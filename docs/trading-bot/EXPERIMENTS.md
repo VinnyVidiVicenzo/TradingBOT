@@ -74,11 +74,23 @@ python -m crypto_research experiments show <run_id>
 
 ## Protocol
 
-### 1. Establish the floor first
+### 1. Establish the floor first -- the MATCHING floor
 
 Run Benchmark 0 over the window. Every other number is quoted relative to it.
 Then run Benchmark 1 with `tranche_count = 1` — a lump sum. Staging only earns
 its complexity if it beats both.
+
+**Match the capital base or the comparison is meaningless.** A strategy funded
+by deposits has more money in it than a hold that receives none, so their net
+returns are not comparable: the deposit-funded run is computing a return on a
+larger base, contributed at different prices. Compare Benchmark 2 against
+`configs/benchmark0_hold_with_contributions.toml`, which receives the identical
+deposit schedule and deploys none of it. That turns a meaningless number into a
+precise question: *did deploying the deposits beat leaving them in cash?*
+
+The general rule: two runs are comparable only when `total_capital_in` and the
+timing of that capital match. Check that field in both records before quoting
+one against the other.
 
 ### 2. Change one thing at a time
 

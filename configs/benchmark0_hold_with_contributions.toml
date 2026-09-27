@@ -1,0 +1,103 @@
+#-----------------------------------------------------------------------------
+# Benchmark 0b -- hold, but receive the same external contributions.
+#
+# THE CONTROL FOR BENCHMARK 2. Without it, Benchmark 2 gets compared against
+# plain Benchmark 0, and that comparison is invalid: Benchmark 2 has $150 of
+# deposits that plain Benchmark 0 never receives, so the two have different
+# capital bases and their net returns are not like-for-like.
+#
+# This config receives exactly the deposit schedule Benchmark 2 receives and
+# deploys none of it. The money arrives and sits as cash. That makes the
+# question precise:
+#
+#     did deploying the deposits beat leaving them in cash?
+#
+# Keep the contribution schedule here identical to
+# configs/benchmark2_contribution_dca.toml. If you change one, change both, or
+# the comparison silently stops being a comparison.
+#
+# This run cannot place an order. See docs/trading-bot/SAFETY.md.
+#-----------------------------------------------------------------------------
+
+[experiment]
+name = "benchmark0b-hold-with-contributions"
+description = """
+Control for benchmark 2. The same hypothetical deposits arrive on the same
+dates, and none are deployed. Quote benchmark 2 against THIS run, not against
+plain benchmark 0, which has a smaller capital base.
+"""
+seed = 0
+
+[data]
+symbols = ["BTCUSD", "ETHUSD", "SOLUSD"]     # CANDIDATES, not finalized
+interval = "1d"
+# Binance.US suspended USD trading between 2023-07-14 and 2025-02-19, so the
+# USD-quoted pairs have NO history across that window. This range sits entirely
+# after the resumption. Run `data gaps` before trusting any window.
+start = "2025-03-01T00:00:00Z"
+end = "2026-09-01T00:00:00Z"
+db_path = "data/market.sqlite"
+max_gap_intervals = 3
+feed_delay_ms = 0
+
+[portfolio]
+valuation_asset = "USD"
+initial_cash = { USD = "200.00" }
+
+# Identical to benchmark2_contribution_dca.toml. Deliberately duplicated rather
+# than shared: a control whose inputs can drift from the thing it controls for
+# is worse than no control.
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USD"
+availability_time = "2025-03-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-03"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USD"
+availability_time = "2025-04-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-04"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USD"
+availability_time = "2025-05-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-05"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USD"
+availability_time = "2025-06-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-06"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USD"
+availability_time = "2025-07-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-07"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USD"
+availability_time = "2025-08-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-08"
+
+[strategy]
+name = "benchmark0_hold"
+
+[costs.fees]
+# Unused -- this run places no orders -- but recorded so the run record stays
+# directly comparable with the runs that do.
+maker_rate = "0.0040"
+taker_rate = "0.0060"
+source = "ASSUMPTION -- placeholder, not a quoted Binance.US rate"
+
+[fill]
+model = "full"
