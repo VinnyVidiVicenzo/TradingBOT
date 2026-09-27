@@ -10,14 +10,23 @@ do-nothing baseline, out of sample, by more than it costs?"
 
 ## This is not a trading bot
 
-V1 **cannot place an order.** There is no live execution path, no API key, no
-secret, and no request signing. That is enforced rather than promised:
+**Nothing here can place an order or move funds.** The repository is split into
+two zones with separately-verified guarantees:
+
+| Zone | Authenticates? | Can trade or move funds? |
+| --- | --- | --- |
+| `crypto_research/` — the research engine | **No.** No signing code exists in it. | No. |
+| `account_tools/` — read-only account reader | Yes, read-only. | **No.** No such endpoint exists in it. |
+
+The engine cannot even reach the account reader: no engine module imports it, and
+a test re-imports the whole engine with `account_tools` made un-importable to
+prove no chain exists. Both claims are enforced, not promised:
 
 ```bash
 python -m crypto_research safety-check
 ```
 
-The guarantee and how it is enforced: [docs/trading-bot/SAFETY.md](docs/trading-bot/SAFETY.md).
+The guarantees, their limits, and the API-key setup: [docs/trading-bot/SAFETY.md](docs/trading-bot/SAFETY.md).
 
 Scope: Binance.US only, spot only, no leverage, no borrowing, no margin, no
 futures, no martingale sizing, no selling.
@@ -82,7 +91,8 @@ settled, and none of it is hard-coded:
 - **Fee, spread, slippage and latency figures.** Every one is an unverified
   placeholder labelled `ASSUMPTION`. There is no single universal Binance.US
   trading fee — the rate depends on volume tier, promotions in force, and
-  whether fees are paid in BNB.
+  whether fees are paid in BNB. Replace the fee figures with your real ones:
+  see [account_tools/README.md](account_tools/README.md).
 
 Historical context only: starting capital was around $200, and an earlier
 snapshot of roughly $206 was mostly BTC and BNB. That is context, not a current
@@ -116,7 +126,7 @@ that identifies neither effect cannot be produced by accident.
 - No module can reach a live order path.
 
 ```
-263 tests, 0 failures (9 live-API tests skipped by default)
+306 tests, 0 failures (9 live-API tests skipped by default)
 ```
 
 Live API checks are opt-in, so the default run is offline and deterministic:
@@ -135,7 +145,8 @@ crypto_research/
   backtest/      event loop, portfolio + cash buckets, execution, costs, metrics
   strategies/    benchmarks 0, 1, 2
   experiments/   append-only run registry
-  safety.py      the machine-checkable no-live-trading audit
+  safety.py      the zone-aware, machine-checkable safety audit
+account_tools/   read-only account reader (separate zone; can sign, cannot trade)
 configs/         example experiment configurations
 docs/trading-bot/
 tests/

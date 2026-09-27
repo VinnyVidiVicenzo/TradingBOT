@@ -24,7 +24,7 @@ from .decimals import format_decimal
 from .errors import CryptoResearchError
 from .experiments.registry import ExperimentRegistry
 from .experiments.runner import run_experiment
-from .safety import audit, permitted_endpoints
+from .safety import audit_repository, permitted_endpoints
 from .storage.database import open_database
 from .storage.repositories import RawSnapshotRepository, RuleSnapshotRepository
 from .timeutil import now_ms, parse_time, to_iso
@@ -390,13 +390,12 @@ def _experiments_command(args: argparse.Namespace) -> int:
 
 
 def _safety_command() -> int:
-    repo_root = Path(__file__).resolve().parent.parent
-    extra = [repo_root / "tests", repo_root / "configs", repo_root / "docs"]
-    report = audit(extra_roots=[path for path in extra if path.exists()])
+    report = audit_repository(Path(__file__).parent.parent)
     print(report.summary())
-    print("\npermitted public endpoints:")
-    for endpoint in permitted_endpoints():
-        print(f"  {endpoint}")
+    for zone, endpoints in permitted_endpoints().items():
+        print(f"\npermitted endpoints -- {zone}:")
+        for endpoint in endpoints:
+            print(f"  {endpoint}")
     return 0 if report.ok else 1
 
 

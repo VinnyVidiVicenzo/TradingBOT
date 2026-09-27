@@ -15,7 +15,12 @@ from crypto_research.binanceus.constants import BASE_URL, PUBLIC_ENDPOINTS
 from crypto_research.binanceus.public_client import BinanceUSPublicClient
 from crypto_research.binanceus.transport import PublicTransport
 from crypto_research.errors import TransportError
-from crypto_research.safety import SECRET_ASSIGNMENT_RE, audit
+from crypto_research.safety import (
+    RESEARCH_RULES,
+    SECRET_ASSIGNMENT_RE,
+    audit,
+    audit_repository,
+)
 
 REPO_ROOT = Path(__file__).parent.parent
 PACKAGE_ROOT = REPO_ROOT / "crypto_research"
@@ -33,20 +38,16 @@ ORDER_VERBS = (
 
 
 class SourceAuditTests(unittest.TestCase):
-    def test_the_repository_passes_the_safety_audit(self) -> None:
-        report = audit(
-            PACKAGE_ROOT,
-            extra_roots=[
-                REPO_ROOT / "tests",
-                REPO_ROOT / "configs",
-                REPO_ROOT / "docs",
-                REPO_ROOT / ".env.example",
-                REPO_ROOT / "README.md",
-                REPO_ROOT / "pyproject.toml",
-            ],
-        )
+    def test_the_repository_passes_the_zone_audit(self) -> None:
+        report = audit_repository(REPO_ROOT)
         self.assertTrue(report.ok, report.summary())
         self.assertGreater(report.files_scanned, 20)
+
+    def test_the_research_zone_alone_is_free_of_signing_and_credentials(self) -> None:
+        # The strong claim, checked on its own: the package a backtest run
+        # executes has no way to authenticate at all.
+        report = audit(PACKAGE_ROOT, rules=RESEARCH_RULES)
+        self.assertTrue(report.ok, report.summary())
 
     def test_the_audit_actually_detects_a_violation(self) -> None:
         # A guard that cannot fail is not a guard. Feed it something bad.
@@ -64,8 +65,12 @@ class SourceAuditTests(unittest.TestCase):
             report = audit(Path(tmp))
             self.assertFalse(report.ok)
             reasons = {finding.reason for finding in report.findings}
-            self.assertTrue(any("HMAC" in reason for reason in reasons))
-            self.assertTrue(any("private endpoint" in reason for reason in reasons))
+            self.assertTrue(
+                any("signing" in reason for reason in reasons), reasons
+            )
+            self.assertTrue(
+                any("forbidden endpoint" in reason for reason in reasons), reasons
+            )
 
     def test_the_secret_detector_matches_a_value_not_a_mention(self) -> None:
         self.assertIsNone(
@@ -124,6 +129,9 @@ class NoOrderApiTests(unittest.TestCase):
             "json", "os", "pathlib", "platform", "random", "re", "sqlite3",
             "subprocess", "sys", "time", "tomllib", "types", "typing", "urllib",
             "contextlib", "traceback", "collections", "functools", "math",
+            # First-party sibling subproject, referenced lazily by safety.py
+            # only so the audit can report its endpoint whitelist.
+            "account_tools",
         }
         found: set[str] = set()
         for path in sorted(PACKAGE_ROOT.rglob("*.py")):

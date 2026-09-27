@@ -73,8 +73,14 @@ persist, and cannot see anything the engine has not handed it.
 | `backtest/metrics.py` | Run metrics. |
 | `strategies/` | Benchmarks 0, 1 and 2, plus the `AssetUniverse` weighting helper. |
 | `experiments/` | Append-only run registry and the runner that orchestrates a run. |
-| `safety.py` | The machine-checkable no-live-trading audit. |
+| `safety.py` | The zone-aware, machine-checkable safety audit. |
 | `cli.py` | `python -m crypto_research`. |
+
+`account_tools/` is a **separate subproject**, not a module of the engine. It
+authenticates (read-only) to report real commission rates and balances, and the
+engine cannot import it -- see [SAFETY.md](SAFETY.md) for the zone split and the
+tests that enforce it. Only `cli.py` and `safety.py` know it exists, and neither
+is part of a backtest run.
 
 ## The event loop
 
@@ -160,6 +166,6 @@ Fractions summing below 1 leave the order partially filled.
 
 ## Deliberate non-goals for V1
 
-No live or paper execution. No authentication. No websockets. No machine
+No live or paper execution. No websockets. No machine
 learning. No news or LLM inputs. No selling. No optimizer. No web UI. No
 deployment. Each of these is a decision to be revisited only with evidence.

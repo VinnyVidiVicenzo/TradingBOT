@@ -8,40 +8,132 @@ done better than a simple benchmark?"*
 
 ## What this system is not
 
-It is not an autonomous trading system. It is not connected to an account. It
-holds no credentials. It cannot move money.
+It is not an autonomous trading system. It cannot place an order and it cannot
+move money. It can, through a separate and deliberately isolated subproject,
+read one account's commission rates and balances — and nothing else.
 
-## Live execution is intentionally absent
+**Live execution is intentionally absent.** That is a design property, not a
+to-do item: no part of this repository contains a code path that submits,
+amends or cancels an order, or that moves funds. The two sections below state
+what each zone can do and how each claim is enforced.
 
-There is no live order path in V1. That is a design property, not a to-do
-item, and it is enforced in four independent ways:
+## Two zones, two different claims
+
+The repository is split into zones with separately-verified guarantees. This
+split is the whole design, and collapsing it into one vague "the repo is safe"
+statement would destroy the useful part.
+
+| Zone | Can it authenticate? | Can it trade or move funds? |
+| --- | --- | --- |
+| `crypto_research/` — the research engine | **No.** No signing code exists. | No. |
+| `account_tools/` — the account reader | Yes, read-only. | **No.** No such endpoint exists in it. |
+
+### Zone 1: the research engine cannot authenticate
+
+Everything a backtest run executes lives here, and it has no way to
+authenticate at all:
 
 1. **No signing.** Binance.US authenticated endpoints require an HMAC-SHA256
-   signature. Nothing in this package imports `hmac` or computes a signature,
-   so an authenticated request cannot be formed.
+   signature. Nothing in `crypto_research/` imports `hmac` or computes a
+   signature, so an authenticated request cannot be formed.
 
-2. **No credentials.** There is no API key or secret anywhere: not in source,
-   not in configuration, not in `.env.example`, not in tests, not in fixtures.
-   The `.env.example` file explicitly documents that none is required.
+2. **No credentials.** No API key or secret is read, stored or referenced.
 
 3. **GET only, whitelist only.** `crypto_research/binanceus/transport.py`
-   issues `GET` and nothing else, and refuses any path that is not in
-   `PUBLIC_ENDPOINTS`. That list contains market-data endpoints exclusively;
-   `/api/v3/order`, `/api/v3/account` and their relatives are absent, and the
-   transport rejects a credential header outright if one is ever attached.
+   issues `GET` and nothing else, and refuses any path not in
+   `PUBLIC_ENDPOINTS` — market data exclusively. It rejects a credential
+   header outright if one is ever attached.
 
-4. **An audit that runs in CI.** `crypto_research/safety.py` scans the whole
-   repository for private endpoints, signing machinery, credential values,
-   Binance.com hosts and testnet hosts. `tests/test_safety.py` asserts the
-   audit passes, asserts the audit can actually fail when fed a violation, and
-   asserts no module defines a function named `place_order`, `cancel_order`,
-   `withdraw_funds`, `transfer` or similar.
+4. **It cannot reach the account reader.** No engine module imports
+   `account_tools`, no engine module imports the CLI or the auditor (which is
+   how the transitive path is closed), and a test re-imports the whole engine
+   in a fresh interpreter with `account_tools` made un-importable to prove no
+   chain exists. A backtest therefore cannot read live account state even by
+   accident, which is what keeps a run reproducible from stored data alone.
 
-Run it yourself:
+### Zone 2: the account reader cannot trade
+
+`account_tools/` authenticates, because reading your real commission rates is
+the one thing public data cannot provide. Its power is bounded structurally:
+
+1. **GET only.** There is no code path that issues another method.
+2. **Five endpoints.** `ACCOUNT_READ_ENDPOINTS` lists `/api/v3/account`,
+   `/api/v3/account/commission`, `/sapi/v1/asset/tradeFee`,
+   `/sapi/v1/account/status` and `/sapi/v1/account/apiTradingStatus`. A path
+   outside it is refused before a request is built. A test asserts the list
+   contains no `order`, `withdraw`, `transfer`, `convert`, `oco` or `otc` path,
+   and that it stays small — every addition widens what a leaked key could
+   reach through this tool.
+3. **Credentials live only in the environment.** Read at call time from
+   `BINANCEUS_READ_API_KEY` and `BINANCEUS_READ_API_SECRET`, never written to
+   disk, never placed in a config or a run record. `Credentials.__repr__` is
+   overridden so a stray log line or traceback cannot leak the secret, and API
+   error text is redacted before it is raised.
+4. **It emits text, not actions.** Output is configuration for a human to
+   review and paste. It does not edit configs or experiments.
+
+### The audit
+
+`crypto_research/safety.py` audits each zone against its own rule set, and
+`tests/test_safety.py` plus `tests/test_account_tools.py` assert that each
+audit passes, that each can actually fail when fed a violation, and that
+signing is permitted in Zone 2 while order placement is forbidden in both.
 
 ```bash
 python -m crypto_research safety-check
 ```
+
+### What this does and does not buy you
+
+Being precise, because this is the part worth being precise about: the earlier
+absolute property — *no credential exists anywhere, therefore no order is
+possible* — has been traded for a narrower one: *the code that could
+authenticate contains no order path, and the code that runs experiments cannot
+authenticate*.
+
+That is a weaker guarantee. It is still a real one, and it is still enforced
+by structure rather than by intention. But the residual risk is now yours to
+manage rather than the architecture's to eliminate: if the API key you supply
+has trading permission enabled, then **something else** on your machine could
+use it, even though this tool will not. Which is why the next section matters.
+
+## The API key you supply
+
+Create it with **reading permission only**. Specifically, on the Binance.US API
+management page:
+
+- **Enable Reading** — yes, this is all the tool needs.
+- **Enable Spot & Margin Trading** — **off.**
+- **Enable Withdrawals** — **off.**
+- **IP access restriction** — restrict to your own IP if your setup allows it.
+  This is the single most effective control, because a key that only works from
+  one address is far less useful to anyone who obtains it.
+
+Then set it in your own shell, never in a file in this repository:
+
+```bash
+export BINANCEUS_READ_API_KEY="<paste key>"
+export BINANCEUS_READ_API_SECRET="<paste secret>"
+```
+
+`.gitignore` excludes `.env` and `.env.*`, and the audit fails the build if a
+credential *value* appears in any tracked file. Neither of those helps if a
+secret is pasted into a chat, a commit message or a screenshot, so do not.
+
+### A limitation to be honest about
+
+**This tool cannot verify that your key is read-only.** Binance.US exposes no
+endpoint reporting a key's own permissions, so `account_tools check` reports
+*account*-level flags (`canTrade`, `canWithdraw`) which are not the same thing.
+Verifying the key's own restrictions is a manual step on the API management
+page, and the tool says so rather than implying it has checked.
+
+### Rotate it when you are done
+
+The research workflow needs the key for a few seconds, once, to read rates and
+balances. It is not a standing requirement. Reading the values and then
+deleting the key removes the residual risk entirely, and the measured rates stay
+in your configs where they belong.
 
 ## Binance.US only
 
@@ -106,7 +198,10 @@ most, and exactly the situation where a hard-coded `1.0` would hide it.
 ## The research model and the execution system stay separate
 
 They are separate for a reason that survives V1: a model that can reach the
-thing that spends money is a model that can spend money by accident.
+thing that spends money is a model that can spend money by accident. The
+zone split described above is the first instance of this rule, and
+`account_tools` is deliberately a sibling of the research engine rather than a
+module inside it for exactly that reason.
 
 The boundary is the strategy interface. A strategy receives a
 `StrategyContext` and returns `OrderIntent` records. It gets no client, no

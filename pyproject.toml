@@ -14,9 +14,10 @@ dev = ["pytest>=8"]
 
 [project.scripts]
 crypto-research = "crypto_research.cli:main"
+crypto-research-account = "account_tools.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["crypto_research*"]
+include = ["crypto_research*", "account_tools*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
