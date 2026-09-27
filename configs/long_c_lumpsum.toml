@@ -1,0 +1,64 @@
+#-----------------------------------------------------------------------------
+# Long-window test, generated. Measured in USDT, which is the unit these pairs
+# are priced in. USDT is NOT treated as US dollars anywhere -- nothing converts
+# between them -- so every figure in this run is a USDT figure.
+#
+# Why USDT pairs and not USD pairs: Binance.US suspended USD trading between
+# 2023-07-14 and 2025-02-19, so the USD pairs have only ~18 months of usable
+# history. These have almost six years, including the 2021 rise and the 2022
+# fall. Assets are still CANDIDATES; nothing here is a final choice.
+#
+# This run cannot place an order. See docs/trading-bot/SAFETY.md.
+#-----------------------------------------------------------------------------
+
+[experiment]
+name = "long-c-lumpsum"
+description = """
+Spend the whole 200 pool on day one.
+"""
+seed = 0
+
+[data]
+symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
+interval = "1d"
+start = "2020-10-01T00:00:00Z"
+end = "2026-09-01T00:00:00Z"
+db_path = "data/market.sqlite"
+max_gap_intervals = 3
+feed_delay_ms = 0
+
+[portfolio]
+valuation_asset = "USDT"
+initial_cash = { USDT = "200.00" }
+
+[strategy]
+name = "benchmark1_staged_deployment"
+
+[strategy.params]
+symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
+quote_asset = "USDT"
+tranche_count = 1
+cadence_days = 0
+
+[costs.fees]
+maker_rate = "0.0040"
+taker_rate = "0.0060"
+source = "ASSUMPTION -- placeholder, replace with the real account rates"
+commission_asset_policy = "RECEIVED_ASSET"
+
+[costs.spread]
+default_bps = "5"
+prefer_observed = true
+
+[costs.slippage]
+model = "fixed"
+bps = "5"
+
+[costs.latency]
+decision_to_submit_ms = 500
+
+[execution]
+max_reference_age_ms = 90000
+
+[fill]
+model = "full"

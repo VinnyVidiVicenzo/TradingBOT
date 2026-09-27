@@ -1,0 +1,561 @@
+#-----------------------------------------------------------------------------
+# Long-window test, generated. Measured in USDT, which is the unit these pairs
+# are priced in. USDT is NOT treated as US dollars anywhere -- nothing converts
+# between them -- so every figure in this run is a USDT figure.
+#
+# Why USDT pairs and not USD pairs: Binance.US suspended USD trading between
+# 2023-07-14 and 2025-02-19, so the USD pairs have only ~18 months of usable
+# history. These have almost six years, including the 2021 rise and the 2022
+# fall. Assets are still CANDIDATES; nothing here is a final choice.
+#
+# This run cannot place an order. See docs/trading-bot/SAFETY.md.
+#-----------------------------------------------------------------------------
+
+[experiment]
+name = "long-e-monthly-deposits"
+description = """
+Spend each monthly deposit as it arrives. Never touch the 200 pool.
+"""
+seed = 0
+
+[data]
+symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
+interval = "1d"
+start = "2020-10-01T00:00:00Z"
+end = "2026-09-01T00:00:00Z"
+db_path = "data/market.sqlite"
+max_gap_intervals = 3
+feed_delay_ms = 0
+
+[portfolio]
+valuation_asset = "USDT"
+initial_cash = { USDT = "200.00" }
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2020-10-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2020-10"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2020-11-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2020-11"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2020-12-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2020-12"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2021-01-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2021-01"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2021-02-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2021-02"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2021-03-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2021-03"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2021-04-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2021-04"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2021-05-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2021-05"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2021-06-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2021-06"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2021-07-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2021-07"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2021-08-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2021-08"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2021-09-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2021-09"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2021-10-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2021-10"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2021-11-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2021-11"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2021-12-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2021-12"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2022-01-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2022-01"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2022-02-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2022-02"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2022-03-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2022-03"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2022-04-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2022-04"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2022-05-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2022-05"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2022-06-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2022-06"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2022-07-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2022-07"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2022-08-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2022-08"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2022-09-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2022-09"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2022-10-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2022-10"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2022-11-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2022-11"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2022-12-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2022-12"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2023-01-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2023-01"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2023-02-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2023-02"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2023-03-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2023-03"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2023-04-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2023-04"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2023-05-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2023-05"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2023-06-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2023-06"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2023-07-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2023-07"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2023-08-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2023-08"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2023-09-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2023-09"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2023-10-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2023-10"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2023-11-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2023-11"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2023-12-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2023-12"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2024-01-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2024-01"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2024-02-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2024-02"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2024-03-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2024-03"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2024-04-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2024-04"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2024-05-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2024-05"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2024-06-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2024-06"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2024-07-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2024-07"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2024-08-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2024-08"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2024-09-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2024-09"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2024-10-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2024-10"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2024-11-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2024-11"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2024-12-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2024-12"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2025-01-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-01"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2025-02-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-02"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2025-03-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-03"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2025-04-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-04"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2025-05-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-05"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2025-06-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-06"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2025-07-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-07"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2025-08-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-08"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2025-09-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-09"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2025-10-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-10"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2025-11-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-11"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2025-12-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-12"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2026-01-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2026-01"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2026-02-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2026-02"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2026-03-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2026-03"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2026-04-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2026-04"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2026-05-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2026-05"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2026-06-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2026-06"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2026-07-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2026-07"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USDT"
+availability_time = "2026-08-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2026-08"
+
+[strategy]
+name = "benchmark2_contribution_dca"
+
+[strategy.params]
+symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
+quote_asset = "USDT"
+cadence_days = 0
+min_deploy_amount = "0"
+
+[costs.fees]
+maker_rate = "0.0040"
+taker_rate = "0.0060"
+source = "ASSUMPTION -- placeholder, replace with the real account rates"
+commission_asset_policy = "RECEIVED_ASSET"
+
+[costs.spread]
+default_bps = "5"
+prefer_observed = true
+
+[costs.slippage]
+model = "fixed"
+bps = "5"
+
+[costs.latency]
+decision_to_submit_ms = 500
+
+[execution]
+max_reference_age_ms = 90000
+
+[fill]
+model = "full"
