@@ -1,0 +1,63 @@
+$200 invested in crypto (the same rotating basket used throughout this
+project), withdrawing $5 a month for 3 years. Same returns,
+just replayed in the opposite order -- crash-first vs crash-last.
+
+start month      forward order  reversed order       gap
+--------------------------------------------------------
+2020-10                    214               0      +214
+2020-11                    384              11      +372
+2020-12                    311             115      +196
+2021-01                    562             336      +226
+2021-02                    208             180       +28
+2021-03                      0             181      -181
+2021-04                      0             224      -224
+2021-05                      0             140      -140
+2021-06                      0             246      -246
+2021-07                      0             184      -184
+2021-08                      0             214      -214
+2021-09                      0             104      -104
+2021-10                      0             126      -126
+2021-11                      0             103      -103
+2021-12                      0             178      -178
+2022-01                      0             157      -157
+2022-02                      0             301      -301
+2022-03                      0             134      -134
+2022-04                      0              99       -99
+2022-05                      0             159      -159
+2022-06                    159             297      -138
+2022-07                    454             430       +24
+2022-08                    366             553      -187
+2022-09                    443             559      -116
+2022-10                    517             579       -62
+2022-11                    389             413       -24
+2022-12                    503             307      +196
+2023-01                    623             259      +364
+2023-02                    360             125      +235
+2023-03                    305               0      +305
+2023-04                    269               0      +269
+2023-05                    283               2      +281
+2023-06                    305               0      +305
+2023-07                    240               0      +240
+2023-08                    266               0      +266
+2023-09                    461              90      +371
+
+36 windows tested (only large gaps shown above; every window is
+in the totals below).
+
+Typical (median) ending balance, forward order:  227
+Typical (median) ending balance, reversed order:  158
+
+Median gap between the two orderings: -80
+Largest gap in either direction: +372
+Order mattered by more than $20 in 36 of 36 windows.
+
+Why this matters in plain terms: with no withdrawals at all, the order of
+the SAME returns would make no difference whatsoever to the ending balance --
+multiplying the same numbers in a different sequence gives the same answer.
+Every gap shown above exists ONLY because of the $5/month coming out along the
+way. A crash early in the withdrawal period locks in a loss on money that a
+later recovery can no longer grow, because that money is already gone.
+
+This project's own situation is the opposite -- money going IN, not out -- and
+earlier tests already showed that when you are contributing rather than
+withdrawing, the timing of a crash matters far less to the end result.

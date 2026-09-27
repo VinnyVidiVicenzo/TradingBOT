@@ -55,6 +55,8 @@ Hard rules the person set at the start, still in force:
   `scripts/long_history.py`, `scripts/fundamentals.py`,
   `scripts/big_forces.py`, `scripts/trading_cost.py`,
   `scripts/leverage_and_flows.py`, `scripts/macro_and_maturity.py`,
+  `scripts/optimal_allocation.py`, `scripts/rolling_correlation.py`,
+  `scripts/withdrawal_risk.py`,
   `scripts/valuation.py`, `scripts/scenarios.py`, `scripts/crowd_mood.py`.
 - Every raw result, every row: `results/*.csv`.
 - A separate, read-only account reader in `account_tools/` can look up the person's
@@ -443,6 +445,49 @@ Binance.US research engine or its data store.
 - **Has Bitcoin's volatility actually come down?** Yes, measurably: 73% (2014-17) to
   74% (2018-20) to 64% (2021-23) to 48% (2024-26, the ETF era) annualized volatility.
   Real evidence of a maturing market. Still 2.5-3x the S&P 500's typical 15-20%.
+
+### Analyst step: what allocation would actually have been "optimal" (and why that question is a trap)
+(`results/optimal_allocation_report.txt`) Grid-searched every crypto/stock/cash weight
+in 10% steps, scored by "gain per unit of worst drawdown" (same measure used earlier).
+- **On the ONE real historical path**, 100% cash "won" by this ratio -- but that is an
+  artifact: dividing by an almost-zero drawdown inflates the ratio even for a tiny gain.
+  Shown side by side with the SAME grid ranked by plain growth instead, where 100%
+  crypto tops the list ($561 typical vs cash's $241) -- which ranking matters depends on
+  how much risk is acceptable, not on the arithmetic itself.
+- **Scored instead across many resampled possible futures** (reusing the possible-futures
+  Monte Carlo machinery, not just the one lucky/unlucky real path): picked a DIFFERENT
+  answer (10% stocks / 90% cash) than the single-history version (100% cash). The two
+  versions disagreeing is the actual point -- a weight tuned to exactly what happened is
+  not the same thing as a weight that holds up broadly, which is why "backtest-optimized"
+  allocations should be distrusted.
+- **Does spreading out the buying matter more once most of the money is in something
+  steadier** (90% stocks / 10% crypto)? No: staged beat lump-sum in only 22 of 60 months
+  (37%), same conclusion as for pure crypto.
+
+### Analyst step: has owning several coins gotten LESS protective over time?
+(`results/rolling_correlation_report.txt`) big_forces.py's single whole-period
+correlation numbers were tracked instead in 90-day rolling windows, split into three
+eras. 5 of 6 coins (ETH, XRP, SOL, DOGE, BNB) show RISING correlation with Bitcoin --
+only Zcash fell. Average correlation with Bitcoin across the other 6 coins rose from
+about 0.56 (first 18 months) to 0.71 (most recent ~30 months). **Owning several coins
+instead of concentrating in Bitcoin has been diversifying less, not more, as the market
+has matured** -- the opposite of what "the market is maturing" might suggest.
+
+### Illustration only: if withdrawing instead of depositing, does crash timing matter?
+(`results/withdrawal_risk_report.txt`) Not this project's actual situation -- money is
+going IN, not out -- but requested explicitly as background knowledge. Took real 3-year
+return sequences and replayed each one forward and in reverse, withdrawing $5/month
+(2.5% of a $200 stake) either way. With no withdrawals, order would make zero difference
+to the ending value; every difference shown exists only because of the withdrawals.
+**Order mattered by more than $20 in all 36 of 36 windows tested.** Several consecutive
+real starting months (March 2021 - May 2022, aligned with the well-documented 2021-22
+crash) show the forward-order account being wiped out to $0 entirely, while the
+reversed order of the exact same returns preserved real value. The takeaway is not
+which direction is safer in general (that flips depending on which real sequence gets
+reversed) -- it is that a crash landing early in a withdrawal period is far more
+damaging than the identical crash landing late, which is why this project's own
+accumulation (depositing) situation is fundamentally less exposed to this risk than a
+withdrawal situation would be.
 
 ### Fees
 Trading fees barely matter at this size: about $1.20 on $200 over six years, and

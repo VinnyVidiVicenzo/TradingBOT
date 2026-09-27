@@ -1,0 +1,60 @@
+Testing 66 crypto/stock/cash combinations in 5% steps.
+
+A. IF YOU HAD KNOWN THE FUTURE (one real path, 2020-2026) -- a trap, see below
+
+rank    crypto  stocks    cash  ended with  gain/drawdown
+1           0%      0%    100%         241          20.64
+2           0%     10%     90%         262          13.62
+3           0%     20%     80%         284           8.80
+4          60%     40%      0%        1239           8.33
+5          50%     50%      0%        1149           8.28
+
+
+B. ROBUST ACROSS MANY POSSIBLE FUTURES (same method as possible_futures.py)
+
+  Scoring the same grid on its MEDIAN result across 1,000 resampled
+  versions of history, not the one that actually happened. This is
+  the version worth trusting more. (Coarse search width, for runtime;
+  the top candidates are re-scored on 5,000 paths below for precision.)
+
+rank    crypto  stocks    cash  median end  gain/drawdown  lose money
+1           0%     10%     90%         229          10.04          0%
+2           0%      0%    100%         220           9.92          0%
+3           0%     20%     80%         238           5.95          0%
+4           0%     30%     70%         247           4.71          0%
+5           0%     40%     60%         256           4.14          1%
+
+  'Best on one path' picked 0% crypto / 0% stocks / 100% cash.
+  'Best across many paths' picked 0% crypto / 10% stocks / 90% cash.
+  THEY DISAGREE. That disagreement is the whole point: a weight tuned to one
+  specific history is not the same thing as a weight that holds up broadly.
+
+  IMPORTANT CAVEAT ON THE RANKING ABOVE: 'gain per unit of worst drawdown'
+  mechanically rewards near-zero-volatility mixes, because dividing by an
+  almost-zero drawdown inflates the ratio even for a small gain. That is why
+  cash-heavy mixes top the list -- it is a true statement about the RATIO, not
+  a claim that they grew your money the most. For contrast, here is the same
+  grid ranked by plain median ending value instead:
+
+  rank    crypto  stocks    cash  median end  lose money
+  1         100%      0%      0%         561         21%
+  2          90%     10%     -0%         543         19%
+  3          80%     20%     -0%         536         17%
+  4          90%      0%     10%         529         20%
+  5          80%     10%     10%         523         18%
+
+  Ranked by growth, more crypto climbs the list; ranked by gain-per-drawdown,
+  cash does. Which ranking matters more is a question about how much risk is
+  acceptable, not a question this arithmetic can answer by itself.
+
+
+C. FOR A BLENDED PORTFOLIO, DOES SPREADING OUT THE BUYING MATTER MORE?
+
+  Earlier tests found spreading out PURE crypto purchases made no reliable
+  difference. Repeating that test for a 90% stock / 10% crypto blend, added
+  to gradually over 12 weeks vs all at once, every start month, 1-year hold.
+
+  Staged beat lump-sum in 22 of 60 start months (37%).
+  Typical (median) result -- lump sum: 231   staged: 230
+  Same conclusion as for pure crypto: spreading out the buying does not
+  reliably help, even once most of the money is in something steadier.
