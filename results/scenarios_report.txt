@@ -1,0 +1,30 @@
+
+=== $200 HELD 1 YEAR -- scenarios taken from history ===
+asset              record from  disaster      bad   middle     good  lost money  lost 3/4+
+                               (1 in 20) (1 in 5)          (1 in 5)
+------------------------------------------------------------------------------------------
+Savings account        2000-01       200      200      202      208          0%         0%
+Bitcoin                2014-09        82      158      345      566         28%         1%
+Ethereum               2017-11        54      115      229      396         45%         4%
+XRP                    2017-11        69      102      195      628         51%         1%
+Solana                 2020-04        35       97      239    1,567         43%        11%
+Zcash                  2017-11        41       79      190      483         51%         8%
+Dogecoin               2017-11        54       93      209      486         47%         3%
+BNB                    2017-11       110      157      272      517         34%         0%
+Stock fund (SPY)       2000-01       156      194      226      244         22%         0%
+
+=== $200 HELD 3 YEARS -- scenarios taken from history ===
+asset              record from  disaster      bad   middle     good  lost money  lost 3/4+
+                               (1 in 20) (1 in 5)          (1 in 5)
+------------------------------------------------------------------------------------------
+Savings account        2000-01       200      201      208      220          0%         0%
+Bitcoin                2014-09       248      435      895    2,432          0%         0%
+Ethereum               2017-11       140      230      571    1,740         15%         0%
+XRP                    2017-11        93      217      425      650         18%         2%
+Solana                 2020-04       193      434      930    2,422          6%         0%
+Zcash                  2017-11        33       54      140      515         60%        18%
+Dogecoin               2017-11        95      252    1,664    8,069         13%         0%
+BNB                    2017-11       246      384    1,447    4,259          1%         0%
+Stock fund (SPY)       2000-01       148      214      276      314         17%         0%
+
+lost 3/4+ = ended below $50.
