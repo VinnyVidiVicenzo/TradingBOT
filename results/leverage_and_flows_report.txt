@@ -1,0 +1,44 @@
+1. LEVERAGE COST (Deribit BTC perpetual funding rate, paid continuously)
+
+  history: 2019-06-01 to 2026-09-27 (64215 readings)
+  today's rate: 0.0000% per funding interval -- higher than 29% of days on record
+
+  funding-rate regime                   days  next 30d avg  next 30d fell  next 90d avg  next 90d fell
+  most negative 10% (crowded shorts)     267         +8.9%         87/266        +18.0%         84/266
+  middle 80% (no crowd either way)      2142         +3.4%       993/2113        +12.2%       946/2053
+  most positive 10% (crowded longs)      267         +5.1%        127/267        +20.5%        128/267
+
+
+2. NEW MONEY ARRIVING (combined USDT + USDC supply growth)
+
+  history: 2018-08-03 to 2026-09-26
+  combined supply today: $255.8bn
+
+  stablecoin-supply regime                 months  next 30d BTC avg  next 30d fell
+  supply shrank (bottom 20% of months)         19             -5.7%          13/19
+  supply grew fastest (top 20% of months)      19             +9.8%          10/19
+
+
+3. THE BIGGEST DRAWDOWNS IN OUR OWN DATA, AND WHAT DROVE THEM
+
+  (from results/risk_profile.csv and event_study.py; qualitative,
+   cross-referenced against public reporting, not measured here)
+
+  2025-10-10 to 2025-10-11  (BTC -12.5% close-to-low in our own data (~-14% intraday, widely reported))
+    THE LARGEST LEVERAGE LIQUIDATION EVENT ON RECORD. Trump's announcement of a 100% tariff on Chinese imports hit equities and commodities first; crypto was sitting near record-high open interest and crowded long positioning and became, in one analyst's words, 'the perfect pressure point.' Over $19bn in leveraged positions were forcibly closed, more than 1.6 million trading accounts liquidated -- about 9x the February 2025 crash and 19x the FTX collapse. Cross-checked against this project's own Binance.US data: BTCUSDT closed $124,798 on Oct 6 and fell to a low of $109,278 by Oct 11, independently confirming an event of this scale really happened, on these dates, on this exchange -- not just in the news reports. Sources: CoinDesk, Forbes, CCN, FTI Consulting (links in results/reference_verification.md addendum below).
+
+  2021-05-19 to 2021-05-23  (BTC -30% in 4 days)
+    China's mining-ban headline hit a market already record-long on leverage. $8.6bn in leveraged positions were forcibly closed in 24 hours -- a record at the time, since surpassed by October 2025 above. Amplified an initial news-driven drop into a much larger one.
+
+  2022-05-07 to 2022-05-12  (LUNA itself fell essentially to zero)
+    Not a futures-leverage cascade -- a stablecoin (UST) losing its peg triggered a bank-run-style redemption spiral. It matters for this project's data because it triggered broad de-risking and leveraged liquidations across the wider market in its wake, visible in results/risk_profile.csv as one of the worst stretches in the whole six-year window.
+
+  2022-11-08 to 2022-11-09  (FTX collapse, BTC -14% in a day)
+    FTX's own affiliated trading firm (Alameda) was a major leveraged market participant; its insolvency and FTX's own halted withdrawals forced liquidations across every exchange with exposure to either firm.
+
+  Pattern across all four: the INITIAL trigger was news, tariffs, or a
+  stablecoin failure -- not leverage itself. But every time, a market already
+  carrying a lot of leveraged, one-directional betting turned that trigger into
+  a much larger move than the news alone would suggest, because forced closures
+  beget more forced closures. The October 2025 event is the clearest illustration:
+  the trigger (a tariff announcement) had nothing to do with crypto at all.

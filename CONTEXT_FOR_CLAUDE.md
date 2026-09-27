@@ -54,6 +54,7 @@ Hard rules the person set at the start, still in force:
   `scripts/vs_stock_fund.py`, `scripts/mix_vs_savings.py`, `scripts/possible_futures.py`,
   `scripts/long_history.py`, `scripts/fundamentals.py`,
   `scripts/big_forces.py`, `scripts/trading_cost.py`,
+  `scripts/leverage_and_flows.py`, `scripts/macro_and_maturity.py`,
   `scripts/valuation.py`, `scripts/scenarios.py`, `scripts/crowd_mood.py`.
 - Every raw result, every row: `results/*.csv`.
 - A separate, read-only account reader in `account_tools/` can look up the person's
@@ -389,6 +390,59 @@ $200 held 1 year:
 
 Over 3 years, Bitcoin, BNB and Solana lost money in almost none of their own past
 3-year periods; Zcash lost money in 60% of them, the worst of the group.
+
+### Analyst step: leverage -- borrowed-money betting and how it amplifies crashes
+(`results/leverage_and_flows_report.txt`) "Leverage" = trading with borrowed money in
+futures. This project's own tool cannot do this (spot-only, no leverage, no futures --
+see docs/trading-bot/SAFETY.md); this reads it as an OUTSIDE indicator only, the same
+way Fear & Greed was read. Binance.com and Bybit's public data are both geo-blocked
+from this environment; Deribit's public BTC perpetual-futures history (back to mid-2019,
+64,215 hourly readings) was used instead -- informational only, never touching the
+Binance.US research engine or its data store.
+
+- **Funding rate** (the fee crowded leveraged traders pay each other): extreme NEGATIVE
+  readings (crowded short bets) preceded the BEST average next-30-day return (+8.9%,
+  fell only 33% of the time); extreme POSITIVE readings (crowded long bets) preceded
+  weaker, near-average returns (+5.1%, fell 48% of the time, barely different from the
+  47% baseline). **This runs opposite to the earlier Fear & Greed finding**, where
+  extreme GREED preceded the biggest gains. Flagged as a genuine tension, not resolved:
+  different ways of measuring "crowd positioning" gave different, even contradictory
+  answers, which is itself a reason not to trust any single sentiment measure too far.
+- **Stablecoin supply growth** (new USDT+USDC being created = new money likely arriving):
+  months when supply SHRANK preceded worse Bitcoin returns (-5.7% avg, fell 68% of the
+  time); the fastest-growing months preceded better returns (+9.8% avg, fell 53% of the
+  time). This one points the intuitive direction.
+- **The biggest leverage-driven crash by far is one the person hadn't known about**:
+  8-11 October 2025, $19bn in leveraged positions forcibly liquidated, 1.6 million
+  accounts, roughly 9x the Feb 2025 crash and 19x the FTX collapse -- triggered by a
+  Trump tariff announcement with nothing to do with crypto itself. Independently
+  confirmed against this project's own Binance.US data: BTCUSDT fell from $124,798
+  (Oct 6) to a low of $109,278 (Oct 11). The May 2021 China-crackdown crash ($8.6bn
+  liquidated, precise figure) was record-sized at the time but has since been dwarfed.
+- Pattern across the 4 biggest crashes studied: the trigger was always news, a stablecoin
+  failure, or a geopolitical announcement -- never leverage itself. But every time, a
+  market already carrying a lot of one-directional leveraged betting turned an ordinary
+  bad-news day into a much larger move, because forced position closures force further
+  price drops, which force more closures.
+
+### Analyst step: gold, GBTC, and whether crypto has calmed down
+(`results/macro_and_maturity_report.txt`)
+- **"Digital gold" claim tested directly**: move-together score with gold is +0.06 --
+  essentially zero. In gold's 12 worst months, Bitcoin actually rose in 10 of them. The
+  "digital gold" pitch compares what the two assets represent, not a real price
+  relationship in this data.
+- **GBTC premium/discount** (the old way to hold Bitcoin in a normal brokerage account,
+  before 2024): no exact historical premium % was available for free, so a proxy was
+  built (cumulative GBTC return minus cumulative Bitcoin return) and checked for
+  sensibility rather than taken as gospel. It swung by 122 percentage points before
+  GBTC converted to a real ETF on 11 Jan 2024, and by only 10 points in the 2.7 years
+  since -- a >10x drop, exactly what should happen once ETF arbitrage starts holding
+  the price to the coin's actual value. The proxy shows clearly positive readings
+  through the 2021 run-up and a deep negative reading around the FTX collapse
+  (Dec 2022, -35%), matching the publicly known shape of that period.
+- **Has Bitcoin's volatility actually come down?** Yes, measurably: 73% (2014-17) to
+  74% (2018-20) to 64% (2021-23) to 48% (2024-26, the ETF era) annualized volatility.
+  Real evidence of a maturing market. Still 2.5-3x the S&P 500's typical 15-20%.
 
 ### Fees
 Trading fees barely matter at this size: about $1.20 on $200 over six years, and

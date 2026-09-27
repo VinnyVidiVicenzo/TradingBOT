@@ -60,6 +60,19 @@ claim from the actual data. Once the date correction shrank China's move to
 Fixed to identify the actual largest mover from the data on every run, rather
 than asserting a fixed answer.
 
+## Addendum: sources checked for the leverage study (`leverage_and_flows.py`)
+
+| Claim | Verified | Source |
+|---|---|---|
+| May 19-23 2021 crash: "~$8bn liquidated, largest on record at the time" | **$8.6bn**, precise figure; genuinely the largest single-day liquidation on record *at that time* -- since surpassed (see below) | [search result summarizing KuCoin/CoinDesk/CryptoPolitan reporting] |
+| A previously-unknown-to-me October 2025 event, surfaced only because I checked the May 2021 figure and the search results mentioned it had since been surpassed | **2025-10-10/11: $19bn liquidated, 1.6m accounts, ~9x the Feb 2025 crash, ~19x FTX** -- triggered by Trump's 100% China tariff announcement, a macro/geopolitical event with nothing to do with crypto itself | [CoinDesk](https://www.coindesk.com/research/market-spotlight-the-19-billion-liquidation-that-shook-crypto), [Forbes](https://www.forbes.com/sites/digital-assets/2025/10/13/cryptos-black-friday-inside-the-19-billion-market-meltdown/), [CCN](https://www.ccn.com/education/crypto/cryptos-19-billion-liquidation-explained-trump-china-tariff-leverage-crash/), [FTI Consulting](https://www.fticonsulting.com/insights/articles/crypto-crash-october-2025-leverage-met-liquidity), [CoinGecko](https://www.coingecko.com/learn/october-10-crypto-crash-explained) |
+| Whether that October 2025 event actually shows up in OUR OWN Binance.US data, on the reported dates, at roughly the reported size | **Independently confirmed**: our own BTCUSDT closes fell from $124,798 (Oct 6) to a low of $109,278 (Oct 11), an ~12.5% close-to-low decline -- consistent with the ~14% intraday figure widely reported (some difference expected: one is a close-to-low measure on one exchange, the other an intraday peak-to-trough figure quoted across the broader market) | Own data, `data/market.sqlite`, cross-checked in `scripts/leverage_and_flows.py` |
+
+This is a good example of why checking one claim is worth doing even when it
+seems settled: verifying the smaller, older number (May 2021) is what surfaced
+the far larger, more recent, and more directly relevant event (October 2025)
+that would otherwise have been missing from this research entirely.
+
 ## What was not re-checked
 
 Every other date in this project came either from a live API response (prices,
