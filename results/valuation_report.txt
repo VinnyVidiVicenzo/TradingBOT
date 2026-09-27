@@ -1,0 +1,36 @@
+1. WHERE EACH COIN SITS TODAY
+
+coin     today  history from  lowest ever  highest ever   higher than today on
+BTC       1.58    2013-01-01         0.56          5.88               58% of days
+ETH       1.15    2015-08-08         0.30          6.09               56% of days
+XRP       1.02    2014-08-15         0.31        146.63               55% of days
+ZEC       2.60    2016-10-29         0.26          2.91                0% of days
+DOGE      0.82    2014-01-23         0.19         10.31               58% of days
+
+
+2. WHAT IT READ AT PAST TURNING POINTS
+
+moment                   BTC     ETH     XRP     ZEC    DOGE
+peak Dec 2017           4.25    2.37    1.21    1.96    3.82
+bottom Dec 2018         0.69    0.30    0.49    0.26    0.65
+peak Apr 2021           3.38    2.02    2.89    1.95    3.60
+peak Nov 2021           2.72    1.96    1.69    1.27    1.24
+bottom Nov 2022         0.78    0.73    0.72    0.37    0.84
+peak Mar 2024           2.68    1.50    1.19    0.52    1.92
+peak Oct 2025           2.29    1.40    1.87    1.69    1.60
+low Jun 2026            1.13    0.76    0.74    1.02    0.64
+TODAY                   1.58    1.15    1.02    2.60    0.82
+
+
+3. DID IT PREDICT THE NEXT 12 MONTHS?  (Bitcoin, every month since 2012)
+
+reading at the start    months  typical next 12m   fell over next 12m
+below 1.0                   22              +84%            0 of 22
+1.0-1.5                     35             +105%            7 of 35
+1.5-2.5                     70              +62%           28 of 70
+2.5-3.5                     23              +46%            9 of 23
+above 3.5                    3              -61%            2 of 3
+
+  Bitcoin today reads 1.58.
+  Months in the same bucket overlap heavily and come from only ~4 cycles,
+  so these are a handful of independent episodes, not dozens.

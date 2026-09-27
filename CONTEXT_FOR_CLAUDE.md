@@ -300,6 +300,20 @@ Live order books, 3 snapshots, 27 Sep 2026; excludes the exchange's trading fee.
   $4.3bn settlement 2023, Bybit ~$1.5bn hack Feb 2025, CLARITY Act failure) rather
   than a full study.
 
+### Analyst step: is it expensive right now? (`results/valuation_report.txt`)
+Measure: MVRV (Coin Metrics free data) = market value / what holders collectively
+paid. 1.0 = holders at break-even on average; 3 = triple; below 1 = at a loss.
+Not available free for SOL or BNB.
+- Today (26 Sep 2026): BTC 1.58, ETH 1.15, XRP 1.02, DOGE 0.82, **ZEC 2.60**.
+- Past peaks mostly read 2-4 for Bitcoin; crash bottoms 0.7-0.8.
+- BTC, ETH, XRP, DOGE sit in the middle-to-low part of their history (higher on
+  55-58% of past days). Zcash is at almost its highest reading ever (fewer than
+  0.5% of days higher) -- consistent with its price running far ahead of use.
+- Did it predict Bitcoin's next 12 months? Below 1.0: rose every time (22 months);
+  1.5-2.5 (today's zone): fell 28 of 70 times, typical +62%; above 3.5: fell 2 of 3.
+  Only ~4 cycles and heavily overlapping months, so a handful of real episodes --
+  a "stretched or not" gauge, not a timing signal.
+
 ### Fees
 Trading fees barely matter at this size: about $1.20 on $200 over six years, and
 changing the fee assumption from 0% to 1% moved results by about 1 percentage point.
