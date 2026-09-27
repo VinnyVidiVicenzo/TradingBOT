@@ -1,0 +1,32 @@
+USAGE (90-day averages; 'address' != person, trends matter more than levels)
+
+coin   active addr/day   vs 1y   vs 3y        tx/day   vs 1y   vs 3y
+BTC            638,470    -11%    -35%       670,455    +48%    +41%
+ETH            858,891    +23%    +83%     2,173,538    +36%   +113%
+XRP             81,519    +50%    +83%     2,157,686    +10%   +106%
+SOL                n/a     n/a     n/a           n/a     n/a     n/a
+ZEC              5,710   +228%    -44%         6,476   +401%    +97%
+DOGE            39,267    -37%    -21%        26,921    -47%    -86%
+BNB                n/a     n/a     n/a           n/a     n/a     n/a
+
+SUPPLY
+
+coin       started  coins in circulation          hard cap  % of cap issued  new coins / yr
+BTC     2009-01-03            20,089,918        21,000,000              96%          +0.82%
+ETH     2015-07-30           122,084,678              none           no cap          +0.82%
+XRP            n/a        62,879,209,849   100,000,000,000             63%*          -0.00%
+SOL            n/a           587,711,978              none           no cap             n/a
+ZEC     2016-10-28            16,954,185        21,000,000              81%          +4.03%
+DOGE    2013-12-08       156,086,176,384              none           no cap          +3.29%
+BNB     2017-07-08           133,159,707       200,000,000              67%             n/a
+
+VALUE vs USE AND HEALTH
+
+coin    market value  $ per active addr   3 yrs ago  below all-time high
+BTC           1698bn          2,211,427     557,747            -33% (2025-10)
+ETH            331bn            302,724     450,696            -45% (2025-08)
+XRP             96bn          1,493,575   1,290,502            -58% (2025-07)
+SOL             72bn                n/a         n/a            -59% (2025-01)
+ZEC             28bn          2,228,918      38,847            -48% (2016-10)
+DOGE            15bn            311,242     192,175            -87% (2021-05)
+BNB            103bn                n/a         n/a            -43% (2025-10)
