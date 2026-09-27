@@ -51,7 +51,7 @@ Hard rules the person set at the start, still in force:
 - Detailed technical docs: `docs/trading-bot/` (ARCHITECTURE, DATA_MODEL,
   BACKTESTING, SAFETY, EXPERIMENTS).
 - Analysis scripts: `scripts/risk_profile.py`, `scripts/event_study.py`,
-  `scripts/vs_stock_fund.py`.
+  `scripts/vs_stock_fund.py`, `scripts/mix_vs_savings.py`, `scripts/possible_futures.py`.
 - Every raw result, every row: `results/*.csv`.
 - A separate, read-only account reader in `account_tools/` can look up the person's
   real trading fees and balances. It has no ability to trade. It was built but never
@@ -185,6 +185,48 @@ pain.** Caveats: 2020–26 was an exceptionally strong period for stocks (the fu
 rose about 2.5x); the 5-year rows have only 10 tests. Both sides used identical start
 dates, so those caveats don't tilt the comparison.
 
+### Test 7: a small slice of crypto inside a stock fund
+$200, rebalanced back to the target mix once a year, every start month. Crypto here
+follows "the three biggest coins" re-picked monthly (switching costs included).
+
+| Held 3 years | Typical end | Worst drop | Beat a savings account |
+|---|---|---|---|
+| Savings account only | $228 | 0% | — |
+| Stock fund only | $281 | −24% | 36/36 |
+| Fund 90% + crypto 10% | $325 | −34% | 36/36 |
+| Fund 80% + crypto 20% | $382 | −43% | 36/36 |
+| Crypto only | $463 | −79% | 35/36 |
+
+- Each extra 10% of crypto added roughly 10 points to the worst drop.
+- Over 1 year the slice didn't help the typical result; over 2+ years it raised it in
+  this (very good) period.
+- **Holding rule matters for crypto:** following the biggest coins monthly lost money in
+  0 of 12 five-year windows; buying the 2020 top three once and holding lost in 5 of 10.
+
+### Test 8: against a savings account (3-month Treasury bill rate)
+Rates were about 0% in 2020–21, about 5% in 2023–24, about 4% in 2025–26.
+- Over 1 year, the stock fund beat savings in 46 of 60 start months; **crypto alone only
+  29 of 60 (a coin flip).**
+- Over 3+ years, the stock fund and every mix beat savings in every start month.
+
+### Test 9: 5,000 possible futures (reshuffled 30-day chunks of 2020–26)
+Two scenarios: **A** = like 2020–26; **B** = same ups and downs but only half the extra
+growth above savings (because 2020–26 was unusually good).
+
+| Held 5 years | Typical (A) | Bad 1-in-20 (A) | Typical (B) | Bad 1-in-20 (B) | Chance of losing money (B) |
+|---|---|---|---|---|---|
+| Savings only | $234 | $229 | $234 | $229 | 0% |
+| Stock fund only | $425 | $246 | $304 | $176 | 11% |
+| Fund 90% + crypto 10% | $505 | $255 | $323 | $168 | 11% |
+| Crypto only | $828 | **$57** | $224 | **$15** | 47% |
+
+- Crypto alone fell by half at some point in 98–100% of 5-year futures.
+- A 5–10% crypto slice barely changed the odds of losing money; it mostly raised the good
+  outcomes.
+- **Most important caveat:** the stock fund almost never "falls by half" here only
+  because no big stock crash happened in 2020–26. Stocks halved in 2000–02 and 2008–09.
+  Real stock risk is higher than these futures show.
+
 ### Fees
 Trading fees barely matter at this size: about $1.20 on $200 over six years, and
 changing the fee assumption from 0% to 1% moved results by about 1 percentage point.
@@ -200,6 +242,8 @@ Getting the person's exact fee rate is not important.
 | Does reacting to news help? | No |
 | How bad can it get? | About −80%, underwater up to 3½ years |
 | Better than a stock index fund? | Similar money, much more pain |
+| A small crypto slice in a stock fund? | More upside, somewhat bigger drops, similar odds of losing |
+| Better than a savings account? | Stock fund usually yes over 2+ years; crypto alone a coin flip over 1 year |
 
 The consistent theme: the things people think they can control didn't help; the
 thing that dominated results was **when you happen to start**, which nobody controls.
@@ -210,7 +254,5 @@ A "fall by half" was the normal experience over multi-year holds, not a rare eve
 - A "watch it live with no money" tracker that records what a plan would do each day
   going forward.
 - Holding periods longer than five years (needs more history than exists here).
-- Mixing a small amount of crypto with a stock fund, and whether that changes the
-  pain much.
 - Turning the tool into one simple command they can run themselves.
 - Stopping here is also a legitimate choice: the research answered its question.
