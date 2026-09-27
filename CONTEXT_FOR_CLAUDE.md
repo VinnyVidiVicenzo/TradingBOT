@@ -214,16 +214,18 @@ Rates were about 0% in 2020–21, about 5% in 2023–24, about 4% in 2025–26.
 
 ### Test 9: 5,000 possible futures (reshuffled 30-day chunks of 2020–26)
 Two scenarios: **A** = like 2020–26; **B** = same ups and downs but only half the extra
-growth above savings (because 2020–26 was unusually good).
+growth above savings (because 2020–26 was unusually good). Numbers below were corrected
+during an independent review -- see the review note near the end of this document; the
+correction moved every crypto figure up by roughly 1-16% and changed no conclusion.
 
 | Held 5 years | Typical (A) | Bad 1-in-20 (A) | Typical (B) | Bad 1-in-20 (B) | Chance of losing money (B) |
 |---|---|---|---|---|---|
 | Savings only | $234 | $229 | $234 | $229 | 0% |
 | Stock fund only | $425 | $246 | $304 | $176 | 11% |
-| Fund 90% + crypto 10% | $505 | $255 | $323 | $168 | 11% |
-| Crypto only | $828 | **$57** | $224 | **$15** | 47% |
+| Fund 90% + crypto 10% | $520 | $258 | $327 | $169 | 11% |
+| Crypto only | $958 | **$63** | $237 | **$16** | 46% |
 
-- Crypto alone fell by half at some point in 98–100% of 5-year futures.
+- Crypto alone fell by half at some point in 93–100% of 5-year futures.
 - A 5–10% crypto slice barely changed the odds of losing money; it mostly raised the good
   outcomes.
 - **Most important caveat:** the stock fund almost never "falls by half" here only
@@ -380,6 +382,19 @@ Over 3 years, Bitcoin, BNB and Solana lost money in almost none of their own pas
 Trading fees barely matter at this size: about $1.20 on $200 over six years, and
 changing the fee assumption from 0% to 1% moved results by about 1 percentage point.
 Getting the person's exact fee rate is not important.
+
+### Independent review (`results/independent_review.md`)
+A deliberate adversarial pass over the analysis scripts, done after the fact.
+Found and fixed one real bug: a coin (XRP) held in the rotating crypto basket
+had its Binance.US price data go dark for 912 days starting mid-month (the
+exchange suspended it during the SEC lawsuit, a real event, not a data error);
+the code silently scored the rest of that month as 0% return instead of XRP's
+real +61% move, understating one month by about 20 percentage points. Fixed by
+falling back to the real published price for exactly that gap. Re-ran the two
+affected studies (mix-vs-savings, possible-futures): every crypto-containing
+number moved up 1-16%, no pure-stock or pure-savings number changed at all, and
+no conclusion in this document flipped. Full details, plus what else was
+checked and came back clean, in the review file.
 
 ## 7. The overall conclusion so far
 

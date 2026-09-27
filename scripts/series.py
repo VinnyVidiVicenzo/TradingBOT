@@ -109,10 +109,57 @@ def load_cash(days: list[date]) -> list[float]:
     return returns
 
 
+def _yahoo_fallback_price(symbol: str) -> dict[int, float]:
+    """Real-world daily closes for a symbol, for the rare day Binance.US has none.
+
+    Found during review: Binance.US suspended XRPUSDT trading for 912 days
+    (2021-01-13 to 2023-07-14) during the SEC lawsuit. XRP was legitimately held
+    in the rotating basket when the gap opened (picked 2021-01-01), so for the
+    rest of that month `closes[symbol].get(now)` returned None and the code
+    below silently scored those days as a 0% return. XRP actually rose 61% in
+    that window (Yahoo XRP-USD), so one month's return was understated by about
+    20 percentage points -- not a rounding error, and it compounds into every
+    multi-year path that includes that month. This pulls the real published
+    price for exactly the days Binance.US has none, and only ever for a symbol
+    actually held that day; it does not change which symbols get picked.
+    """
+    ticker = symbol[:-4] + "-USD"  # "XRPUSDT" -> "XRP-USD"
+    cache = REPO / "data/reference/prices" / f"{ticker}.csv"
+    if not cache.exists():
+        import json
+        import time as _time
+        import urllib.request
+
+        url = (f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}"
+               "?period1=946684800&period2=1790640000&interval=1d")
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (research)"})
+        try:
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                r = json.loads(resp.read().decode())["chart"]["result"][0]
+        except Exception:
+            return {}
+        from datetime import datetime, timezone as _tz
+
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        with cache.open("w", newline="", encoding="utf-8") as fh:
+            w = csv.writer(fh)
+            w.writerow(["date", "value"])
+            for t, v in zip(r["timestamp"], r["indicators"]["quote"][0]["close"]):
+                if v is not None:
+                    d = datetime.fromtimestamp(t, tz=_tz.utc).date()
+                    w.writerow([d.isoformat(), v])
+        _time.sleep(1)
+    if not cache.exists():
+        return {}
+    return {_ms(date.fromisoformat(r["date"])): float(r["value"])
+            for r in csv.DictReader(cache.open(encoding="utf-8"))}
+
+
 def load_crypto(days: list[date]) -> tuple[list[float], dict[date, tuple[str, ...]]]:
     universe = [s for s in UNIVERSE_FILE.read_text().split() if s not in EXCLUDE]
     closes: dict[str, dict[int, float]] = {}
     volume: dict[str, dict[int, float]] = {}
+    fallback: dict[str, dict[int, float]] = {}
     with open_database(DB_PATH) as db:
         repo = BarRepository(db)
         for symbol in universe:
@@ -150,6 +197,16 @@ def load_crypto(days: list[date]) -> tuple[list[float], dict[date, tuple[str, ..
         for symbol, w in weights.items():
             today = closes[symbol].get(now)
             yesterday = closes[symbol].get(now - DAY_MS)
+            if today is None or yesterday is None:
+                # Binance.US has no bar for a symbol we are actually holding
+                # (e.g. XRPUSDT during its 2021-2023 US delisting). Falling
+                # back to 0% here understated one real month by ~20 points --
+                # see _yahoo_fallback_price. Use the real published price for
+                # exactly this symbol and this day instead of inventing "flat".
+                if symbol not in fallback:
+                    fallback[symbol] = _yahoo_fallback_price(symbol)
+                today = today if today is not None else fallback[symbol].get(now)
+                yesterday = yesterday if yesterday is not None else fallback[symbol].get(now - DAY_MS)
             r = today / yesterday - 1 if today and yesterday else 0.0
             day_return += w * r
             grown[symbol] = w * (1 + r)

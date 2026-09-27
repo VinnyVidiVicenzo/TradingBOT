@@ -3,71 +3,71 @@
 mix                         typical  bad 1-in-20  good 1-in-20  lose money  fall by half  beat savings
 ------------------------------------------------------------------------------------------------------
 Savings account only            206          204           208          0%            0%            --
-Savings 90% + crypto 10%        212          193           280         20%            0%           63%
+Savings 90% + crypto 10%        213          193           288         20%            0%           64%
 Stock fund only                 234          183           293         15%            0%           80%
-Fund 95% + crypto 5%            238          182           313         14%            0%           81%
-Fund 90% + crypto 10%           240          180           339         15%            0%           80%
-Fund 80% + crypto 20%           244          172           400         18%            0%           77%
-Crypto only                     266           79           936         35%           49%           63%
+Fund 95% + crypto 5%            239          182           316         14%            0%           81%
+Fund 90% + crypto 10%           242          180           348         15%            0%           80%
+Fund 80% + crypto 20%           246          172           421         18%            0%           78%
+Crypto only                     272           79          1013         34%           49%           64%
 
 --- A like 2020-26: held 3 years, $200, 5,000 possible futures ---
 mix                         typical  bad 1-in-20  good 1-in-20  lose money  fall by half  beat savings
 ------------------------------------------------------------------------------------------------------
 Savings account only            220          216           223          0%            0%            --
-Savings 90% + crypto 10%        252          202           383          4%            0%           82%
+Savings 90% + crypto 10%        256          202           415          4%            0%           83%
 Stock fund only                 314          208           472          4%            0%           92%
-Fund 95% + crypto 5%            333          209           537          3%            0%           93%
-Fund 90% + crypto 10%           348          206           623          4%            0%           92%
-Fund 80% + crypto 20%           371          195           826          6%            1%           91%
-Crypto only                     452           58          3789         25%           91%           73%
+Fund 95% + crypto 5%            336          210           549          3%            0%           93%
+Fund 90% + crypto 10%           353          207           652          4%            0%           93%
+Fund 80% + crypto 20%           381          198           906          5%            1%           92%
+Crypto only                     497           62          4729         23%           91%           74%
 
 --- A like 2020-26: held 5 years, $200, 5,000 possible futures ---
 mix                         typical  bad 1-in-20  good 1-in-20  lose money  fall by half  beat savings
 ------------------------------------------------------------------------------------------------------
 Savings account only            234          229           239          0%            0%            --
-Savings 90% + crypto 10%        303          219           526          1%            0%           89%
+Savings 90% + crypto 10%        312          221           580          1%            0%           90%
 Stock fund only                 425          246           723          1%            0%           97%
-Fund 95% + crypto 5%            469          255           870          1%            0%           97%
-Fund 90% + crypto 10%           505          255          1063          1%            0%           97%
-Fund 80% + crypto 20%           574          246          1616          2%            2%           96%
-Crypto only                     828           57         13760         20%           98%           78%
+Fund 95% + crypto 5%            476          258           909          1%            0%           97%
+Fund 90% + crypto 10%           520          258          1159          1%            0%           97%
+Fund 80% + crypto 20%           607          252          1858          2%            2%           96%
+Crypto only                     958           63         18504         18%           98%           79%
 
 --- B half the growth: held 1 year, $200, 5,000 possible futures ---
 mix                         typical  bad 1-in-20  good 1-in-20  lose money  fall by half  beat savings
 ------------------------------------------------------------------------------------------------------
 Savings account only            206          204           208          0%            0%            --
-Savings 90% + crypto 10%        206          192           258         31%            0%           50%
+Savings 90% + crypto 10%        206          191           263         31%            0%           50%
 Stock fund only                 219          171           274         28%            0%           65%
-Fund 95% + crypto 5%            221          169           287         28%            0%           65%
-Fund 90% + crypto 10%           220          165           302         29%            0%           64%
-Fund 80% + crypto 20%           219          158           344         33%            0%           61%
-Crypto only                     205           61           721         49%           60%           50%
+Fund 95% + crypto 5%            221          169           289         28%            0%           66%
+Fund 90% + crypto 10%           221          166           307         29%            0%           65%
+Fund 80% + crypto 20%           220          158           355         33%            0%           61%
+Crypto only                     206           60           767         48%           61%           50%
 
 --- B half the growth: held 3 years, $200, 5,000 possible futures ---
 mix                         typical  bad 1-in-20  good 1-in-20  lose money  fall by half  beat savings
 ------------------------------------------------------------------------------------------------------
 Savings account only            220          216           223          0%            0%            --
-Savings 90% + crypto 10%        229          192           323         13%            0%           61%
+Savings 90% + crypto 10%        230          191           340         13%            0%           62%
 Stock fund only                 257          170           386         16%            0%           73%
-Fund 95% + crypto 5%            263          167           421         16%            0%           74%
-Fund 90% + crypto 10%           266          161           461         18%            1%           73%
-Fund 80% + crypto 20%           268          146           559         22%            3%           69%
-Crypto only                     206           27          1731         49%           96%           48%
+Fund 95% + crypto 5%            264          167           426         16%            0%           75%
+Fund 90% + crypto 10%           268          161           473         17%            1%           73%
+Fund 80% + crypto 20%           272          146           593         21%            4%           70%
+Crypto only                     215           27          2049         48%           96%           49%
 
 --- B half the growth: held 5 years, $200, 5,000 possible futures ---
 mix                         typical  bad 1-in-20  good 1-in-20  lose money  fall by half  beat savings
 ------------------------------------------------------------------------------------------------------
 Savings account only            234          229           239          0%            0%            --
-Savings 90% + crypto 10%        257          198           404          6%            0%           69%
+Savings 90% + crypto 10%        260          198           432          6%            0%           70%
 Stock fund only                 304          176           517         11%            1%           78%
-Fund 95% + crypto 5%            316          174           577         10%            1%           79%
-Fund 90% + crypto 10%           323          168           653         11%            3%           79%
-Fund 80% + crypto 20%           332          149           856         16%            8%           76%
-Crypto only                     224           15          3725         47%          100%           49%
+Fund 95% + crypto 5%            319          175           592         10%            1%           80%
+Fund 90% + crypto 10%           327          169           689         11%            2%           80%
+Fund 80% + crypto 20%           340          151           948         15%            9%           76%
+Crypto only                     237           16          4591         46%          100%           50%
 
 --- sensitivity: 3 years, scenario A, 90-day blocks instead of 30 ---
   Stock fund only          lose money 4% -> 3%   fall by half 0% -> 0%
   Fund 90% + crypto 10%    lose money 4% -> 5%   fall by half 0% -> 0%
-  Crypto only              lose money 25% -> 31%   fall by half 91% -> 93%
+  Crypto only              lose money 23% -> 29%   fall by half 91% -> 93%
 
 all rows written to D:\Desktop\TraderBOT\results\possible_futures.csv
