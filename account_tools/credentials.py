@@ -12,6 +12,7 @@ repository should ever contain the values.
 from __future__ import annotations
 
 import os
+import sys
 from dataclasses import dataclass
 
 KEY_ENV_VAR = "BINANCEUS_READ_API_KEY"
@@ -49,14 +50,41 @@ class Credentials:
         return self.__repr__()
 
 
-def load_credentials() -> Credentials:
-    """Read credentials from the environment.
+def prompt_for_credentials() -> Credentials:
+    """Ask at the terminal, with the typing hidden.
 
-    Raises with setup instructions rather than prompting, because a prompt is
-    a place a secret can end up in a shell history or a transcript.
+    Safer than an environment variable, which leaves the value in the shell
+    scrollback and usually in the shell history file too. ``getpass`` echoes
+    nothing, and the value lives only in this process for the seconds it runs.
+    """
+    import getpass
+
+    print(
+        "Paste your Binance.US READ-ONLY credentials. Nothing you type will be\n"
+        "shown on screen, saved to a file, or kept after this command finishes.\n",
+        file=sys.stderr,
+    )
+    key = getpass.getpass("API key    (hidden): ").strip()
+    secret = getpass.getpass("API secret (hidden): ").strip()
+    if not key or not secret:
+        raise MissingCredentials("nothing was entered")
+    return Credentials(key=key, secret=secret)
+
+
+def load_credentials(*, allow_prompt: bool = True) -> Credentials:
+    """Read credentials from the environment, or ask for them at the terminal.
+
+    The environment is checked first so scripted use keeps working. When
+    nothing is set and a real terminal is attached, this prompts instead of
+    failing -- pasting into a hidden prompt keeps the value out of the shell
+    scrollback and history, which the environment-variable route does not.
     """
     key = os.environ.get(KEY_ENV_VAR, "").strip()
     secret = os.environ.get(SECRET_ENV_VAR, "").strip()
+
+    if (not key or not secret) and allow_prompt and sys.stdin.isatty():
+        return prompt_for_credentials()
+
     if not key or not secret:
         missing = [
             name
@@ -66,7 +94,12 @@ def load_credentials() -> Credentials:
         raise MissingCredentials(
             "not set: "
             + ", ".join(missing)
-            + ".\n\nSet them in your own shell before running. PowerShell:\n"
+            + ".\n\nNo terminal is attached, so there is nowhere to ask you.\n\n"
+            "Normally you do not need to set these at all: run this command "
+            "directly\nin a terminal and it will ask you to paste them at a "
+            "hidden prompt, which\nkeeps them out of your shell scrollback and "
+            "history.\n\n"
+            "To set them anyway, PowerShell:\n"
             f'  $env:{KEY_ENV_VAR} = "<paste key>"\n'
             f'  $env:{SECRET_ENV_VAR} = "<paste secret>"\n\n'
             "bash:\n"
@@ -74,7 +107,7 @@ def load_credentials() -> Credentials:
             f'  export {SECRET_ENV_VAR}="<paste secret>"\n\n'
             "Use a key created with reading permission only: no trading, no "
             "withdrawals, and IP-restricted if you can. Do not put the values "
-            "in any file in this repository."
+            "in any file in this repository, and do not paste them into a chat."
         )
     return Credentials(key=key, secret=secret)
 

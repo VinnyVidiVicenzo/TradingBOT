@@ -25,29 +25,38 @@ On the Binance.US API management page:
 This tool **cannot verify** those settings — Binance.US exposes no endpoint
 reporting a key's own permissions. Confirm them yourself on that page.
 
-## 2. Set it in your shell
+## 2. Run it and paste at the prompt
 
-Never in a file in this repository.
+Just run a command. It asks for the key and secret at a **hidden prompt** --
+nothing is echoed, nothing is written to a file, and nothing is kept once the
+command exits. This is the recommended route: unlike an environment variable,
+the value never lands in your shell scrollback or history file.
 
-PowerShell:
+```bash
+python -m account_tools check
+```
+
+```
+Paste your Binance.US READ-ONLY credentials. Nothing you type will be
+shown on screen, saved to a file, or kept after this command finishes.
+
+API key    (hidden):
+API secret (hidden):
+```
+
+Never paste credentials into a chat window, a config file, or a commit.
+
+### Or, for scripted use
+
+Environment variables are still honoured and take precedence. They are the
+worse option for interactive use, because the value stays in your scrollback:
 
 ```powershell
 $env:BINANCEUS_READ_API_KEY = "<paste key>"
 $env:BINANCEUS_READ_API_SECRET = "<paste secret>"
 ```
 
-bash:
-
-```bash
-export BINANCEUS_READ_API_KEY="<paste key>"
-export BINANCEUS_READ_API_SECRET="<paste secret>"
-```
-
-## 3. Check it works
-
-```bash
-python -m account_tools check
-```
+## 3. What `check` tells you
 
 Reports account flags and non-zero balances, and states plainly that the flags
 describe the account rather than the key.
