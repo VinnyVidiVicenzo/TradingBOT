@@ -271,7 +271,17 @@ Free data (Coin Metrics, CoinGecko). Full tables in `results/fundamentals_report
 - **Solana, BNB:** no free usage data. BNB tied to one exchange.
 - Ownership (`results/ownership_concentration.md`): Bitcoin broad by crypto
   standards (~15% in ~88 addresses, mostly exchanges/ETF custodians; source figures
-  partly inconsistent); Dogecoin highly concentrated; Ethereum page unavailable.
+  partly inconsistent); Dogecoin highly concentrated; Ethereum broad once pooled
+  contracts are set aside (staking contract 75% is many stakers; biggest named holders
+  are exchanges at ~1-2% each).
+- **BNB usage** (BscScan free CSVs): 16.4m transactions/day, +24% in a year, +362% in
+  3 years; new addresses/day -14% in a year. Very low fees mean much is bot activity.
+- **Developer activity** (GitHub, commits in the past year, main code project):
+  Bitcoin ~3,800-4,500, Solana ~4,250, XRP ~1,300 (last 3 months up sharply),
+  Ethereum ~1,160 (main client only; Ethereum has several), BNB ~1,060 (last 3 months
+  down sharply), Zcash ~830 (up sharply), Dogecoin 51 (very little). Rough sizes only.
+- Still missing: Solana usage history, Solana/BNB valuation (paid services only), the
+  person's own fee rate. Drop-off folder with instructions: `data/user_supplied/`.
 
 ### Analyst step 2: outside forces (`results/big_forces_report.txt`)
 "Move-together score" = monthly correlation, -1 to +1.

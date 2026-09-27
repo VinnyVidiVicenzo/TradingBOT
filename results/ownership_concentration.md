@@ -24,15 +24,24 @@ concentration by address overstates concentration by person.
 - 5 of the top 10 are labelled: Binance (several cold wallets), Robinhood, Bitfinex,
   Tether. Much of the rest is exchange and ETF-custodian holdings on behalf of others.
 
-## Ethereum -- not obtained
+## Ethereum -- spread out once pooled contracts are set aside
 
-- The rich-list page returned a server error on two attempts.
-- Known structurally (not measured here): Ethereum's largest single "holder" is the
-  staking deposit contract, which pools coins from many independent stakers, so
-  raw rich-list figures for ETH would overstate concentration anyway.
+Source: Etherscan "Top Accounts by ETH Balance", read through a browser on
+2026-09-27 (BitInfoCharts had failed twice).
+
+- #1 is the **staking deposit contract at 74.9%**. It is not one owner: it pools
+  coins deposited by a very large number of independent stakers. It also only ever
+  counts deposits (withdrawals are paid out elsewhere), so it overstates how much is
+  currently staked.
+- #2 Wrapped Ether (1.7%) and several bridges to add-on networks (Base, Arbitrum,
+  Optimism, ~0.6% each) are also pooled contracts, not individuals.
+- The largest named holders are exchanges: Binance (~1.6% in its biggest wallet),
+  Robinhood (~1.0%), Upbit (~0.8%), Bitfinex, Kraken, Gemini -- each holding for
+  customers. Ethereum co-founder Vitalik Buterin's labelled wallet holds ~0.18%.
+- No single individual appears to control a large share.
 
 ## Reading it
 
 Dogecoin's ownership is concentrated enough to be a real risk in its own right.
-Bitcoin's is broad by crypto standards. Neither figure accounts for coins that have
+Bitcoin's and Ethereum's are broad by crypto standards. Neither figure accounts for coins that have
 been lost for good (Bitcoin especially), which makes the effective supply smaller.
