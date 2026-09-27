@@ -1,0 +1,56 @@
+1. STOCKS  (Bitcoin since late 2014, monthly)
+
+  Move-together score, Bitcoin vs stock fund, whole period: +0.35  (144 months)
+  By period:
+    2014-2019: +0.12  (63 months)
+    2020-2022: +0.58  (36 months)
+    2023-2026: +0.44  (45 months)
+
+  The stock fund's 12 worst months since 2014 (average -7.6%):
+    Bitcoin fell in 11 of 12, average -7.0%
+      2015-08: stocks   -6.1%   Bitcoin  -19.2%
+      2018-10: stocks   -6.9%   Bitcoin   -4.6%
+      2018-12: stocks   -8.8%   Bitcoin   -6.8%
+      2019-05: stocks   -6.4%   Bitcoin  +60.2%
+      2020-02: stocks   -7.9%   Bitcoin   -8.0%
+      2020-03: stocks  -12.5%   Bitcoin  -25.1%
+      2022-01: stocks   -5.3%   Bitcoin  -16.9%
+      2022-04: stocks   -8.8%   Bitcoin  -17.2%
+      2022-06: stocks   -8.2%   Bitcoin  -37.8%
+      2022-09: stocks   -9.2%   Bitcoin   -3.1%
+      2022-12: stocks   -5.8%   Bitcoin   -3.6%
+      2025-03: stocks   -5.6%   Bitcoin   -2.2%
+  The stock fund's 12 best months: Bitcoin rose in 10 of 12, average +17.6%
+
+
+2. INTEREST RATES  (3-month Treasury yield, monthly change)
+
+                                       months  Bitcoin avg  stocks avg
+  rates rose by 0.25 points or more        11        -2.0%       +0.2%
+  rates roughly flat                      128        +6.5%       +1.4%
+  rates fell by 0.25 points or more         5        +2.3%       -1.8%
+
+  During the big 2022-23 rate rises (Mar 2022 - Jul 2023, 17 months):
+    Bitcoin -32.3%, stock fund +7.4% overall
+  Move-together score, Bitcoin vs rate changes: +0.00
+
+
+3. THE US DOLLAR  (Dollar Index, monthly)
+
+  dollar strengthened 2%+     26 months   Bitcoin avg -3.1%   fell in 16 of them
+  dollar weakened 2%+         21 months   Bitcoin avg +9.4%   fell in 9 of them
+  Move-together score, Bitcoin vs dollar: -0.14
+
+
+4. DO THE OTHER COINS JUST FOLLOW BITCOIN?  (Oct 2020 - Sep 2026)
+
+  coin    score vs Bitcoin  score vs stocks  worst month  when Bitcoin fell 20%+
+  BTC                +1.00            +0.51       -37.3%                  -31.0%
+  ETH                +0.74            +0.54       -44.8%                  -23.0%
+  XRP                +0.44            +0.37       -67.0%                  -22.0%
+  SOL                +0.54            +0.27       -56.5%                  -20.1%
+  ZEC                +0.20            +0.20       -41.9%                  -35.9%
+  DOGE               +0.22            +0.15       -39.4%                  -18.2%
+  BNB                +0.45            +0.22       -43.2%                  -32.6%
+
+  (3 months where Bitcoin fell 20% or more: 2021-05, 2022-06, 2026-06)

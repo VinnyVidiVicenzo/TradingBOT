@@ -52,7 +52,8 @@ Hard rules the person set at the start, still in force:
   BACKTESTING, SAFETY, EXPERIMENTS).
 - Analysis scripts: `scripts/risk_profile.py`, `scripts/event_study.py`,
   `scripts/vs_stock_fund.py`, `scripts/mix_vs_savings.py`, `scripts/possible_futures.py`,
-  `scripts/long_history.py`.
+  `scripts/long_history.py`, `scripts/fundamentals.py`,
+  `scripts/big_forces.py`.
 - Every raw result, every row: `results/*.csv`.
 - A separate, read-only account reader in `account_tools/` can look up the person's
   real trading fees and balances. It has no ability to trade. It was built but never
@@ -250,6 +251,41 @@ money for any mix; Bitcoin alone typically turned $200 into $882 (3 yrs) and $2,
 **Big caveat:** Bitcoin is the coin that survived and won; choosing it today is
 hindsight. The blind 2020-26 basket did far worse. In the "half the growth"
 futures, Bitcoin alone lost money in 36% of 5-year futures and fell by half in 99%.
+
+### Analyst step 1: what is underneath the coins (BTC, ETH, XRP, SOL, ZEC, DOGE, BNB)
+Coins chosen by rule: top by market value, minus stablecoins, keeping those that
+trade meaningfully on Binance.US (DOGE added for liquidity, TRX dropped, BNB kept
+because the person held it before; its exchange-token conflict is flagged).
+Free data (Coin Metrics, CoinGecko). Full tables in `results/fundamentals_report.txt`.
+- **Ethereum:** healthiest usage (active addresses +83%, transactions +113% over 3
+  years); price grew slower than use. Layer-2 activity not counted, so understated.
+- **Bitcoin:** addresses -35% but transactions +41% over 3 yrs; value per address 4x --
+  price ahead of direct use, partly because ETF holders never touch the network.
+  Fixed 21m supply, 96% issued.
+- **XRP:** usage growing roughly in step with price; Ripple (a company) holds ~37bn
+  in escrow -- concentration of control.
+- **Zcash:** tiny usage (~5,700 addresses/day); value per address up 57x in 3 yrs --
+  price far ahead of use; ~4% new coins/yr; privacy-coin regulatory risk.
+- **Dogecoin:** usage shrinking (addresses -37% in a year, transactions -86% in 3);
+  ~3.3% new coins/yr forever; top 10 wallets hold ~58% (mostly exchanges).
+- **Solana, BNB:** no free usage data. BNB tied to one exchange.
+- Ownership (`results/ownership_concentration.md`): Bitcoin broad by crypto
+  standards (~15% in ~88 addresses, mostly exchanges/ETF custodians; source figures
+  partly inconsistent); Dogecoin highly concentrated; Ethereum page unavailable.
+
+### Analyst step 2: outside forces (`results/big_forces_report.txt`)
+"Move-together score" = monthly correlation, -1 to +1.
+- **Stocks:** Bitcoin vs stock fund +0.35 overall, but rising: +0.12 (2014-19),
+  +0.58 (2020-22), +0.44 (2023-26). In the stock fund's 12 worst months, Bitcoin fell
+  11 times (e.g. March 2020 -25%, June 2022 -38%). Crypto does NOT protect you in a
+  stock crash; it tends to fall with it, often harder.
+- **Rates:** in the 2022-23 rate rises Bitcoin fell 32% while the stock fund rose 7%.
+  Few months with big rate moves, so evidence is thin.
+- **Dollar:** when the dollar strengthened 2%+, Bitcoin averaged -3.1%; when it
+  weakened 2%+, +9.4%. Weak but consistent opposite relationship.
+- **Other coins vs Bitcoin:** month-to-month scores only 0.20 (ZEC) to 0.74 (ETH), but
+  in the 3 months Bitcoin fell 20%+, every coin fell 18-36%. Owning several coins
+  spreads risk in normal times, not in crashes.
 
 ### Fees
 Trading fees barely matter at this size: about $1.20 on $200 over six years, and
