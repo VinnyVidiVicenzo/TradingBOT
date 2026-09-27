@@ -1,0 +1,102 @@
+CHECKS
+  Bitcoin: Yahoo vs our Binance.US closes on 2095 shared days -- median difference 0.06%, largest 3.6%
+  Stock fund 2008 crash: 2007-10-09 -> 2009-03-09, fell 55% (dividends included; the index alone fell about 57%)
+
+====================================================================================================
+PART 1: STOCK FUND vs SAVINGS SINCE 2000 (two big crashes included)
+====================================================================================================
+
+  held 1 years, 308 start months
+  mix                         typical  worst start  lost money  beat savings  worst drop  longest in red
+  Savings account only            202          200       0/308            --         -0%         0.0 yrs
+  Stock fund only                 226          113      68/308       236/308        -51%         1.0 yrs
+
+  held 3 years, 284 start months
+  mix                         typical  worst start  lost money  beat savings  worst drop  longest in red
+  Savings account only            208          200       0/284            --         -0%         0.0 yrs
+  Stock fund only                 276          117      47/284       233/284        -55%         3.0 yrs
+
+  held 5 years, 260 start months
+  mix                         typical  worst start  lost money  beat savings  worst drop  longest in red
+  Savings account only            212          200       0/260            --         -0%         0.0 yrs
+  Stock fund only                 342          142      28/260       212/260        -55%         5.0 yrs
+
+  held 10 years, 200 start months
+  mix                         typical  worst start  lost money  beat savings  worst drop  longest in red
+  Savings account only            226          206       0/200            --         -0%         0.0 yrs
+  Stock fund only                 514          168      10/200       187/200        -55%         6.1 yrs
+
+  Possible futures built from 2000-2026:
+
+  stocks since 2000, held 1 years, 5,000 futures
+  mix                         typical  bad 1-in-20  lose money  fall by half  beat savings
+  Savings account only            204          202          0%            0%            --
+  Stock fund only                 219          163         29%            0%           67%
+
+  stocks since 2000, held 5 years, 5,000 futures
+  mix                         typical  bad 1-in-20  lose money  fall by half  beat savings
+  Savings account only            220          216          0%            0%            --
+  Stock fund only                 302          158         15%            4%           79%
+
+  stocks since 2000, held 10 years, 5,000 futures
+  mix                         typical  bad 1-in-20  lose money  fall by half  beat savings
+  Savings account only            242          235          0%            0%            --
+  Stock fund only                 458          190          6%           10%           88%
+
+====================================================================================================
+PART 2: BITCOIN MIXES SINCE SEPTEMBER 2014 (several crypto cycles)
+====================================================================================================
+
+  held 1 years, 132 start months
+  mix                         typical  worst start  lost money  beat savings  worst drop  longest in red
+  Savings account only            203          200       0/132            --         -0%         0.0 yrs
+  Savings 90% + Bitcoin 10%       219          189      26/132        95/132        -43%         1.0 yrs
+  Stock fund only                 232          164      17/132       112/132        -34%         1.0 yrs
+  Fund 95% + Bitcoin 5%           238          159      17/132       112/132        -34%         1.0 yrs
+  Fund 90% + Bitcoin 10%          242          154      17/132       112/132        -41%         1.0 yrs
+  Fund 80% + Bitcoin 20%          251          145      20/132       111/132        -52%         1.0 yrs
+  Crypto only                     337           53      37/132        95/132        -82%         1.0 yrs
+
+  held 3 years, 108 start months
+  mix                         typical  worst start  lost money  beat savings  worst drop  longest in red
+  Savings account only            209          202       0/108            --         -0%         0.0 yrs
+  Savings 90% + Bitcoin 10%       280          225       0/108       108/108        -45%         1.9 yrs
+  Stock fund only                 290          235       0/108       108/108        -34%         1.9 yrs
+  Fund 95% + Bitcoin 5%           351          258       0/108       108/108        -38%         1.9 yrs
+  Fund 90% + Bitcoin 10%          390          259       0/108       108/108        -49%         1.9 yrs
+  Fund 80% + Bitcoin 20%          447          261       0/108       108/108        -60%         2.0 yrs
+  Crypto only                     882          220       0/108       108/108        -83%         2.8 yrs
+
+  held 5 years, 84 start months
+  mix                         typical  worst start  lost money  beat savings  worst drop  longest in red
+  Savings account only            215          210        0/84            --         -0%         0.0 yrs
+  Savings 90% + Bitcoin 10%       364          250        0/84         84/84        -45%         1.9 yrs
+  Stock fund only                 392          271        0/84         84/84        -34%         1.2 yrs
+  Fund 95% + Bitcoin 5%           465          338        0/84         84/84        -38%         1.2 yrs
+  Fund 90% + Bitcoin 10%          542          341        0/84         84/84        -49%         1.3 yrs
+  Fund 80% + Bitcoin 20%          727          337        0/84         84/84        -60%         1.6 yrs
+  Crypto only                    2237          225        0/84         83/84        -83%         2.8 yrs
+
+  Possible futures built from 2014-2026:
+
+  A like 2014-26, held 5 years, 5,000 futures
+  mix                         typical  bad 1-in-20  lose money  fall by half  beat savings
+  Savings account only            221          217          0%            0%            --
+  Savings 90% + Bitcoin 10%       322          226          1%            0%           96%
+  Stock fund only                 386          214          4%            1%           94%
+  Fund 95% + Bitcoin 5%           453          237          2%            1%           96%
+  Fund 90% + Bitcoin 10%          520          247          1%            2%           97%
+  Fund 80% + Bitcoin 20%          655          263          1%            3%           98%
+  Crypto only                    1800          141          8%           94%           91%
+
+  B half the growth, held 5 years, 5,000 futures
+  mix                         typical  bad 1-in-20  lose money  fall by half  beat savings
+  Savings account only            221          217          0%            0%            --
+  Savings 90% + Bitcoin 10%       257          196          7%            0%           79%
+  Stock fund only                 283          157         16%            3%           76%
+  Fund 95% + Bitcoin 5%           305          162         13%            4%           80%
+  Fund 90% + Bitcoin 10%          323          159         13%            5%           82%
+  Fund 80% + Bitcoin 20%          351          151         14%           10%           81%
+  Crypto only                     364           28         36%           99%           62%
+
+rolling results written to D:\Desktop\TraderBOT\results\long_history.csv

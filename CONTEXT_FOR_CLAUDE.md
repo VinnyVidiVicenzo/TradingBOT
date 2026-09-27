@@ -51,7 +51,8 @@ Hard rules the person set at the start, still in force:
 - Detailed technical docs: `docs/trading-bot/` (ARCHITECTURE, DATA_MODEL,
   BACKTESTING, SAFETY, EXPERIMENTS).
 - Analysis scripts: `scripts/risk_profile.py`, `scripts/event_study.py`,
-  `scripts/vs_stock_fund.py`, `scripts/mix_vs_savings.py`, `scripts/possible_futures.py`.
+  `scripts/vs_stock_fund.py`, `scripts/mix_vs_savings.py`, `scripts/possible_futures.py`,
+  `scripts/long_history.py`.
 - Every raw result, every row: `results/*.csv`.
 - A separate, read-only account reader in `account_tools/` can look up the person's
   real trading fees and balances. It has no ability to trade. It was built but never
@@ -227,6 +228,29 @@ growth above savings (because 2020–26 was unusually good).
   because no big stock crash happened in 2020–26. Stocks halved in 2000–02 and 2008–09.
   Real stock risk is higher than these futures show.
 
+### Test 10: longer history (stocks since 2000, Bitcoin since 2014)
+Sources: Yahoo Finance, checked first -- Yahoo's Bitcoin matched our Binance.US
+prices to 0.06% on a typical day; the stock fund showed the 2008 crash at -55%.
+
+**Stock fund since 2000 (includes 2000-02 and 2008-09 crashes):**
+
+| Held | Typical | Worst start | Lost money | Beat savings | Worst drop | Longest in red |
+|---|---|---|---|---|---|---|
+| 1 year | $226 | $113 | 68/308 | 236/308 | -51% | 1 yr |
+| 5 years | $342 | $142 | 28/260 | 212/260 | -55% | 5 yrs |
+| 10 years | $514 | $168 | 10/200 | 187/200 | -55% | 6.1 yrs |
+
+So the stock fund's real risk is much bigger than 2020-26 showed: it can halve,
+and a 10-year hold starting around 2000 still lost money.
+
+**Bitcoin since 2014 (Bitcoin alone, not a basket):** 3- and 5-year holds never lost
+money for any mix; Bitcoin alone typically turned $200 into $882 (3 yrs) and $2,237
+(5 yrs) but still fell -83% at worst. A 10% Bitcoin slice raised a fund's typical
+5-year result from $392 to $542 and its worst drop from -34% to -49%.
+**Big caveat:** Bitcoin is the coin that survived and won; choosing it today is
+hindsight. The blind 2020-26 basket did far worse. In the "half the growth"
+futures, Bitcoin alone lost money in 36% of 5-year futures and fell by half in 99%.
+
 ### Fees
 Trading fees barely matter at this size: about $1.20 on $200 over six years, and
 changing the fee assumption from 0% to 1% moved results by about 1 percentage point.
@@ -253,6 +277,5 @@ A "fall by half" was the normal experience over multi-year holds, not a rare eve
 
 - A "watch it live with no money" tracker that records what a plan would do each day
   going forward.
-- Holding periods longer than five years (needs more history than exists here).
 - Turning the tool into one simple command they can run themselves.
 - Stopping here is also a legitimate choice: the research answered its question.
