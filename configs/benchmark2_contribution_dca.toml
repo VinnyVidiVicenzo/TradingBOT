@@ -1,0 +1,136 @@
+#-----------------------------------------------------------------------------
+# Benchmark 2 -- periodic DCA funded ONLY by explicit external contributions.
+#
+# This is a different question from Benchmark 1 and is kept strictly separate.
+# Benchmark 1 spends money you already have. Benchmark 2 spends money that
+# arrives from outside, and cannot spend a cent of it before its
+# availability_time.
+#
+# NO RECURRING DEPOSIT IS COMMITTED. The contributions listed below are a
+# hypothetical schedule for the purpose of this experiment. They are not a plan
+# and not an assumption about anyone's income.
+#
+# The symbols are CANDIDATES. Equal weighting is the fallback, not a decision.
+#
+# This run cannot place an order. See docs/trading-bot/SAFETY.md.
+#-----------------------------------------------------------------------------
+
+[experiment]
+name = "benchmark2-dca-25usd-monthly"
+description = """
+Deploy a hypothetical $25 monthly external contribution into three CANDIDATE
+liquid assets, buying on the first decision tick at or after each deposit
+becomes available. The pre-existing cash pool is deliberately left untouched so
+that this result is not contaminated by deployment-timing effects.
+"""
+seed = 0
+
+[data]
+symbols = ["BTCUSD", "ETHUSD", "SOLUSD"]     # CANDIDATES, not finalized
+interval = "1d"
+# Binance.US suspended USD trading between 2023-07-14 and 2025-02-19, so the
+# USD-quoted pairs have NO history across that window. This range sits entirely
+# after the resumption. Run `data gaps` before trusting any window.
+start = "2025-03-01T00:00:00Z"
+end = "2026-09-01T00:00:00Z"
+db_path = "data/market.sqlite"
+# Refuse the run if history has a hole wider than this many bars. Crypto trades
+# continuously, so any hole means the market was not there.
+max_gap_intervals = 3
+# Modelled delay between the venue closing a bar and this strategy being able to
+# act on it. 0 = act at the close.
+feed_delay_ms = 0
+
+[portfolio]
+valuation_asset = "USD"
+
+# Present on purpose. Benchmark 2 must leave this alone; a test asserts it.
+initial_cash = { USD = "200.00" }
+
+# A hypothetical deposit schedule. Each entry names the moment the money
+# becomes spendable -- not a moment earlier.
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USD"
+availability_time = "2025-03-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-03"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USD"
+availability_time = "2025-04-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-04"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USD"
+availability_time = "2025-05-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-05"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USD"
+availability_time = "2025-06-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-06"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USD"
+availability_time = "2025-07-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-07"
+
+[[portfolio.external_contributions]]
+amount = "25"
+asset = "USD"
+availability_time = "2025-08-15T00:00:00Z"
+contribution_type = "RECURRING_DEPOSIT"
+label = "hypothetical-2025-08"
+
+[strategy]
+name = "benchmark2_contribution_dca"
+
+[strategy.params]
+symbols = ["BTCUSD", "ETHUSD", "SOLUSD"]
+quote_asset = "USD"
+# 0 = buy on the first decision tick at or after the money lands.
+# A positive value holds contributed cash until the next scheduled buy date,
+# which is a genuinely different plan and worth testing separately.
+cadence_days = 0
+# A $25 deposit split three ways is $8.33 per order, comfortably above the $1
+# Binance.US minimum notional on these pairs. Set a floor here if a smaller
+# deposit would otherwise generate orders the venue refuses -- or leave it at
+# zero and let the rejections show up in the metrics, which is often the more
+# informative choice.
+min_deploy_amount = "0"
+
+[costs.fees]
+maker_rate = "0.0040"
+taker_rate = "0.0060"
+source = "ASSUMPTION -- placeholder, not a quoted Binance.US rate"
+note = "Replace with the fee tier that applied to the account over this window."
+commission_asset_policy = "RECEIVED_ASSET"
+
+[costs.spread]
+default_bps = "5"
+prefer_observed = true
+note = "ASSUMPTION -- not measured from order-book history."
+
+[costs.slippage]
+model = "fixed"
+bps = "5"
+note = "ASSUMPTION -- flat, independent of order size."
+
+[costs.latency]
+decision_to_submit_ms = 500
+note = "ASSUMPTION -- constant."
+
+[execution]
+max_reference_age_ms = 90000
+
+[fill]
+model = "full"

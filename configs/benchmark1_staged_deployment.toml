@@ -1,0 +1,115 @@
+#-----------------------------------------------------------------------------
+# Benchmark 1 -- staged deployment of a finite initial cash pool.
+#
+# The question this run answers: if I already hold ~$200 of cash and deploy it
+# in equal weekly tranches across three liquid assets, what do I end up with,
+# and what did the exchange minimums, fees and spread cost me along the way?
+#
+# NOTHING IN THIS FILE IS A DECISION THAT HAS BEEN MADE.
+#   * The three symbols below are CANDIDATES chosen for liquidity, not a final
+#     portfolio. Swap them and re-run.
+#   * Equal weighting is the fallback when no weights are given. It is a
+#     placeholder, not a conclusion. Uncomment the weights block to vary it.
+#   * The tranche count and cadence are the variables under test. Sweep them.
+#   * The fee, spread, slippage and latency figures are ASSUMPTIONS. See
+#     docs/trading-bot/BACKTESTING.md before trusting any result that depends
+#     on them.
+#
+# This run cannot place an order. See docs/trading-bot/SAFETY.md.
+#-----------------------------------------------------------------------------
+
+[experiment]
+name = "benchmark1-staged-200usd-weekly-12"
+description = """
+Deploy a $200 pre-existing cash pool into three CANDIDATE liquid assets in 12
+equal weekly tranches. Compare against benchmark0 (hold) and against a
+single-tranche lump sum run of this same strategy.
+"""
+seed = 0
+
+[data]
+symbols = ["BTCUSD", "ETHUSD", "SOLUSD"]     # CANDIDATES, not finalized
+interval = "1d"
+# Binance.US suspended USD trading between 2023-07-14 and 2025-02-19, so the
+# USD-quoted pairs have NO history across that window. This range sits entirely
+# after the resumption. Run `data gaps` before trusting any window.
+start = "2025-03-01T00:00:00Z"
+end = "2026-09-01T00:00:00Z"
+db_path = "data/market.sqlite"
+# Refuse the run if history has a hole wider than this many bars. Crypto trades
+# continuously, so any hole means the market was not there.
+max_gap_intervals = 3
+# Modelled delay between the venue closing a bar and this strategy being able to
+# act on it. 0 = act at the close.
+feed_delay_ms = 0
+
+[portfolio]
+valuation_asset = "USD"
+
+# Cash already in hand, to be deployed gradually. This is NOT a deposit
+# schedule -- see benchmark2 for that, and never merge the two.
+initial_cash = { USD = "200.00" }
+
+# Any pre-existing positions go here. They are marked to market and are never
+# treated as spendable cash. Left empty by default: a historical snapshot is
+# not a current balance.
+# [[portfolio.starting_holdings]]
+# asset = "BTC"
+# quantity = "0.0021"
+# cost_basis_per_unit = "62000"   # optional, only if you actually know it
+# cost_basis_asset = "USD"        # required whenever a basis is supplied
+# source = "manual snapshot"
+# as_of = "2024-01-01T00:00:00Z"
+
+# USDT is not USD. If a run holds USDT, either include USDTUSD in `symbols` so
+# it can be priced, or declare the rate here as an explicit assumption.
+# assumed_rates = { "USDT->USD" = "1.0" }
+
+[strategy]
+name = "benchmark1_staged_deployment"
+
+[strategy.params]
+symbols = ["BTCUSD", "ETHUSD", "SOLUSD"]
+quote_asset = "USD"
+tranche_count = 12
+cadence_days = 7
+# weights = { BTCUSD = "2", ETHUSD = "1", SOLUSD = "1" }   # normalized on load
+
+#-----------------------------------------------------------------------------
+# Cost assumptions. Every number below is unverified until you replace it.
+#-----------------------------------------------------------------------------
+
+[costs.fees]
+# Binance.US spot fees are tiered by 30-day volume and have been subject to
+# promotions. There is no single universal rate. Replace these with the rates
+# that actually applied over the window above, and say so in `source`.
+maker_rate = "0.0040"
+taker_rate = "0.0060"
+source = "ASSUMPTION -- placeholder, not a quoted Binance.US rate"
+note = "Replace with the fee tier that applied to the account over this window."
+# RECEIVED_ASSET matches Binance spot behaviour for an account not paying fees
+# in BNB: a buy is charged in the asset it receives.
+commission_asset_policy = "RECEIVED_ASSET"
+
+[costs.spread]
+default_bps = "5"
+prefer_observed = true
+note = "ASSUMPTION -- 5bps round-trip spread on liquid USD pairs, not measured."
+
+[costs.slippage]
+model = "fixed"
+bps = "5"
+note = "ASSUMPTION -- flat 5bps. At $16 per order this is almost certainly conservative."
+
+[costs.latency]
+decision_to_submit_ms = 500
+note = "ASSUMPTION -- constant 500ms from decision to venue."
+
+[execution]
+# Reject an order whose reference price is older than this at submit time.
+max_reference_age_ms = 90000
+
+[fill]
+# Conservative default: the whole order fills at the effective price, with the
+# cost of crossing already carried by the spread and slippage models.
+model = "full"
