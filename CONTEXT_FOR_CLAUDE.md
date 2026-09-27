@@ -53,7 +53,8 @@ Hard rules the person set at the start, still in force:
 - Analysis scripts: `scripts/risk_profile.py`, `scripts/event_study.py`,
   `scripts/vs_stock_fund.py`, `scripts/mix_vs_savings.py`, `scripts/possible_futures.py`,
   `scripts/long_history.py`, `scripts/fundamentals.py`,
-  `scripts/big_forces.py`.
+  `scripts/big_forces.py`, `scripts/trading_cost.py`,
+  `scripts/valuation.py`, `scripts/scenarios.py`, `scripts/crowd_mood.py`.
 - Every raw result, every row: `results/*.csv`.
 - A separate, read-only account reader in `account_tools/` can look up the person's
   real trading fees and balances. It has no ability to trade. It was built but never
@@ -323,6 +324,57 @@ Not available free for SOL or BNB.
   1.5-2.5 (today's zone): fell 28 of 70 times, typical +62%; above 3.5: fell 2 of 3.
   Only ~4 cycles and heavily overlapping months, so a handful of real episodes --
   a "stretched or not" gauge, not a timing signal.
+
+### Analyst step: crowd psychology (`results/crowd_mood_report.txt`, `results/etf_flows_farside.md`)
+Four free public sources; two others (Google Trends, crypto-specific betting-market
+odds) have no reliable free API and were left as open gaps. Congressional trading
+disclosures in crypto-adjacent stocks (Coinbase, Strategy, Bitcoin ETFs) would be a
+genuinely interesting "obscure" source tying back to the CLARITY Act, but that
+endpoint needs a higher-tier FMP plan than is currently connected.
+
+- **Fear & Greed Index** (alternative.me, daily since Feb 2018, 3,157 days). Today
+  reads 70 ("Greed"), higher than 79% of all days on record. Tested against what
+  Bitcoin's own price did next: **extreme greed (76-100) was followed by the
+  BIGGEST average gains** (+13.1% next 30 days, +39.9% next 90 days), not losses --
+  the opposite of the popular "sell into greed" idea. Extreme fear (0-24) preceded
+  only +3.2%/+2.1%. Read this as "Bitcoin trended up strongly across this history and
+  greed readings cluster in uptrends," not as a signal to chase greed.
+- **Wikipedia "Bitcoin" page views** (daily since Jul 2015): last 30 days averaging
+  6,656 views/day; all 10 biggest attention spikes ever were in Nov-Dec 2017, at the
+  2017 mania peak. Public attention today is far below the 2017 extreme.
+- **Solana usage gap partly filled**: DefiLlama total value locked in Solana apps
+  is $6.68bn today, down 40% from a year ago but up 2045% from three years ago.
+  This is money using the network, not the active-address/transaction count we
+  wanted -- that free-data gap remains open.
+- **Bitcoin ETF money flows** (Farside Investors, real investor money, not
+  sentiment): -$450m and -$296m flowed OUT on the two days around the CLARITY Act's
+  15 Sep 2026 failure, then $130m-$999m flowed back IN on four of the next five
+  days. Confirms the price-based event-study finding (fell 4.4% on the day, +16.9%
+  the following week) with actual money rather than price alone. One 14-day episode,
+  not a proven repeatable pattern.
+
+### Analyst step: scenarios from history (`results/scenarios_report.txt`)
+For each asset, every 1- and 3-year holding period in its own price record was
+measured, then labelled by how often the past was that bad or good: disaster (1
+period in 20), bad (1 in 5), typical (the middle), good (1 in 5). These are
+frequencies from the past, not forecasts, and a coin that failed and disappeared
+cannot appear in this kind of history at all.
+
+$200 held 1 year:
+| Asset | Disaster | Bad | Typical | Good | Years that lost money |
+|---|---|---|---|---|---|
+| Savings account | $200 | $200 | $202 | $208 | 0% |
+| Stock fund | $156 | $194 | $226 | $244 | 22% |
+| Bitcoin | $82 | $158 | $345 | $566 | 28% |
+| Ethereum | $54 | $115 | $229 | $396 | 45% |
+| XRP | $69 | $102 | $195 | $628 | 51% |
+| Solana | $35 | $97 | $239 | $1,567 | 43% |
+| Zcash | $41 | $79 | $190 | $483 | 51% |
+| Dogecoin | $54 | $93 | $209 | $486 | 47% |
+| BNB | $110 | $157 | $272 | $517 | 34% |
+
+Over 3 years, Bitcoin, BNB and Solana lost money in almost none of their own past
+3-year periods; Zcash lost money in 60% of them, the worst of the group.
 
 ### Fees
 Trading fees barely matter at this size: about $1.20 on $200 over six years, and

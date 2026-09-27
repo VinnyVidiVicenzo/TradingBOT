@@ -1,0 +1,42 @@
+1. FEAR & GREED INDEX vs BITCOIN'S OWN NEXT RETURNS
+
+  history: 2018-02-01 to 2026-09-27 (3157 days)
+  today's reading: 70 (Greed) -- higher than 79% of all days on record
+
+  reading that day          days  next 30d avg  next 30d fell  next 90d avg  next 90d fell
+  extreme fear (0-24)        679         +3.2%        282/679         +2.1%        367/668
+  fear (25-44)               915         +0.5%        479/915         +8.9%        435/876
+  neutral (45-55)            496         +4.2%        221/494        +19.5%        195/493
+  greed (56-75)              785         +5.0%        354/758        +16.4%        313/749
+  extreme greed (76-100)     282        +13.1%        112/281        +39.9%        112/281
+
+
+2. PUBLIC ATTENTION (Wikipedia 'Bitcoin' page views/day)
+
+  history: 2015-07-01 to 2026-09-26
+  last 30 days average: 6,656 views/day
+  all-time peak: 347,624 views on 2017-12-08 (price that day: $16,569)
+  top 10 attention spikes on record:
+    2017-11-29: 264,319 views  (BTC $9,889)
+    2017-11-30: 214,178 views  (BTC $10,234)
+    2017-12-06: 180,707 views  (BTC $14,292)
+    2017-12-07: 333,517 views  (BTC $17,900)
+    2017-12-08: 347,624 views  (BTC $16,569)
+    2017-12-09: 215,966 views  (BTC $15,178)
+    2017-12-10: 192,190 views  (BTC $15,455)
+    2017-12-11: 244,694 views  (BTC $16,937)
+    2017-12-12: 232,389 views  (BTC $17,415)
+    2017-12-13: 203,034 views  (BTC $16,408)
+
+
+3. SOLANA -- MONEY ACTUALLY USING THE NETWORK (DefiLlama TVL)
+
+  today: $6.68bn locked in Solana applications
+  vs 1 year ago: -40%
+  vs 3 years ago: +2045%
+  (this is money deposited in Solana apps, not active addresses or
+   transactions -- the free-data gap for Solana usage remains open)
+
+
+See results/etf_flows_farside.md for Bitcoin ETF money flows around
+the CLARITY Act vote, read directly from the source site.
