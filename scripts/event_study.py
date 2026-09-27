@@ -17,9 +17,13 @@ Two honest limits, stated because they bound what this can show:
    size of event-day moves against the size of ordinary-day moves, which needs
    no statistics at all -- just counting.
 
-Event dates marked VERIFIED were confirmed from sources during this work.
-Dates marked RECALLED are from general knowledge and may be off by a day or
-two; they are used with wide windows so small errors do not matter.
+Every date below is now VERIFIED against a source; see
+results/reference_verification.md for the search-by-search record. Nine dates
+were originally entered from memory and marked RECALLED. Checking them found
+two genuinely wrong by two days each (not just "might be off") -- corrected
+in place, with the old value left in a comment. A one-day Bitcoin-halving
+ambiguity was resolved by this project's own UTC convention rather than
+picking whichever source was more convenient.
 
     python scripts/event_study.py
 """
@@ -53,15 +57,23 @@ class Event:
 
 
 EVENTS = [
-    Event("2021-05-19", "China mining crackdown", "bad", "RECALLED"),
-    Event("2021-09-24", "China bans all crypto transactions", "bad", "RECALLED"),
-    Event("2022-05-09", "Terra/LUNA collapse begins", "bad", "RECALLED"),
-    Event("2022-11-08", "FTX collapse", "bad", "RECALLED"),
-    Event("2023-06-05", "SEC sues Binance and Coinbase", "bad", "RECALLED"),
-    Event("2024-01-10", "Spot Bitcoin ETFs approved", "good", "RECALLED"),
-    Event("2024-04-19", "Bitcoin halving", "good", "RECALLED"),
-    Event("2024-11-05", "US presidential election", "good", "RECALLED"),
-    Event("2025-03-06", "Strategic Bitcoin Reserve order", "good", "RECALLED"),
+    # All nine of the entries below were originally entered from memory and
+    # marked RECALLED with a stated +/-1-2 day margin of error. Verified by web
+    # search during the independent-review pass; two dates were actually wrong
+    # by 2 days each (not just "might be off"), corrected here, all now VERIFIED.
+    # Sources: see results/reference_verification.md.
+    Event("2021-05-21", "China mining crackdown", "bad", "VERIFIED"),  # was 05-19
+    Event("2021-09-24", "China bans all crypto transactions", "bad", "VERIFIED"),
+    Event("2022-05-07", "Terra/LUNA collapse begins", "bad", "VERIFIED"),  # was 05-09
+    Event("2022-11-08", "FTX collapse", "bad", "VERIFIED"),
+    Event("2023-06-05", "SEC sues Binance and Coinbase", "bad", "VERIFIED"),
+    Event("2024-01-10", "Spot Bitcoin ETFs approved", "good", "VERIFIED"),
+    # Sources disagree by hours around the UTC/US-timezone boundary (block
+    # 840,000; commonly cited as "Apr 19 US evening / Apr 20 UTC morning").
+    # This project times everything in UTC throughout, so UTC's date wins.
+    Event("2024-04-20", "Bitcoin halving", "good", "VERIFIED"),  # was 04-19
+    Event("2024-11-05", "US presidential election", "good", "VERIFIED"),
+    Event("2025-03-06", "Strategic Bitcoin Reserve order", "good", "VERIFIED"),
     Event("2025-05-29", "CLARITY Act introduced", "good", "VERIFIED"),
     Event("2025-06-17", "GENIUS Act passes Senate 68-30", "good", "VERIFIED"),
     Event("2025-07-17", "CLARITY passes House 294-134", "good", "VERIFIED"),
@@ -130,7 +142,9 @@ def main() -> None:
               f"{fmt(d7):>10}{fmt(d30):>10}{event.source:>10}")
 
     print("\n\nWERE EVENT DAYS UNUSUAL? (this needs no statistics, only counting)\n")
-    event_moves = [abs(day) for _, day, _, _ in rows if day is not None]
+    labelled_moves = [(abs(day), event.label, event.date)
+                      for event, day, _, _ in rows if day is not None]
+    event_moves = [m for m, _, _ in labelled_moves]
     all_moves = sorted(abs(d) for d in daily)
     typical_event = statistics.median(event_moves)
 
@@ -138,10 +152,16 @@ def main() -> None:
         count = sum(1 for m in all_moves if m > threshold)
         return count, count / len(all_moves) * 100
 
+    # Named dynamically, not hard-coded: an earlier version of this line
+    # named "the 2021 China crash" unconditionally, written when that really
+    # was the biggest move on record. Correcting that event's date (see the
+    # module docstring) shrank it below FTX's, and the hard-coded label kept
+    # citing the wrong event even after the number changed underneath it.
+    biggest_move, biggest_label, biggest_date = max(labelled_moves, key=lambda t: t[0])
     print(f"  typical day, any day of the year   {statistics.median(all_moves):.1f}%")
     print(f"  typical event day                  {typical_event:.1f}%")
-    print(f"  biggest single event-day move      {max(event_moves):.1f}%   "
-          f"(the 2021 China crash -- one of the largest ever, so nothing beats it)")
+    print(f"  biggest single event-day move      {biggest_move:.1f}%   "
+          f"({biggest_date}, {biggest_label})")
     print()
 
     # The useful question is not "did anything beat the worst crash in the data",

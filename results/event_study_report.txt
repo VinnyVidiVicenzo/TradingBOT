@@ -1,0 +1,66 @@
+An equal-weight BTC/ETH/SOL basket around major events.
+2187 trading days, 2020-10-01 to 2026-09-26
+
+date        event                                        day   next 7d  next 30d       src
+------------------------------------------------------------------------------------------
+2021-05-21  China mining crackdown                    -11.0%     -9.8%     -5.2%  VERIFIED
+2021-09-24  China bans all crypto transactions         -6.3%    +14.0%    +43.6%  VERIFIED
+2022-05-07  Terra/LUNA collapse begins                 -2.4%    -23.4%    -29.8%  VERIFIED
+2022-11-08  FTX collapse                              -14.3%    -18.8%    -18.8%  VERIFIED
+2023-06-05  SEC sues Binance and Coinbase              -5.8%     -9.7%     +6.3%  VERIFIED
+2024-01-10  Spot Bitcoin ETFs approved                 +4.6%     -3.4%     +0.8%  VERIFIED
+2024-04-20  Bitcoin halving                            +3.6%     -1.9%    +16.9%  VERIFIED
+2024-11-05  US presidential election                   +2.9%    +29.5%    +46.7%  VERIFIED
+2025-03-06  Strategic Bitcoin Reserve order            -1.2%    -13.3%    -13.8%  VERIFIED
+2025-05-29  CLARITY Act introduced                     -2.4%     -8.4%     -5.0%  VERIFIED
+2025-06-17  GENIUS Act passes Senate 68-30             -1.6%     -1.0%    +23.4%  VERIFIED
+2025-07-17  CLARITY passes House 294-134               +1.6%     +3.5%    +11.1%  VERIFIED
+2025-07-18  GENIUS Act signed into law                 +0.7%     +3.5%    +11.1%  VERIFIED
+2026-05-14  CLARITY advanced by Senate cmte 15-9       +1.5%     -5.4%    -24.0%  VERIFIED
+2026-09-15  CLARITY Act FAILS Senate cloture 49-50     -4.4%    +16.9%    +16.3%  VERIFIED
+
+
+WERE EVENT DAYS UNUSUAL? (this needs no statistics, only counting)
+
+  typical day, any day of the year   2.0%
+  typical event day                  2.9%
+  biggest single event-day move      14.3%   (2022-11-08, FTX collapse)
+
+  Ordinary days that moved more than a TYPICAL event day:
+    766 of 2186 days (35%) -- roughly 128 days a year
+
+  The CLARITY Act failing moved the basket 4.4% in a day.
+    Ordinary days that moved more: 411 of 2186 (19%) -- about 68 days a year.
+    So the biggest crypto law of the year produced a move this market
+    serves up roughly every 5 days anyway.
+
+
+DID 'GOOD NEWS' AND 'BAD NEWS' GO THE RIGHT WAY?
+
+  good  news,  1 day(s): went up 6 of 9 times, average +1.1%
+  good  news,  7 day(s): went up 3 of 9 times, average +0.3%
+  good  news, 30 day(s): went up 6 of 9 times, average +7.5%
+
+  bad   news,  1 day(s): went down 6 of 6 times, average -7.3%
+  bad   news,  7 day(s): went down 4 of 6 times, average -5.1%
+  bad   news, 30 day(s): went down 3 of 6 times, average +2.1%
+
+
+THE CLARITY ACT, SPECIFICALLY
+
+  2025-05-29  CLARITY Act introduced
+    on the day    -2.4%
+    next week     -8.4%
+    next month    -5.0%
+  2025-07-17  CLARITY passes House 294-134
+    on the day    +1.6%
+    next week     +3.5%
+    next month    +11.1%
+  2026-05-14  CLARITY advanced by Senate cmte 15-9
+    on the day    +1.5%
+    next week     -5.4%
+    next month    -24.0%
+  2026-09-15  CLARITY Act FAILS Senate cloture 49-50
+    on the day    -4.4%
+    next week     +16.9%
+    next month    +16.3%

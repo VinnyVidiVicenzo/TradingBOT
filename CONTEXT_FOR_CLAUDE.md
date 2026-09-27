@@ -157,13 +157,25 @@ Price moves of a Bitcoin/Ethereum/Solana basket:
 | **Failed Senate vote (15 Sep 2026)** | **−4.4%** | **+16.9%** | **+16.3%** |
 
 Across 15 major events (China bans, Terra and FTX collapses, ETF approvals, halving,
-election, bills):
+election, bills). **Every date below was independently verified by web search** during
+a later reference-check pass (`results/reference_verification.md`); two dates
+originally entered from memory turned out to be wrong by 2 days each, which changed
+these numbers meaningfully -- reported here corrected, not as first computed:
 
-- **Bad news:** fell on the day 6 of 6 times, average −11.8%, but within a month most
-  had recovered (down only 2 of 6, average +4.6%).
-- **Good news:** barely moved prices (average +0.7% on the day).
+- **Bad news:** fell on the day 6 of 6 times, average −7.3%. Recovery is weaker than
+  first thought: at 1 week, 4 of 6 were STILL down (average −5.1%); at 1 month, 3 of 6
+  were still down (average +2.1%, barely net positive). The original run said "most had
+  recovered within a month" -- that was partly an artifact of one wrong date and is now
+  closer to "roughly half had recovered."
+- **Good news:** barely moved prices (average +1.1% on the day).
 - **411 of 2,186 ordinary days (about 1 in 5) moved more than the day the CLARITY Act
-  failed.** News moves are small compared with normal day-to-day swings.
+  failed.** News moves are small compared with normal day-to-day swings. (This specific
+  figure was unaffected by the date corrections -- the CLARITY Act's own two events were
+  already independently verified from the start.)
+- The single biggest event-day move in the dataset is FTX's collapse (−14.3%), not the
+  China mining crackdown as first reported -- the code had hard-coded that label back
+  when it really was the biggest, and kept citing it after the date correction changed
+  which event actually was biggest. Also fixed.
 - This is hindsight and only 15 events, so no single event proves anything.
 
 ### Test 6: crypto versus a plain stock-market index fund (SPY, S&P 500)
@@ -395,6 +407,21 @@ affected studies (mix-vs-savings, possible-futures): every crypto-containing
 number moved up 1-16%, no pure-stock or pure-savings number changed at all, and
 no conclusion in this document flipped. Full details, plus what else was
 checked and came back clean, in the review file.
+
+### Reference verification (`results/reference_verification.md`)
+A separate pass checking factual claims about the outside world (event dates,
+figures) rather than our own arithmetic. Nine event dates that had been typed
+from memory were checked against sources: 2 were genuinely wrong by 2 days
+each (China mining crackdown, Terra/LUNA collapse start) and corrected; 1 was a
+real one-day UTC/US-timezone ambiguity (the 2024 Bitcoin halving) resolved to
+this project's own UTC convention; the other 6, plus two figures stated in
+conversation (the Bybit hack, the Binance settlement), were already accurate.
+The two date corrections changed a real conclusion in Test 5 above (bad-news
+recovery is weaker than first reported) and exposed a second bug: the code had
+hard-coded "the 2021 China crash" as the biggest single-day mover in the
+dataset, which stopped being true once its date was corrected -- fixed to
+identify the actual biggest mover from the data instead of asserting a fixed
+answer. Full source-by-source record, with links, in the file.
 
 ## 7. The overall conclusion so far
 
