@@ -255,6 +255,8 @@ class CredentialHandlingTests(unittest.TestCase):
 
         saved = {k: os.environ.pop(k, None) for k in (KEY_ENV_VAR, SECRET_ENV_VAR)}
         try:
+            # Must raise immediately, never wait for input. An earlier version
+            # prompted here and hung the whole suite.
             with self.assertRaises(MissingCredentials) as ctx:
                 load_credentials()
             message = str(ctx.exception)
@@ -264,6 +266,19 @@ class CredentialHandlingTests(unittest.TestCase):
             for key, value in saved.items():
                 if value is not None:
                     os.environ[key] = value
+
+    def test_the_loader_never_prompts(self) -> None:
+        # Guard against reintroducing a hang: the loader must not touch
+        # getpass or the terminal, whatever the environment looks like. An
+        # earlier version prompted from here and blocked the whole suite.
+        import inspect
+
+        from account_tools import credentials as module
+
+        source = inspect.getsource(module.load_credentials)
+        self.assertNotIn("getpass", source)
+        self.assertNotIn("prompt_for_credentials", source)
+        self.assertNotIn("isatty", source)
 
     def test_credentials_are_read_from_the_environment_only(self) -> None:
         import os

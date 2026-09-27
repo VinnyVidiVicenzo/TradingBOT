@@ -71,19 +71,16 @@ def prompt_for_credentials() -> Credentials:
     return Credentials(key=key, secret=secret)
 
 
-def load_credentials(*, allow_prompt: bool = True) -> Credentials:
-    """Read credentials from the environment, or ask for them at the terminal.
+def load_credentials() -> Credentials:
+    """Read credentials from the environment. Never blocks.
 
-    The environment is checked first so scripted use keeps working. When
-    nothing is set and a real terminal is attached, this prompts instead of
-    failing -- pasting into a hidden prompt keeps the value out of the shell
-    scrollback and history, which the environment-variable route does not.
+    Deliberately does NOT fall back to prompting. A library function that can
+    wait on human input can hang anything that calls it -- a test suite, a
+    scheduled job -- and it did hang this one. The interactive fallback lives in
+    the CLI, which is the only layer that knows a human is present.
     """
     key = os.environ.get(KEY_ENV_VAR, "").strip()
     secret = os.environ.get(SECRET_ENV_VAR, "").strip()
-
-    if (not key or not secret) and allow_prompt and sys.stdin.isatty():
-        return prompt_for_credentials()
 
     if not key or not secret:
         missing = [
@@ -94,11 +91,9 @@ def load_credentials(*, allow_prompt: bool = True) -> Credentials:
         raise MissingCredentials(
             "not set: "
             + ", ".join(missing)
-            + ".\n\nNo terminal is attached, so there is nowhere to ask you.\n\n"
-            "Normally you do not need to set these at all: run this command "
-            "directly\nin a terminal and it will ask you to paste them at a "
-            "hidden prompt, which\nkeeps them out of your shell scrollback and "
-            "history.\n\n"
+            + ".\n\nNormally you do not need to set these at all: run the command "
+            "without\n--no-ask and it will ask you to paste them at a hidden "
+            "prompt, which keeps\nthem out of your shell scrollback and history.\n\n"
             "To set them anyway, PowerShell:\n"
             f'  $env:{KEY_ENV_VAR} = "<paste key>"\n'
             f'  $env:{SECRET_ENV_VAR} = "<paste secret>"\n\n'

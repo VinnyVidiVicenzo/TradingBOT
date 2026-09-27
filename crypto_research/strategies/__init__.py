@@ -14,6 +14,8 @@ from .benchmark1_staged_deployment import StagedDeployment
 from .benchmark1_staged_deployment import build as build_staged_deployment
 from .benchmark2_contribution_dca import ContributionDca
 from .benchmark2_contribution_dca import build as build_contribution_dca
+from .dip_weighted_deployment import DipWeightedDeployment
+from .dip_weighted_deployment import build as build_dip_weighted
 
 # Configuration names a strategy by string; nothing imports a strategy class
 # by path, so a config file cannot cause arbitrary code to be loaded.
@@ -21,6 +23,7 @@ STRATEGY_BUILDERS: Mapping[str, Callable[..., Any]] = {
     "benchmark0_hold": lambda **kwargs: HoldStartingPortfolio(),
     "benchmark1_staged_deployment": build_staged_deployment,
     "benchmark2_contribution_dca": build_contribution_dca,
+    "dip_weighted_deployment": build_dip_weighted,
 }
 
 
@@ -40,6 +43,7 @@ __all__ = [
     "AssetUniverse",
     "BaseStrategy",
     "ContributionDca",
+    "DipWeightedDeployment",
     "HoldStartingPortfolio",
     "STRATEGY_BUILDERS",
     "StagedDeployment",

@@ -334,6 +334,7 @@ class StrategyRegistryTests(unittest.TestCase):
                 "benchmark0_hold",
                 "benchmark1_staged_deployment",
                 "benchmark2_contribution_dca",
+                "dip_weighted_deployment",
             ],
         )
 

@@ -20,7 +20,11 @@ from typing import Sequence
 from crypto_research.timeutil import now_ms, to_iso
 
 from .client import BinanceUSAccountClient, fees_for_symbols
-from .credentials import MissingCredentials, load_credentials
+from .credentials import (
+    MissingCredentials,
+    load_credentials,
+    prompt_for_credentials,
+)
 from .reporting import (
     render_fee_block,
     render_holdings_block,
@@ -40,27 +44,45 @@ def build_parser() -> argparse.ArgumentParser:
             "balances as configuration text. Cannot trade or move funds."
         ),
     )
-    parser.add_argument(
+    # Shared flags live on a parent parser so they work AFTER the subcommand,
+    # which is where people naturally type them. Putting them only on the top
+    # level would make "check --no-ask" an error.
+    shared = argparse.ArgumentParser(add_help=False)
+    shared.add_argument(
+        "--no-ask",
+        action="store_true",
+        help="never prompt; fail if the credential environment variables are unset",
+    )
+    shared.add_argument(
         "--recv-window-ms",
         type=int,
         default=5_000,
         help="how long the signed request stays valid (default 5000, max 60000)",
     )
+
     sub = parser.add_subparsers(dest="command", required=True)
 
-    sub.add_parser("check", help="verify the key works and report account exposure")
+    sub.add_parser(
+        "check", parents=[shared],
+        help="verify the key works and report account exposure",
+    )
 
-    fees = sub.add_parser("fees", help="print a [costs.fees] block with real rates")
+    fees = sub.add_parser(
+        "fees", parents=[shared], help="print a [costs.fees] block with real rates"
+    )
     fees.add_argument("--symbols", default=DEFAULT_SYMBOLS)
     fees.add_argument("--window", default="", help="the backtest window these apply to")
     fees.add_argument("--write", help="also write the block to this path")
 
     holdings = sub.add_parser(
-        "holdings", help="print a [portfolio] block from current balances"
+        "holdings", parents=[shared],
+        help="print a [portfolio] block from current balances",
     )
     holdings.add_argument("--write", help="also write the block to this path")
 
-    balances = sub.add_parser("balances", help="list non-zero balances")
+    balances = sub.add_parser(
+        "balances", parents=[shared], help="list non-zero balances"
+    )
     balances.add_argument("--json", action="store_true")
 
     return parser
@@ -70,9 +92,21 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         credentials = load_credentials()
-    except MissingCredentials as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        return 2
+    except MissingCredentials as env_error:
+        # Prompting is the normal path for a human at a terminal, the same way
+        # ssh asks for a password. --no-ask is the escape hatch for scripts.
+        #
+        # Note sys.stdin.isatty() is NOT a reliable guard here: on Windows
+        # getpass reads the console handle directly, so redirecting stdin does
+        # not stop the prompt. Hence an explicit flag rather than a sniff.
+        if args.no_ask:
+            print(f"error: {env_error}", file=sys.stderr)
+            return 2
+        try:
+            credentials = prompt_for_credentials()
+        except (MissingCredentials, EOFError, KeyboardInterrupt) as exc:
+            print(f"\nerror: {exc or 'cancelled'}", file=sys.stderr)
+            return 2
 
     transport = SignedReadOnlyTransport(
         credentials, recv_window_ms=args.recv_window_ms
