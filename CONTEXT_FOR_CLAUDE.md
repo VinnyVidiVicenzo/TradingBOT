@@ -287,6 +287,19 @@ Free data (Coin Metrics, CoinGecko). Full tables in `results/fundamentals_report
   in the 3 months Bitcoin fell 20%+, every coin fell 18-36%. Owning several coins
   spreads risk in normal times, not in crashes.
 
+### Analyst step: the real cost of trading on Binance.US (`results/trading_cost_report.txt`)
+Live order books, 3 snapshots, 27 Sep 2026; excludes the exchange's trading fee.
+- For a $200 order, the price penalty was 0.00-0.04% on every pair except ZECUSD
+  (0.12%). BTC, ETH and XRP stay under 0.1% even at $50,000.
+- The tests assumed 0.10% (5 bps spread + 5 bps slippage) -- confirmed as reasonable
+  and slightly cautious. The trading fee itself (assumed 0.4-0.6%) is the bigger cost.
+- Thinnest markets: ZEC in dollars (only ~$47k on offer within 1% of the price; a
+  $50k buy would cost ~5%), then DOGE and BNB (~$130-170k). BTC/ETH ~$1.3-1.6m.
+- Platform risk: the person considers it lower now; agreed to cover it as a short
+  factual section in the final report (Binance.US USD suspension 2023-25, Binance
+  $4.3bn settlement 2023, Bybit ~$1.5bn hack Feb 2025, CLARITY Act failure) rather
+  than a full study.
+
 ### Fees
 Trading fees barely matter at this size: about $1.20 on $200 over six years, and
 changing the fee assumption from 0% to 1% moved results by about 1 percentage point.
