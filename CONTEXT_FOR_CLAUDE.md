@@ -652,8 +652,13 @@ subsystem for whale, on-chain, exchange-flow and derivatives data**, in
   whether to supply an export; whether to build a free Binance.US executed-large-trade
   feature (public `aggTrades` endpoint, probably with an aggressor-side flag, to be
   confirmed) as the first real-data test; whether to fetch minute-level bars (latency
-  work needs them); how to record work in git (no identity is configured; every past
-  commit is authored by the placeholder `dev <dev@localhost>`).
+  work needs them).
+- **The name on saved work (git):** no git identity is configured on this computer, and
+  it must not be changed. On 28 Sep 2026 the person chose the name **Trading Bot
+  Research** in place of the placeholder `dev`. Save with per-command overrides,
+  `git -c user.name="Trading Bot Research" -c user.email=research@localhost commit ...`.
+  A `.mailmap` file makes every older save (stored under `dev <dev@localhost>`) display
+  under the new name; history was not rewritten.
 - **Same standing rules as everywhere:** never ask for or accept an API key in chat;
   give no personalised financial advice; no leverage, margin, martingale, live orders or
   automatic selling; USD and stablecoins stay distinct assets.
