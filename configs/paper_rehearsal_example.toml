@@ -1,0 +1,83 @@
+#-----------------------------------------------------------------------------
+# Rehearsal track -- the plan being watched against real, live prices.
+#
+# This is an ordinary backtest config (see configs/benchmark1_staged_deployment.toml
+# for the same shape explained line by line). Two things are specific to a
+# rehearsal:
+#
+#   * `db_path` points at a database of its own (data/paper_market.sqlite), kept
+#     separate from data/market.sqlite so a rehearsal never mixes pretend-money
+#     data with the data used for the project's actual findings.
+#   * `end` below is a placeholder. Every tick replaces it with the newest fully
+#     closed price, so this file itself never needs editing to "move time
+#     forward" -- see docs/trading-bot/PAPER_TRADING.md.
+#
+# NOTHING IN THIS FILE IS A DECISION THAT HAS BEEN MADE. The symbols, the pool
+# size, the tranche count and the cadence are all candidates: change them and
+# start a fresh rehearsal (a new db_path) to try something else.
+#
+# This cannot place an order. See docs/trading-bot/SAFETY.md.
+#-----------------------------------------------------------------------------
+
+[experiment]
+name = "paper-rehearsal-staged-200usd-weekly-12"
+description = """
+Rehearsal track: deploy a $200 pretend cash pool into three CANDIDATE liquid
+assets in 12 equal weekly tranches, watched against live prices. Compared
+against configs/paper_benchmark_example.toml.
+"""
+seed = 0
+
+[data]
+symbols = ["BTCUSD", "ETHUSD", "SOLUSD"]     # CANDIDATES, not finalized
+interval = "1d"
+start = "2026-09-28T00:00:00Z"               # when this rehearsal begins -- fixed once chosen
+end = "2026-09-29T00:00:00Z"                 # placeholder (must be after start); every tick overrides this
+db_path = "data/paper_market.sqlite"
+max_gap_intervals = 3
+feed_delay_ms = 0
+
+[portfolio]
+valuation_asset = "USD"
+initial_cash = { USD = "200.00" }            # pretend money only
+
+[strategy]
+name = "benchmark1_staged_deployment"
+
+[strategy.params]
+symbols = ["BTCUSD", "ETHUSD", "SOLUSD"]
+quote_asset = "USD"
+tranche_count = 12
+cadence_days = 7
+
+#-----------------------------------------------------------------------------
+# Cost assumptions -- identical to configs/paper_benchmark_example.toml, so the
+# only difference between the two tracks is the strategy, not the costs.
+#-----------------------------------------------------------------------------
+
+[costs.fees]
+maker_rate = "0.0040"
+taker_rate = "0.0060"
+source = "ASSUMPTION -- placeholder, not a quoted Binance.US rate"
+note = "Replace with the fee tier that actually applies to your account."
+commission_asset_policy = "RECEIVED_ASSET"
+
+[costs.spread]
+default_bps = "5"
+prefer_observed = true
+note = "ASSUMPTION -- 5bps round-trip spread on liquid USD pairs, not measured."
+
+[costs.slippage]
+model = "fixed"
+bps = "5"
+note = "ASSUMPTION -- flat 5bps."
+
+[costs.latency]
+decision_to_submit_ms = 500
+note = "ASSUMPTION -- constant 500ms from decision to venue."
+
+[execution]
+max_reference_age_ms = 90000
+
+[fill]
+model = "full"

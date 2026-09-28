@@ -166,6 +166,12 @@ Fractions summing below 1 leave the order partially filled.
 
 ## Deliberate non-goals for V1
 
-No live or paper execution. No websockets. No machine
-learning. No news or LLM inputs. No selling. No optimizer. No web UI. No
-deployment. Each of these is a decision to be revisited only with evidence.
+No live execution. No websockets. No machine learning. No news or LLM inputs.
+No selling. No optimizer. No web UI. No deployment. Each of these is a decision
+to be revisited only with evidence.
+
+Paper execution -- rehearsing a plan against live prices with pretend money --
+is no longer on this list: see `paper_trading/` and
+`docs/trading-bot/PAPER_TRADING.md`. It was built as the separate process this
+document's own extension points call for, and it changed nothing here: it adds
+no execution mode to this engine, only a caller of it.

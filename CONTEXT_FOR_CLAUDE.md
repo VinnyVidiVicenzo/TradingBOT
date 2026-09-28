@@ -50,7 +50,7 @@ Hard rules the person set at the start, still in force:
 - Written in Python, no outside libraries. 921 automatic tests, all passing on 28 Sep
   2026 (9 are opt-in live-network checks that are skipped unless asked for).
 - Detailed technical docs: `docs/trading-bot/` (ARCHITECTURE, DATA_MODEL,
-  BACKTESTING, SAFETY, EXPERIMENTS, EXTERNAL_INTELLIGENCE).
+  BACKTESTING, SAFETY, EXPERIMENTS, EXTERNAL_INTELLIGENCE, PAPER_TRADING).
 - Analysis scripts: `scripts/risk_profile.py`, `scripts/event_study.py`,
   `scripts/vs_stock_fund.py`, `scripts/mix_vs_savings.py`, `scripts/possible_futures.py`,
   `scripts/long_history.py`, `scripts/fundamentals.py`,
@@ -662,3 +662,45 @@ subsystem for whale, on-chain, exchange-flow and derivatives data**, in
 - **Same standing rules as everywhere:** never ask for or accept an API key in chat;
   give no personalised financial advice; no leverage, margin, martingale, live orders or
   automatic selling; USD and stablecoins stay distinct assets.
+
+
+## 11. Paper-trading rehearsal (added 28 Sep 2026)
+
+A third piece of work sits beside the two above: a **rehearsal tool** that watches
+a plan run against real, live Binance.US prices with pretend money, in
+`paper_trading/`, documented in `docs/trading-bot/PAPER_TRADING.md`. It answers the
+person's stated goal ("train the trading bot for a few weeks before launching it").
+
+- **What it actually is:** two ordinary backtest config files (one for the plan,
+  one for a benchmark) re-run every time new prices close, with the file's `end`
+  date replaced by the newest one. Every run goes through the exact same,
+  already-tested `run_experiment`/`Backtester` this project's whole research
+  history has used -- `paper_trading` adds no execution code of its own, only the
+  glue that fetches fresh prices and keeps calling that code forward in time.
+  Safety zone `paper-trading` in `safety.py`; same claim as the research engine
+  itself (cannot authenticate).
+- **It is not training in the machine-learning sense.** Nothing here learns; the
+  strategies are the same fixed-rule benchmarks already in `crypto_research/strategies/`.
+  A rehearsal cannot show that a plan is good or bad -- a few weeks is one small
+  sample of one market regime. What it can show: whether the plan runs cleanly
+  day after day, what it would really cost against a small pool once exchange
+  minimums apply, and (via `python -m paper_trading measure-cost`, a separate,
+  optional command) how far a real order book would have moved for an order of
+  that size -- a real number a backtest can only assume.
+- **Its "scorecard"** (`paper_trading/scorecard.py`) checks six mechanical things
+  (the feed keeps working, nothing crashes, nothing ever sells, cash never goes
+  negative, a benchmark result always exists alongside the plan's, most orders
+  are not getting rejected) and deliberately never grades performance. The weekly
+  report (`python -m paper_trading report`) repeats, every time, that a short
+  rehearsal cannot show which track is better.
+- **Setup:** copy `configs/paper_rehearsal_example.toml` and
+  `configs/paper_benchmark_example.toml`, point both at a `db_path` of their own
+  (never `data/market.sqlite`), and run `python -m paper_trading tick` on a
+  schedule (Windows Task Scheduler works; running it more often than needed is
+  harmless -- it only acts when a genuinely new closed price exists for every
+  configured coin at once).
+- **Decisions still the person's:** which plan and coins to rehearse first (a
+  starting example is provided but nothing is chosen for them); whether/when to
+  move past rehearsal into a person-approves-each-trade stage, which would need a
+  trade-only API key entered on the person's own machine, never in chat -- see the
+  "rehearse, then live" staged path discussed with them on 28 Sep 2026.

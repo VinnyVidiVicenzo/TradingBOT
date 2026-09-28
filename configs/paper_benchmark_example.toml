@@ -1,0 +1,61 @@
+#-----------------------------------------------------------------------------
+# Benchmark track -- what the rehearsal is compared against.
+#
+# Must share `db_path`, `symbols`, `interval` and `start` with
+# configs/paper_rehearsal_example.toml exactly, or `paper_trading` refuses to
+# run: the two tracks have to see byte-identical prices for the comparison to
+# mean anything. Only the strategy differs.
+#
+# This one holds the same $200 pool and does nothing with it -- the floor any
+# more active plan has to clear. Swap in configs/benchmark1_staged_deployment.toml's
+# strategy section instead if you would rather compare against a *different*
+# schedule than "do nothing".
+#-----------------------------------------------------------------------------
+
+[experiment]
+name = "paper-benchmark-hold-200usd"
+description = "Benchmark track: hold the same $200 pretend pool in cash, for comparison."
+seed = 0
+
+[data]
+symbols = ["BTCUSD", "ETHUSD", "SOLUSD"]     # CANDIDATES, not finalized -- must match the rehearsal file
+interval = "1d"
+start = "2026-09-28T00:00:00Z"
+end = "2026-09-29T00:00:00Z"                 # placeholder (must be after start); every tick overrides this
+db_path = "data/paper_market.sqlite"
+max_gap_intervals = 3
+feed_delay_ms = 0
+
+[portfolio]
+valuation_asset = "USD"
+initial_cash = { USD = "200.00" }
+
+[strategy]
+name = "benchmark0_hold"
+
+[costs.fees]
+maker_rate = "0.0040"
+taker_rate = "0.0060"
+source = "ASSUMPTION -- placeholder, not a quoted Binance.US rate"
+note = "Replace with the fee tier that actually applies to your account."
+commission_asset_policy = "RECEIVED_ASSET"
+
+[costs.spread]
+default_bps = "5"
+prefer_observed = true
+note = "ASSUMPTION -- 5bps round-trip spread on liquid USD pairs, not measured."
+
+[costs.slippage]
+model = "fixed"
+bps = "5"
+note = "ASSUMPTION -- flat 5bps."
+
+[costs.latency]
+decision_to_submit_ms = 500
+note = "ASSUMPTION -- constant 500ms from decision to venue."
+
+[execution]
+max_reference_age_ms = 90000
+
+[fill]
+model = "full"
