@@ -552,7 +552,7 @@ class AuditZoneTests(unittest.TestCase):
         self.assertTrue(report.ok, report.summary())
         self.assertEqual(
             sorted(report.zones),
-            ["account-tools", "desktop-app", "research", "support"],
+            ["account-tools", "desktop-app", "external-intel", "research", "support"],
         )
 
     def test_the_research_zone_still_forbids_signing(self) -> None:

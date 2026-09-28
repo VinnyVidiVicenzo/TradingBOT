@@ -155,6 +155,18 @@ DESKTOP_APP_RULES = RuleSet(
     forbidden_patterns=SIGNING_PATTERNS + WRITE_METHOD_PATTERNS + WRONG_VENUE_PATTERNS,
 )
 
+# External market intelligence (external_intelligence/) reads and analyses third-party
+# data. It makes the same claim as the research engine, so it is held to the same
+# rules: no signing, no credentials, no private endpoints, no writes. It must also
+# never reach an order -- that half is enforced by tests/test_external_intelligence_safety.py,
+# which walks every import.
+EXTERNAL_INTELLIGENCE_RULES = RuleSet(
+    zone="external-intel",
+    claim="reads external data only: cannot authenticate, trade or move funds",
+    forbidden_endpoints=TRADING_ENDPOINTS + ACCOUNT_READ_ENDPOINTS_FORBIDDEN_IN_RESEARCH,
+    forbidden_patterns=SIGNING_PATTERNS + WRITE_METHOD_PATTERNS + WRONG_VENUE_PATTERNS,
+)
+
 
 @dataclass(slots=True)
 class SafetyFinding:
@@ -254,6 +266,7 @@ def audit_repository(repo_root: Path | None = None) -> SafetyReport:
         (RESEARCH_RULES, root / "crypto_research", ()),
         (ACCOUNT_TOOLS_RULES, root / "account_tools", ()),
         (DESKTOP_APP_RULES, root / "desktop_app", ()),
+        (EXTERNAL_INTELLIGENCE_RULES, root / "external_intelligence", ()),
         (
             SUPPORT_RULES,
             root / "tests",

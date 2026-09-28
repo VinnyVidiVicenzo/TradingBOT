@@ -47,9 +47,10 @@ Hard rules the person set at the start, still in force:
 ## 3. Where everything lives
 
 - Project folder: `D:\Desktop\TraderBOT` (a git repository with full history).
-- Written in Python, no outside libraries. 318 automatic tests, all passing.
+- Written in Python, no outside libraries. 921 automatic tests, all passing on 28 Sep
+  2026 (9 are opt-in live-network checks that are skipped unless asked for).
 - Detailed technical docs: `docs/trading-bot/` (ARCHITECTURE, DATA_MODEL,
-  BACKTESTING, SAFETY, EXPERIMENTS).
+  BACKTESTING, SAFETY, EXPERIMENTS, EXTERNAL_INTELLIGENCE).
 - Analysis scripts: `scripts/risk_profile.py`, `scripts/event_study.py`,
   `scripts/vs_stock_fund.py`, `scripts/mix_vs_savings.py`, `scripts/possible_futures.py`,
   `scripts/long_history.py`, `scripts/fundamentals.py`,
@@ -619,3 +620,40 @@ property and that rule only binds stocks and securities. Proposals to extend it 
 crypto exist (a CNBC headline of 28 July 2026 says Congress is renewing the push);
 none had passed as of those sources, and the status of any specific bill was not
 confirmed. This is a factual note, not advice -- do not tell the person to act on it.
+
+
+## 10. External-intelligence subsystem (added 28 Sep 2026)
+
+A second, separate piece of work sits beside the research above: a **research-only
+subsystem for whale, on-chain, exchange-flow and derivatives data**, in
+`external_intelligence/`, documented in `docs/trading-bot/EXTERNAL_INTELLIGENCE.md`
+(read that first if asked about it). It has its own safety zone in `safety.py`
+(`external-intel`: cannot authenticate, trade or move funds) and its own tests
+(`tests/test_external_intelligence_*.py`, 308 tests).
+
+- **The rule that shapes it:** external data -> normalized events -> features ->
+  research/statistical testing -> strategy logic -> independent risk controls -> paper
+  execution. **Never "whale alert -> buy or sell."** A large transfer can be an
+  internal move, custody, collateral, an OTC settlement, treasury activity or a bridge
+  movement; size alone does not give direction. Nothing in the subsystem can place an
+  order, and a test walks every import to keep it that way.
+- **State:** built and tested on *synthetic* data only. **No real whale data has been
+  loaded, so nothing has been learned yet about whether whale data helps.** The tests
+  prove the machinery can tell a planted effect from none, and that events received
+  after a decision (or a feed that reveals the future but reports late) add nothing.
+- **Live feeds are off, on purpose.** As of 28 Sep 2026: Whale Alert has no free data
+  API (paid plans that use an API key); CoinLobster's keyless access needs HTTP POST
+  (the audit forbids it), its REST API needs a key on paid plans, it publishes no
+  response schema, and its terms exclude bulk extraction. So both adapters only read
+  **exports the person already has the right to use.** Arkham, Nansen, CryptoQuant and
+  Glassnode are documented placeholders; nothing was bought, scraped or integrated.
+  Verify these facts again before relying on them.
+- **Decisions that are the person's, not yours:** whether to pay for any live provider;
+  whether to supply an export; whether to build a free Binance.US executed-large-trade
+  feature (public `aggTrades` endpoint, probably with an aggressor-side flag, to be
+  confirmed) as the first real-data test; whether to fetch minute-level bars (latency
+  work needs them); how to record work in git (no identity is configured; every past
+  commit is authored by the placeholder `dev <dev@localhost>`).
+- **Same standing rules as everywhere:** never ask for or accept an API key in chat;
+  give no personalised financial advice; no leverage, margin, martingale, live orders or
+  automatic selling; USD and stablecoins stay distinct assets.
