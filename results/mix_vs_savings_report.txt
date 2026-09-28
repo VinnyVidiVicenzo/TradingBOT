@@ -1,0 +1,46 @@
+
+=== HELD 1 YEAR  (60 start months) ===
+mix                         typical  average   lost $  beat savings  worst drop  days in red
+--------------------------------------------------------------------------------------------
+Savings account only            208      207     0/60            --         -0%           0%
+Savings 90% + crypto 10%        208      218    16/60         29/60        -29%          18%
+Stock fund only                 235      230    11/60         46/60        -24%           9%
+Fund 95% + crypto 5%            235      235    12/60         46/60        -27%          11%
+Fund 90% + crypto 10%           231      239    13/60         45/60        -32%          12%
+Fund 80% + crypto 20%           230      248    14/60         45/60        -40%          16%
+Crypto only                     200      321    30/60         29/60        -79%          34%
+
+=== HELD 2 YEARS  (48 start months) ===
+mix                         typical  average   lost $  beat savings  worst drop  days in red
+--------------------------------------------------------------------------------------------
+Savings account only            218      215     0/48            --         -0%           0%
+Savings 90% + crypto 10%        247      239     6/48         33/48        -29%           9%
+Stock fund only                 275      262     1/48         41/48        -24%           5%
+Fund 95% + crypto 5%            279      271     5/48         41/48        -29%           7%
+Fund 90% + crypto 10%           281      280     5/48         38/48        -35%           8%
+Fund 80% + crypto 20%           297      298     9/48         38/48        -43%          10%
+Crypto only                     301      405    17/48         31/48        -79%          31%
+
+=== HELD 3 YEARS  (36 start months) ===
+mix                         typical  average   lost $  beat savings  worst drop  days in red
+--------------------------------------------------------------------------------------------
+Savings account only            227      224     0/36            --         -0%           0%
+Savings 90% + crypto 10%        264      268     0/36         36/36        -29%          10%
+Stock fund only                 281      304     0/36         36/36        -24%           9%
+Fund 95% + crypto 5%            306      323     0/36         36/36        -29%           9%
+Fund 90% + crypto 10%           343      341     0/36         36/36        -35%          10%
+Fund 80% + crypto 20%           386      375     0/36         36/36        -43%          11%
+Crypto only                     465      520     0/36         35/36        -79%          28%
+
+=== HELD 5 YEARS  (12 start months) ===
+mix                         typical  average   lost $  beat savings  worst drop  days in red
+--------------------------------------------------------------------------------------------
+Savings account only            237      237     0/12            --         -0%           0%
+Savings 90% + crypto 10%        271      305     0/12         12/12        -29%          20%
+Stock fund only                 386      387     0/12         12/12        -24%           4%
+Fund 95% + crypto 5%            396      420     0/12         12/12        -29%           8%
+Fund 90% + crypto 10%           403      452     0/12         12/12        -35%          12%
+Fund 80% + crypto 20%           411      516     0/12         12/12        -43%          21%
+Crypto only                     299      746     0/12         10/12        -79%          31%
+
+all 1092 results written to D:\Desktop\TraderBOT\results\mix_vs_savings.csv

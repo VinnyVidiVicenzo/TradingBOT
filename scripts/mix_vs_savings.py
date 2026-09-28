@@ -58,7 +58,7 @@ def main() -> None:
             lost = sum(1 for r in g if r["end"] < STAKE)
             beat = sum(1 for r in g if r["beat_savings"])
             beat_txt = "--" if name == "Savings account only" else f"{beat}/{len(g)}"
-            print(f"{name:<26}{ends[len(ends)//2]:>9.0f}{statistics.mean(ends):>9.0f}"
+            print(f"{name:<26}{statistics.median(ends):>9.0f}{statistics.mean(ends):>9.0f}"
                   f"{f'{lost}/{len(g)}':>9}{beat_txt:>14}"
                   f"{f'-{max(r['worst_drop'] for r in g)*100:.0f}%':>12}"
                   f"{f'{statistics.median(r['share_in_red'] for r in g)*100:.0f}%':>13}")

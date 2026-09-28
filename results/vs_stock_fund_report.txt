@@ -1,0 +1,44 @@
+SPY: 1503 trading days, 2020-10-01 to 2026-09-25
+
+$200 into each on the same day. Every start month. Crypto pays its
+trading costs; the fund's expenses are already inside its prices.
+
+WHAT YOU ENDED UP WITH
+
+held        starts  crypto typical  fund typical  crypto won  crypto lost $  fund lost $
+----------------------------------------------------------------------------------------
+12 months       60             220           236       28/60          27/60        12/60
+24 months       48             252           275       24/48          20/48         1/48
+36 months       34             326           285       17/34           3/34         0/34
+60 months       10             194           374        2/10           5/10         0/10
+
+
+WHAT YOU WENT THROUGH TO GET IT
+
+held         worst drop crypto  worst drop fund  days in red crypto  days in red fund
+-------------------------------------------------------------------------------------
+12 months                 -81%             -24%                 35%                8%
+24 months                 -88%             -24%                 25%                7%
+36 months                 -85%             -24%                 31%               10%
+60 months                 -85%             -24%                 44%               12%
+
+
+LONGEST UNBROKEN STRETCH BELOW WHAT YOU PUT IN
+
+held         crypto typical   crypto worst   fund typical   fund worst
+----------------------------------------------------------------------
+12 months               72d           364d            14d         250d
+24 months               89d           729d            24d         488d
+36 months              164d          1080d            47d         488d
+60 months              662d          1273d            74d         296d
+
+
+RETURN PER UNIT OF PAIN (ending gain divided by worst drop)
+
+  held 12 months:  crypto +0.23   fund +1.19
+  held 24 months:  crypto +0.36   fund +2.08
+  held 36 months:  crypto +0.98   fund +2.09
+  held 60 months:  crypto -0.04   fund +3.55
+
+
+all 304 results written to results\crypto_vs_stocks.csv

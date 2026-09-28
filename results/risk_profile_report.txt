@@ -1,0 +1,57 @@
+A one-off $200, coins picked blind, no clever timing.
+
+held for      starts  typical end  lost money  fell >50%  worst point
+---------------------------------------------------------------------
+12 months         60          220       27/60      26/60         -81%
+24 months         48          252       20/48      32/48         -81%
+36 months         34          326        3/34      27/34         -81%
+60 months         10          194        5/10      10/10         -76%
+
+
+TIME SPENT IN THE RED (below what you put in)
+
+held for       typical   worst case
+-----------------------------------
+12 months          35%         100%
+24 months          25%         100%
+36 months          31%          99%
+60 months          44%          78%
+
+
+LONGEST UNBROKEN STRETCH IN THE RED -- how long you hold your nerve
+
+held for         typical    worst case   still down at end
+----------------------------------------------------------
+12 months        72 days      364 days               27/60
+24 months        89 days      729 days               20/48
+36 months       164 days     1080 days                3/34
+60 months       662 days     1273 days                5/10
+
+
+WHY THE LONGER HOLDS ARE NOT A FAIR COMPARISON
+
+Each holding length can only use start dates that leave room to finish,
+so the samples cover different eras and overlap heavily. The 5-year rows
+all begin inside the 2020-21 run-up; the 3-year rows are full of starts
+in the 2022 crash, when everything was cheap. With six years of data
+this cannot be fixed, only disclosed -- do not read these as 'three
+years is safer than five'.
+
+held for      starts   first start   last start
+-----------------------------------------------
+12 months         60       2020-10      2025-09
+24 months         48       2020-10      2024-09
+36 months         34       2020-10      2023-09
+60 months         10       2020-10      2021-09
+
+
+WHAT IF YOU PANIC-SOLD AFTER A 50% FALL
+
+held for      hit the trigger   held on      sold   cost of selling
+-------------------------------------------------------------------
+12 months               26/60       356       297               -60
+24 months               32/48       276       321               +45
+36 months               27/34       326       359               +33
+60 months               10/10       735       505              -230
+
+all 152 runs written to results\risk_profile.csv

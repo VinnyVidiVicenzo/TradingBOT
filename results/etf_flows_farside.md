@@ -40,8 +40,9 @@ average day **+$96.1m**, biggest single day **+$1,119.9m**, worst single day
 The earlier event study (`results/event_study.py`) found the basket fell 4.4%
 on the day the bill failed, then rose 16.9% over the following week. This table
 shows real money doing the same thing: **-$450m and -$296m out on the two days
-around the failure, then four of the next five trading days brought $130m to
-$999m back in.** That is not a mood score -- it is what large investors actually
+around the failure, then inflows on each of the next seven trading days (17-25
+Sep), from about $135m to $999m a day.** (Outflows had also been running for
+a week before the vote: -$463m over 8-11 Sep.) That is not a mood score -- it is what large investors actually
 bought and sold, and it moved in the same direction and on the same timeline as
 the price recovery.
 

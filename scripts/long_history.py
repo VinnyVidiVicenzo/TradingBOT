@@ -111,7 +111,7 @@ def print_rolling(rows, years_list, title):
             ends = sorted(r["end"] for r in g)
             lost = sum(1 for r in g if r["end"] < STAKE)
             beat = "--" if name == "Savings account only" else f"{sum(r['beat'] for r in g)}/{len(g)}"
-            print(f"  {name:<26}{ends[len(ends)//2]:>9.0f}{ends[0]:>13.0f}"
+            print(f"  {name:<26}{statistics.median(ends):>9.0f}{ends[0]:>13.0f}"
                   f"{f'{lost}/{len(g)}':>12}{beat:>14}"
                   f"{f'-{max(r['worst_drop'] for r in g)*100:.0f}%':>12}"
                   f"{f'{max(r['longest_in_red'] for r in g)/365:.1f} yrs':>16}")

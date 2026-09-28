@@ -247,8 +247,8 @@ def report(rows: list[dict]) -> None:
         won = sum(1 for r in group if r["crypto"]["end"] > r["stocks"]["end"])
         cl = sum(1 for r in group if r["crypto"]["end"] < 200)
         sl = sum(1 for r in group if r["stocks"]["end"] < 200)
-        print(f"{f'{horizon} months':<11}{len(group):>7}{c[len(c)//2]:>16,.0f}"
-              f"{s[len(s)//2]:>14,.0f}{f'{won}/{len(group)}':>12}"
+        print(f"{f'{horizon} months':<11}{len(group):>7}{statistics.median(c):>16,.0f}"
+              f"{statistics.median(s):>14,.0f}{f'{won}/{len(group)}':>12}"
               f"{f'{cl}/{len(group)}':>15}{f'{sl}/{len(group)}':>13}")
 
     print("\n\nWHAT YOU WENT THROUGH TO GET IT\n")
@@ -276,8 +276,8 @@ def report(rows: list[dict]) -> None:
             continue
         c = sorted(r["crypto"]["longest_underwater_days"] for r in group)
         s = sorted(r["stocks"]["longest_underwater_days"] for r in group)
-        print(f"{f'{horizon} months':<11}{f'{c[len(c)//2]}d':>16}{f'{c[-1]}d':>15}"
-              f"{f'{s[len(s)//2]}d':>15}{f'{s[-1]}d':>13}")
+        print(f"{f'{horizon} months':<11}{f'{statistics.median(c):.0f}d':>16}{f'{c[-1]}d':>15}"
+              f"{f'{statistics.median(s):.0f}d':>15}{f'{s[-1]}d':>13}")
 
     print("\n\nRETURN PER UNIT OF PAIN (ending gain divided by worst drop)\n")
     for horizon in HORIZONS:

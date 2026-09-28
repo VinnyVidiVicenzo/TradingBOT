@@ -211,7 +211,7 @@ def report(rows: list[dict[str, object]]) -> None:
         lost = sum(1 for r in group if float(r["end"]) < 200)
         big = sum(1 for r in group if float(r["worst_fall_from_peak"]) >= 0.5)
         worst = max(float(r["worst_vs_stake"]) for r in group)
-        print(f"{f'{horizon} months':<12}{len(group):>8}{ends[len(ends)//2]:>13,.0f}"
+        print(f"{f'{horizon} months':<12}{len(group):>8}{statistics.median(ends):>13,.0f}"
               f"{f'{lost}/{len(group)}':>12}{f'{big}/{len(group)}':>11}"
               f"{f'-{worst*100:.0f}%':>13}")
 
@@ -223,7 +223,7 @@ def report(rows: list[dict[str, object]]) -> None:
         if not group:
             continue
         share = sorted(int(r["days_underwater"]) / int(r["days_held"]) for r in group)
-        print(f"{f'{horizon} months':<12}{share[len(share)//2]*100:>9.0f}%"
+        print(f"{f'{horizon} months':<12}{statistics.median(share)*100:>9.0f}%"
               f"{share[-1]*100:>12.0f}%")
 
     print("\n\nLONGEST UNBROKEN STRETCH IN THE RED -- how long you hold your nerve\n")
@@ -236,7 +236,7 @@ def report(rows: list[dict[str, object]]) -> None:
         stretches = sorted(int(r["longest_underwater_days"]) for r in group)
         still = sum(1 for r in group if r["still_down_at_end"])
         print(f"{f'{horizon} months':<12}"
-              f"{f'{stretches[len(stretches)//2]} days':>12}"
+              f"{f'{statistics.median(stretches):.0f} days':>12}"
               f"{f'{stretches[-1]} days':>14}{f'{still}/{len(group)}':>20}")
 
     print("\n\nWHY THE LONGER HOLDS ARE NOT A FAIR COMPARISON\n")

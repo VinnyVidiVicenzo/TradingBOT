@@ -19,12 +19,12 @@ PART 1: STOCK FUND vs SAVINGS SINCE 2000 (two big crashes included)
   held 5 years, 260 start months
   mix                         typical  worst start  lost money  beat savings  worst drop  longest in red
   Savings account only            212          200       0/260            --         -0%         0.0 yrs
-  Stock fund only                 342          142      28/260       212/260        -55%         5.0 yrs
+  Stock fund only                 341          142      28/260       212/260        -55%         5.0 yrs
 
   held 10 years, 200 start months
   mix                         typical  worst start  lost money  beat savings  worst drop  longest in red
   Savings account only            226          206       0/200            --         -0%         0.0 yrs
-  Stock fund only                 514          168      10/200       187/200        -55%         6.1 yrs
+  Stock fund only                 513          168      10/200       187/200        -55%         6.1 yrs
 
   Possible futures built from 2000-2026:
 
@@ -60,22 +60,22 @@ PART 2: BITCOIN MIXES SINCE SEPTEMBER 2014 (several crypto cycles)
   held 3 years, 108 start months
   mix                         typical  worst start  lost money  beat savings  worst drop  longest in red
   Savings account only            209          202       0/108            --         -0%         0.0 yrs
-  Savings 90% + Bitcoin 10%       280          225       0/108       108/108        -45%         1.9 yrs
-  Stock fund only                 290          235       0/108       108/108        -34%         1.9 yrs
+  Savings 90% + Bitcoin 10%       279          225       0/108       108/108        -45%         1.9 yrs
+  Stock fund only                 289          235       0/108       108/108        -34%         1.9 yrs
   Fund 95% + Bitcoin 5%           351          258       0/108       108/108        -38%         1.9 yrs
-  Fund 90% + Bitcoin 10%          390          259       0/108       108/108        -49%         1.9 yrs
-  Fund 80% + Bitcoin 20%          447          261       0/108       108/108        -60%         2.0 yrs
-  Crypto only                     882          220       0/108       108/108        -83%         2.8 yrs
+  Fund 90% + Bitcoin 10%          389          259       0/108       108/108        -49%         1.9 yrs
+  Fund 80% + Bitcoin 20%          446          261       0/108       108/108        -60%         2.0 yrs
+  Crypto only                     880          220       0/108       108/108        -83%         2.8 yrs
 
   held 5 years, 84 start months
   mix                         typical  worst start  lost money  beat savings  worst drop  longest in red
-  Savings account only            215          210        0/84            --         -0%         0.0 yrs
-  Savings 90% + Bitcoin 10%       364          250        0/84         84/84        -45%         1.9 yrs
-  Stock fund only                 392          271        0/84         84/84        -34%         1.2 yrs
+  Savings account only            214          210        0/84            --         -0%         0.0 yrs
+  Savings 90% + Bitcoin 10%       358          250        0/84         84/84        -45%         1.9 yrs
+  Stock fund only                 389          271        0/84         84/84        -34%         1.2 yrs
   Fund 95% + Bitcoin 5%           465          338        0/84         84/84        -38%         1.2 yrs
-  Fund 90% + Bitcoin 10%          542          341        0/84         84/84        -49%         1.3 yrs
-  Fund 80% + Bitcoin 20%          727          337        0/84         84/84        -60%         1.6 yrs
-  Crypto only                    2237          225        0/84         83/84        -83%         2.8 yrs
+  Fund 90% + Bitcoin 10%          540          341        0/84         84/84        -49%         1.3 yrs
+  Fund 80% + Bitcoin 20%          717          337        0/84         84/84        -60%         1.6 yrs
+  Crypto only                    2220          225        0/84         83/84        -83%         2.8 yrs
 
   Possible futures built from 2014-2026:
 

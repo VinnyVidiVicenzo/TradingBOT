@@ -67,12 +67,16 @@ Hard rules the person set at the start, still in force:
 ## 4. Important facts about the data
 
 - **Binance.US dollar pairs (BTCUSD, ETHUSD, SOLUSD) are missing 586 days of history,
-  14 July 2023 to 19 February 2025**, when Binance.US suspended US-dollar trading.
+  14 July 2023 to 19 February 2025** (last price on 14 July 2023, next one on
+  19 February 2025), when Binance.US wound down and then restored US-dollar trading
+  (most dollar pairs stopped on 26-27 June 2023 and the major ones after 14 July 2023;
+  dollar services returned on 19 February 2025; checked against Binance.US notices and
+  its live price feed on 27 September 2026).
   So all long tests used the **USDT** versions (USDT is a coin designed to track the
   dollar). USDT ranged from $0.9715 to $1.0176 over the period that could be
   checked, so treating it as a dollar is off by up to about 3%.
 - Price history used: October 2020 to 26 September 2026, daily.
-- All 202 USDT coins Binance.US currently lists were downloaded (about 239,000 days of
+- All 202 USDT coins Binance.US currently lists were downloaded (about 246,000 days of
   prices). **Coins that were delisted before today are not in the data at all**, and
   those are mostly the failures. So every result below is somewhat *more optimistic*
   than reality.
@@ -92,6 +96,16 @@ These matter for interpreting anything:
    hiding.
 3. **Settings decided before looking at results**, and all of them reported.
 4. **Trading fees, price spread and slippage were all included** for crypto.
+5. **"Typical" means the median** (half the start months did better, half worse). Some
+   older printed tables used the upper of the two middle values when the count was
+   even, overstating typical results by up to about $15; corrected in the final-report
+   pass.
+6. **Reproducibility.** The studies behind most tables (risk profile, crypto vs fund,
+   mix vs savings, long history) were re-run from scratch and reproduced their saved
+   data files exactly (identical content; only Windows line endings differ). The small driver scripts for Tests 1-3 (start-date sweep,
+   blind selection, dip buying) were never saved in the repository, only their result
+   files, so those three cannot be re-run from the repo; their headline counts were
+   re-derived from the saved result files.
 
 ## 6. The findings
 
@@ -128,16 +142,24 @@ Six versions tested (mild/medium/strong, 1-month or 3-month lookback).
 ### Test 4: how bad does it get (risk)
 $200 all at once, blind picks:
 
-| Held | Typical end | Lost money | Fell by half or more at some point |
+| Held | Typical end | Lost money | Lost half or more from its own high point at some point |
 |---|---|---|---|
 | 1 year | $220 | 27/60 | 26/60 |
-| 2 years | $254 | 20/48 | 32/48 |
-| 3 years | $341 | 3/34 | 27/34 |
-| 5 years | $202 | 5/10 | **10/10** |
+| 2 years | $252 | 20/48 | 32/48 |
+| 3 years | $326 | 3/34 | 27/34 |
+| 5 years | $194 | 5/10 | **10/10** |
+
+("Typical" = the median. An earlier version of this table used the upper of the two
+middle values when the count was even, which overstated the 2-, 3- and 5-year rows by
+$2, $15 and $8.)
 
 - Worst moment: **$200 fell to about $38 (−81%).**
-- Typically spent a third or more of days below what was put in.
-- Longest unbroken stretch below the starting money: up to **1,273 days (3½ years).**
+- Typically spent about a quarter to nearly half of all days below what was put in
+  (median 35%, 25%, 31% and 44% by holding length).
+- "Lost half or more from its own high point" is a weaker measure than "fell to half
+  of the $200 put in", which happened in only 14/60, 15/48, 15/34 and 7/10 of the holds.
+- Longest unbroken stretch below the starting money: median 72, 89, 164 and 662 days
+  by holding length; worst case up to **1,273 days (3½ years).**
 - **Caution:** the holding-period rows are not a fair comparison with each other.
   5-year tests can only start in 2020–21 (near a price peak); 3-year tests include
   many starts in the cheap 2022 crash. Do not read this as "3 years is safest".
@@ -158,6 +180,10 @@ Price moves of a Bitcoin/Ethereum/Solana basket:
 |---|---|---|---|
 | Advanced by Senate committee (14 May 2026) | +1.5% | −5.4% | **−24.0%** |
 | **Failed Senate vote (15 Sep 2026)** | **−4.4%** | **+16.9%** | **+16.3%** |
+
+All four CLARITY milestones measured (introduced, passed the House, advanced by the
+Senate committee, failed) were followed by next-month moves of -5.0%, +11.1%, -24.0%
+and +16.3%: no consistent pattern, and each is a single event.
 
 Across 15 major events (China bans, Terra and FTX collapses, ETF approvals, halving,
 election, bills). **Every date below was independently verified by web search** during
@@ -184,24 +210,26 @@ these numbers meaningfully -- reported here corrected, not as first computed:
 ### Test 6: crypto versus a plain stock-market index fund (SPY, S&P 500)
 $200 in each on the same day, every start month. Fund prices include dividends.
 
-| Held | Crypto typical | Fund typical | Crypto lost money | Fund lost money |
-|---|---|---|---|---|
-| 1 year | $220 | $236 | 27/60 | 12/60 |
-| 2 years | $254 | $276 | 20/48 | **1/48** |
-| 3 years | $341 | $289 | 3/34 | **0/34** |
-| 5 years | $202 | $377 | 5/10 | **0/10** |
+| Held | Crypto typical | Fund typical | Crypto won head-to-head | Crypto lost money | Fund lost money |
+|---|---|---|---|---|---|
+| 1 year | $220 | $236 | 28/60 | 27/60 | 12/60 |
+| 2 years | $252 | $275 | 24/48 | 20/48 | **1/48** |
+| 3 years | $326 | $285 | 17/34 | 3/34 | **0/34** |
+| 5 years | $194 | $374 | 2/10 | 5/10 | **0/10** |
 
 | | Crypto | Fund |
 |---|---|---|
-| Worst drop | about −85% | −24% |
-| Days spent below starting money | 25–44% | 7–12% |
+| Worst drop | −81% to −88% | −24% |
+| Days spent below starting money (median) | 25–44% | 7–12% |
 | Longest stretch below starting money | up to 3½ years | up to 16 months |
 | Reward per unit of worst drop | −0.04 to 0.98 | **1.19 to 3.55** |
 
-**Similar money on average; crypto won about half the head-to-heads; but far more
-pain.** Caveats: 2020–26 was an exceptionally strong period for stocks (the fund
-rose about 2.5x); the 5-year rows have only 10 tests. Both sides used identical start
-dates, so those caveats don't tilt the comparison.
+**Similar money at 1-3 years, crypto ahead in about half the head-to-heads (2 of 10 at
+5 years), but far more pain.** Caveats: 2020–26 was an exceptionally strong period for
+stocks (the fund rose about 2.5x with dividends), so this window may flatter the fund
+compared with a typical period. Identical start dates make the comparison fair within
+this window; they do not make the window itself representative. The 5-year rows have
+only 10 tests.
 
 ### Test 7: a small slice of crypto inside a stock fund
 $200, rebalanced back to the target mix once a year, every start month. Crypto here
@@ -209,13 +237,18 @@ follows "the three biggest coins" re-picked monthly (switching costs included).
 
 | Held 3 years | Typical end | Worst drop | Beat a savings account |
 |---|---|---|---|
-| Savings account only | $228 | 0% | — |
+| Savings account only | $227 | 0% | — |
 | Stock fund only | $281 | −24% | 36/36 |
-| Fund 90% + crypto 10% | $325 | −34% | 36/36 |
-| Fund 80% + crypto 20% | $382 | −43% | 36/36 |
-| Crypto only | $463 | −79% | 35/36 |
+| Fund 95% + crypto 5% | $306 | −29% | 36/36 |
+| Fund 90% + crypto 10% | $343 | −35% | 36/36 |
+| Fund 80% + crypto 20% | $386 | −43% | 36/36 |
+| Crypto only | $465 | −79% | 35/36 |
 
-- Each extra 10% of crypto added roughly 10 points to the worst drop.
+- Each extra 10% of crypto added roughly 10 points to the *worst-case* drop (the single
+  worst start month). The typical start month's worst drop rose more gently: 22% (fund
+  only), 25% (10% crypto), 30% (20% crypto).
+- These figures were corrected after the XRP fix and the median fix; the earlier table
+  showed $325 / $382 / $463 for the 90/10, 80/20 and crypto-only rows.
 - Over 1 year the slice didn't help the typical result; over 2+ years it raised it in
   this (very good) period.
 - **Holding rule matters for crypto:** following the biggest coins monthly lost money in
@@ -240,7 +273,8 @@ correction moved every crypto figure up by roughly 1-16% and changed no conclusi
 | Fund 90% + crypto 10% | $520 | $258 | $327 | $169 | 11% |
 | Crypto only | $958 | **$63** | $237 | **$16** | 46% |
 
-- Crypto alone fell by half at some point in 93–100% of 5-year futures.
+- Crypto alone fell by half at some point in 98% (scenario A) to 100% (B) of 5-year
+  futures, 91-96% of 3-year futures and 49-61% of 1-year futures.
 - A 5–10% crypto slice barely changed the odds of losing money; it mostly raised the good
   outcomes.
 - **Most important caveat:** the stock fund almost never "falls by half" here only
@@ -256,16 +290,16 @@ prices to 0.06% on a typical day; the stock fund showed the 2008 crash at -55%.
 | Held | Typical | Worst start | Lost money | Beat savings | Worst drop | Longest in red |
 |---|---|---|---|---|---|---|
 | 1 year | $226 | $113 | 68/308 | 236/308 | -51% | 1 yr |
-| 5 years | $342 | $142 | 28/260 | 212/260 | -55% | 5 yrs |
-| 10 years | $514 | $168 | 10/200 | 187/200 | -55% | 6.1 yrs |
+| 5 years | $341 | $142 | 28/260 | 212/260 | -55% | 5 yrs |
+| 10 years | $513 | $168 | 10/200 | 187/200 | -55% | 6.1 yrs |
 
 So the stock fund's real risk is much bigger than 2020-26 showed: it can halve,
 and a 10-year hold starting around 2000 still lost money.
 
 **Bitcoin since 2014 (Bitcoin alone, not a basket):** 3- and 5-year holds never lost
-money for any mix; Bitcoin alone typically turned $200 into $882 (3 yrs) and $2,237
+money for any mix; Bitcoin alone typically turned $200 into $880 (3 yrs) and $2,220
 (5 yrs) but still fell -83% at worst. A 10% Bitcoin slice raised a fund's typical
-5-year result from $392 to $542 and its worst drop from -34% to -49%.
+5-year result from $389 to $540 and its worst drop from -34% to -49%.
 **Big caveat:** Bitcoin is the coin that survived and won; choosing it today is
 hindsight. The blind 2020-26 basket did far worse. In the "half the growth"
 futures, Bitcoin alone lost money in 36% of 5-year futures and fell by half in 99%.
@@ -365,9 +399,11 @@ endpoint needs a higher-tier FMP plan than is currently connected.
   wanted -- that free-data gap remains open.
 - **Bitcoin ETF money flows** (Farside Investors, real investor money, not
   sentiment): -$450m and -$296m flowed OUT on the two days around the CLARITY Act's
-  15 Sep 2026 failure, then $130m-$999m flowed back IN on four of the next five
-  days. Confirms the price-based event-study finding (fell 4.4% on the day, +16.9%
-  the following week) with actual money rather than price alone. One 14-day episode,
+  15 Sep 2026 failure, then money flowed back IN on each of the next seven trading
+  days (17-25 Sep), from about $135m to $999m a day (outflows had also run for a week
+  before the vote: -$463m over 8-11 Sep). Consistent with the price-based event-study
+  finding (fell 4.4% on the day, +16.9% the following week), using actual money rather
+  than price alone. One 14-day episode,
   not a proven repeatable pattern.
 
 ### Analyst step: scenarios from history (`results/scenarios_report.txt`)
@@ -406,10 +442,12 @@ Binance.US research engine or its data store.
   readings (crowded short bets) preceded the BEST average next-30-day return (+8.9%,
   fell only 33% of the time); extreme POSITIVE readings (crowded long bets) preceded
   weaker, near-average returns (+5.1%, fell 48% of the time, barely different from the
-  47% baseline). **This runs opposite to the earlier Fear & Greed finding**, where
-  extreme GREED preceded the biggest gains. Flagged as a genuine tension, not resolved:
-  different ways of measuring "crowd positioning" gave different, even contradictory
-  answers, which is itself a reason not to trust any single sentiment measure too far.
+  47% baseline). **At the 90-day horizon the order flips**: crowded longs were followed
+  by +20.5% on average and crowded shorts by +18.0%. So this measure disagrees with the
+  earlier Fear & Greed finding (extreme GREED preceded the biggest gains) at 30 days
+  and roughly agrees with it at 90 days. A signal whose direction depends on the horizon
+  chosen is not dependable; it is one more reason not to trust any single sentiment
+  measure.
 - **Stablecoin supply growth** (new USDT+USDC being created = new money likely arriving):
   months when supply SHRANK preceded worse Bitcoin returns (-5.7% avg, fell 68% of the
   time); the fastest-growing months preceded better returns (+9.8% avg, fell 53% of the
@@ -451,9 +489,12 @@ Binance.US research engine or its data store.
 in 10% steps, scored by "gain per unit of worst drawdown" (same measure used earlier).
 - **On the ONE real historical path**, 100% cash "won" by this ratio -- but that is an
   artifact: dividing by an almost-zero drawdown inflates the ratio even for a tiny gain.
-  Shown side by side with the SAME grid ranked by plain growth instead, where 100%
-  crypto tops the list ($561 typical vs cash's $241) -- which ranking matters depends on
-  how much risk is acceptable, not on the arithmetic itself.
+  Ranked instead by plain growth across the 1,000 resampled 3-year futures, 100% crypto
+  tops the list ($561 typical, but it lost money in 21% of them) versus about $220 for
+  100% cash (0% lost) -- which ranking matters depends on how much risk is acceptable,
+  not on the arithmetic itself. (An earlier version of this note compared $561, a
+  3-year resampled median, with $241, cash's result over the whole ~6-year real path:
+  not a like-for-like comparison.)
 - **Scored instead across many resampled possible futures** (reusing the possible-futures
   Monte Carlo machinery, not just the one lucky/unlucky real path): picked a DIFFERENT
   answer (10% stocks / 90% cash) than the single-history version (100% cash). The two
@@ -502,9 +543,11 @@ exchange suspended it during the SEC lawsuit, a real event, not a data error);
 the code silently scored the rest of that month as 0% return instead of XRP's
 real +61% move, understating one month by about 20 percentage points. Fixed by
 falling back to the real published price for exactly that gap. Re-ran the two
-affected studies (mix-vs-savings, possible-futures): every crypto-containing
-number moved up 1-16%, no pure-stock or pure-savings number changed at all, and
-no conclusion in this document flipped. Full details, plus what else was
+affected studies (mix-vs-savings, possible-futures): in possible-futures the typical
+result of every crypto-containing mix rose by about 1-16%; in mix-vs-savings only 100
+of 780 crypto-containing results changed (the windows overlapping the affected month),
+by up to +21%; no pure-stock or pure-savings number changed at all, and no conclusion
+in this document flipped. Full details, plus what else was
 checked and came back clean, in the review file.
 
 ### Reference verification (`results/reference_verification.md`)
@@ -521,6 +564,18 @@ hard-coded "the 2021 China crash" as the biggest single-day mover in the
 dataset, which stopped being true once its date was corrected -- fixed to
 identify the actual biggest mover from the data instead of asserting a fixed
 answer. Full source-by-source record, with links, in the file.
+
+### Final-report pass (`results/independent_review.md`, last section)
+A third audit, on the *method* behind the numbers rather than their transcription.
+Found and fixed: "typical" had been the upper of the two middle values in four scripts
+(overstating typical results by $1-$15); the small-slice table was still on pre-fix
+numbers; the "before fix" file for it was a copy of the after-fix data; several
+sentences overstated the data (a non-like-for-like allocation comparison, a mixed-horizon
+"93-100%", a funding-rate "contradiction" that only holds at 30 days, a wrong ETF-flow
+count, "a third or more of days" underwater, a bill number no readable source
+confirmed). Also disclosed: the driver scripts for Tests 1-3, the BNB usage calculation
+and the GitHub commit counts were never saved. The four main studies were re-run and
+reproduce their saved data.
 
 ## 7. The overall conclusion so far
 
@@ -545,3 +600,22 @@ A "fall by half" was the normal experience over multi-year holds, not a rare eve
   going forward.
 - Turning the tool into one simple command they can run themselves.
 - Stopping here is also a legitimate choice: the research answered its question.
+
+## 9. Final report
+
+Everything above was synthesised into one plain-language document:
+`results/FINAL_REPORT.md`. It covers all ten tests, every analyst-style deep dive,
+the three audit passes, a coin-by-coin scorecard, the platform, rules and tax facts,
+the case for and against, questions only the person can answer, a limits list, and
+appendices (glossary, corrections table, sources, files). Every table in it was
+checked against its source file by script (317 checks, all passing on 27 Sep 2026). If asked to continue this project, read that file first -- it is
+the most complete single summary, more complete than this handoff document.
+
+One fact surfaced only while preparing that report, not stated anywhere above:
+**the tax "wash sale" rule does not apply to crypto** in the sources checked (two
+tax-firm articles dated March and May 2026). Selling at a loss and immediately
+rebuying does not block the loss for tax purposes, because the IRS treats crypto as
+property and that rule only binds stocks and securities. Proposals to extend it to
+crypto exist (a CNBC headline of 28 July 2026 says Congress is renewing the push);
+none had passed as of those sources, and the status of any specific bill was not
+confirmed. This is a factual note, not advice -- do not tell the person to act on it.
