@@ -68,11 +68,24 @@ python -m crypto_research experiments list
 ## Desktop app
 
 A plain-language window over the research, for anyone who would rather not use a
-terminal:
+terminal. On Windows, run this once to put a **TraderBot Plan Tester** shortcut on the
+Desktop and in the Start menu; after that it opens with one click, or press the Windows
+key and type "TraderBot":
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\make_shortcuts.ps1
+```
+
+Add `-Remove` to take the shortcuts away again; run it again if this folder moves or
+Python is reinstalled. From a terminal, or on another system:
 
 ```bash
-python -m desktop_app          # or double-click run_desktop_app.pyw (no console window)
+python -m desktop_app
 ```
+
+The shortcut runs `run_desktop_app.pyw` with `pythonw.exe` (no console window). It
+names Python explicitly because double-clicking a `.pyw` file only works once Windows
+has been told to open that kind of file with Python, and often it has not.
 
 Five screens: **Home**, **What we've found so far** (the write-ups in `results/`,
 led by `FINAL_REPORT.md`), **Try your own plan**, **Your past plans** and **Safety
@@ -160,7 +173,7 @@ that identifies neither effect cannot be produced by accident.
 - No module can reach a live order path.
 
 ```
-609 tests, 0 failures (9 live-API tests skipped by default)
+940 tests, 0 failures (9 live-API tests skipped by default)
 ```
 
 Live API checks are opt-in, so the default run is offline and deterministic:

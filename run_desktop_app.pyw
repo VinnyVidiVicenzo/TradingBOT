@@ -1,9 +1,9 @@
-"""Double-click launcher.
+"""Launcher for the desktop app; the shortcut made by tools/make_shortcuts.ps1 runs this.
 
-Associated with pythonw.exe on Windows, so no console window appears. That
-also means stdout/stderr go nowhere -- see desktop_app/logging_setup.py,
-which is why a crash here still ends up in logs/desktop_app.log instead of
-disappearing silently.
+It is meant to be started by pythonw.exe, which the shortcut names explicitly,
+so no console window appears. That also means stdout/stderr go nowhere -- see
+desktop_app/logging_setup.py, which is why a crash here still ends up in
+logs/desktop_app.log instead of disappearing silently.
 """
 
 import sys

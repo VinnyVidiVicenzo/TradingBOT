@@ -12,6 +12,8 @@ from .widgets.nav_bar import NavBar
 
 logger = logging.getLogger(__name__)
 
+ICON_PATH = Path(__file__).resolve().parent / "assets" / "app.ico"
+
 # Wide enough for the results table and the map of starting months side by side.
 MIN_WIDTH = 980
 MIN_HEIGHT = 660
@@ -35,6 +37,7 @@ class App:
 
         self.root = tk.Tk()
         self.root.title("Crypto plan tester -- practice only, never real money")
+        self._set_icon()
         self._size_window()
         self.root.report_callback_exception = self._on_callback_exception
 
@@ -57,6 +60,13 @@ class App:
             self._reference = alternatives.load_reference(self.repo_root / "data" / "reference")
             self._reference_loaded = True
         return self._reference
+
+    def _set_icon(self) -> None:
+        # Only Windows reads .ico files here; anywhere else Tk keeps its own icon.
+        try:
+            self.root.iconbitmap(default=str(ICON_PATH))
+        except tk.TclError:
+            logger.info("window icon not applied (%s)", ICON_PATH)
 
     def _size_window(self) -> None:
         """Open at a comfortable size that still fits a small screen.
