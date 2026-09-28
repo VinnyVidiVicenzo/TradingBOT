@@ -34,6 +34,22 @@ def point(time: int, total: str, cash: str, units: str, nav: str, inflow: str = 
     )
 
 
+# The first daily bar closes 1 ms before its day ends, and that close is the
+# run's first mark. Events at one millisecond resolve contribution-before-mark,
+# so a deposit at or before this offset is credited ahead of the first mark.
+FIRST_MARK_OFFSET = DAY_MS - 1
+
+
+def deposit(offset_ms: int, amount: str = "100") -> ExternalContribution:
+    """A one-off USD deposit that becomes available ``offset_ms`` after the run start."""
+    return ExternalContribution(
+        amount=dec(amount),
+        asset="USD",
+        availability_time=EPOCH_2024 + offset_ms,
+        contribution_type=ContributionType.ONE_OFF_DEPOSIT,
+    )
+
+
 class DrawdownTests(unittest.TestCase):
     def test_peak_to_trough_on_nav(self) -> None:
         curve = [
@@ -125,6 +141,81 @@ class EndToEndMetricTests(unittest.TestCase):
         self.assertEqual(metrics.total_capital_in, dec("200"))
         self.assertEqual(metrics.ending_portfolio_value, dec("200"))
         self.assertEqual(metrics.net_return, dec("0"))
+
+    def test_a_deposit_credited_before_the_first_mark_is_counted_once(self) -> None:
+        # The deposit is already inside the first mark's total value and is also
+        # carried on it as an inflow. Counting it again as starting value doubled
+        # capital in, so a cash hold that lost nothing read as a 50% loss.
+        for label, offset in (
+            ("at the run start", 0),
+            ("in the first mark's own millisecond", FIRST_MARK_OFFSET),
+        ):
+            with self.subTest(label):
+                result, metrics = self._run(
+                    closes=["100"] * 5, contributions=[deposit(offset)]
+                )
+                first = result.equity_curve[0]
+                # The premise: the deposit really is attached to the first mark.
+                self.assertEqual(first.time, EPOCH_2024 + FIRST_MARK_OFFSET)
+                self.assertEqual(first.contribution_inflow, dec("100"))
+                self.assertEqual(metrics.starting_portfolio_value, dec("0"))
+                self.assertEqual(metrics.total_external_contributions, dec("100"))
+                self.assertEqual(metrics.total_capital_in, dec("100"))
+                self.assertEqual(metrics.ending_portfolio_value, dec("100"))
+                self.assertEqual(metrics.net_profit, dec("0"))
+                self.assertEqual(metrics.net_return, dec("0"))
+                self.assertEqual(metrics.time_weighted_return, dec("0"))
+                self.assertEqual(metrics.max_drawdown, dec("0"))
+
+    def test_a_deposit_one_day_after_the_start_is_unchanged(self) -> None:
+        # A deposit a full day after the start lands 1 ms past the first mark,
+        # which therefore sees an empty portfolio: nothing to double count and
+        # nothing to take back out.
+        result, metrics = self._run(closes=["100"] * 5, contributions=[deposit(DAY_MS)])
+        self.assertEqual(result.equity_curve[0].contribution_inflow, dec("0"))
+        self.assertEqual(metrics.starting_portfolio_value, dec("0"))
+        self.assertEqual(metrics.total_external_contributions, dec("100"))
+        self.assertEqual(metrics.total_capital_in, dec("100"))
+        self.assertEqual(metrics.ending_portfolio_value, dec("100"))
+        self.assertEqual(metrics.net_return, dec("0"))
+
+    def test_initial_cash_and_a_deposit_at_the_start_are_both_capital_in(self) -> None:
+        # Only the deposit comes out of the first mark's value; the initial cash
+        # stays as starting value.
+        _, metrics = self._run(
+            closes=["100"] * 5, initial_cash="50", contributions=[deposit(0)]
+        )
+        self.assertEqual(metrics.starting_portfolio_value, dec("50"))
+        self.assertEqual(metrics.total_external_contributions, dec("100"))
+        self.assertEqual(metrics.total_capital_in, dec("150"))
+        self.assertEqual(metrics.ending_portfolio_value, dec("150"))
+        self.assertEqual(metrics.net_profit, dec("0"))
+        self.assertEqual(metrics.net_return, dec("0"))
+
+    def test_money_and_time_weighted_returns_agree_for_a_deposit_at_the_start(self) -> None:
+        # Deposit at the start, spent at the first decision, price then 100 -> 150.
+        # With no other flows the two return measures must agree, and the NAV
+        # series (which issues no units for initial cash) must not distort either
+        # the return or the drawdown.
+        for label, initial_cash, net_profit, net_return in (
+            ("no initial cash", "0", "50", "0.5"),
+            ("with initial cash", "100", "50", "0.25"),
+        ):
+            with self.subTest(label):
+                strategy = build_strategy(
+                    "benchmark2_contribution_dca", {"symbols": ["BTCUSD"]}
+                )
+                _, metrics = self._run(
+                    closes=["100", "150"],
+                    initial_cash=initial_cash,
+                    contributions=[deposit(0)],
+                    strategy=strategy,
+                )
+                self.assertEqual(metrics.total_capital_in, dec("100") + dec(initial_cash))
+                self.assertEqual(metrics.net_profit, dec(net_profit))
+                self.assertEqual(metrics.net_return, dec(net_return))
+                self.assertEqual(metrics.time_weighted_return, dec(net_return))
+                self.assertEqual(metrics.max_drawdown, dec("0"))
 
     def test_average_entry_price_across_a_rising_market(self) -> None:
         strategy = build_strategy(

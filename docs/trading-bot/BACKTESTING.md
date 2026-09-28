@@ -184,7 +184,7 @@ on a different day does not invent a new dataset version.
 
 | Metric | Definition |
 | --- | --- |
-| `starting_portfolio_value` | First mark. |
+| `starting_portfolio_value` | First mark, less any contribution credited at or before it. Such a deposit is already inside that mark's value, so it is counted once, under `total_external_contributions`. |
 | `ending_portfolio_value` | Last mark. |
 | `total_external_contributions` | Sum of contribution inflows, valued at arrival. |
 | `total_capital_in` | Starting value + contributions. |

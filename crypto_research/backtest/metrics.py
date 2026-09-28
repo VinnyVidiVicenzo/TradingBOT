@@ -138,7 +138,13 @@ def compute_metrics(result: RunResult) -> RunMetrics:
 
     curve = result.equity_curve
     if curve:
-        metrics.starting_portfolio_value = curve[0].total_value
+        # A contribution credited at or before the first mark is already inside
+        # that mark's total value *and* carried on it as an inflow. Take it back
+        # out here so it is counted once, as a contribution, and not also as
+        # starting value.
+        metrics.starting_portfolio_value = (
+            curve[0].total_value - curve[0].contribution_inflow
+        )
         metrics.ending_portfolio_value = curve[-1].total_value
         metrics.first_mark_time = curve[0].time
         metrics.last_mark_time = curve[-1].time
