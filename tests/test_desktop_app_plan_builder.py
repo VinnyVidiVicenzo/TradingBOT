@@ -65,8 +65,10 @@ class BuildConfigPayloadTests(unittest.TestCase):
 
     def test_no_deposit_is_credited_before_the_first_price_mark_of_the_run(self) -> None:
         # The first bar of a run closes one day (less a millisecond) after the
-        # start. A deposit at or before that moment is double counted by the
-        # engine's "money put in" figure, so none may fall there.
+        # start; that close is the first price mark. The engine now counts a
+        # deposit at or before it correctly, so no deposit has to fall after
+        # it any more. The plan builder still keeps every deposit after it,
+        # and this pins that.
         config = parse_config(plan_builder.build_config_payload(_request(Schedule.ADD_GRADUALLY)))
         first_mark = parse_time(START) + DAY_MS - 1
         self.assertTrue(
