@@ -124,11 +124,13 @@ def _monthly_contributions(request: PlanRequest) -> list[dict]:
     Each deposit is rounded to the cent; the last one absorbs the rounding
     remainder so the money put in is exactly what the person typed.
 
-    The first deposit lands one day after ``start``, not on it. The engine
-    (crypto_research/backtest/metrics.py) takes "starting value" from the
-    first price mark and "contributions" from every deposit, so a deposit
-    credited *before* the first mark is counted in both and "money put in"
-    comes out too high. Every deposit here falls after the first mark.
+    The first deposit lands one day after ``start``, not on it. That offset
+    is no longer required: the engine (crypto_research/backtest/metrics.py)
+    now takes a deposit credited at or before the first price mark back out
+    of "starting value", so it is counted once, as a contribution. (It used
+    to be counted in both, which made "money put in" come out too high.)
+    The offset is kept because it is harmless. Every deposit here falls
+    after the first mark.
     """
     per_month = (request.amount / MONTHLY_CONTRIBUTION_COUNT).quantize(
         Decimal("0.01"), rounding=ROUND_HALF_UP
