@@ -144,6 +144,17 @@ SUPPORT_RULES = RuleSet(
     forbidden_patterns=WRONG_VENUE_PATTERNS,
 )
 
+# The desktop GUI (desktop_app/) only ever calls into the research engine, so
+# it carries exactly the same claim as RESEARCH_RULES rather than the weaker
+# SUPPORT_RULES: it must be structurally unable to authenticate, not merely
+# undocumented for doing so.
+DESKTOP_APP_RULES = RuleSet(
+    zone="desktop-app",
+    claim="cannot authenticate: no signing, no credentials, no private endpoints",
+    forbidden_endpoints=TRADING_ENDPOINTS + ACCOUNT_READ_ENDPOINTS_FORBIDDEN_IN_RESEARCH,
+    forbidden_patterns=SIGNING_PATTERNS + WRITE_METHOD_PATTERNS + WRONG_VENUE_PATTERNS,
+)
+
 
 @dataclass(slots=True)
 class SafetyFinding:
@@ -242,6 +253,7 @@ def audit_repository(repo_root: Path | None = None) -> SafetyReport:
     zones: Sequence[tuple[RuleSet, Path, Sequence[Path]]] = (
         (RESEARCH_RULES, root / "crypto_research", ()),
         (ACCOUNT_TOOLS_RULES, root / "account_tools", ()),
+        (DESKTOP_APP_RULES, root / "desktop_app", ()),
         (
             SUPPORT_RULES,
             root / "tests",

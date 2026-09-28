@@ -11,16 +11,18 @@ do-nothing baseline, out of sample, by more than it costs?"
 ## This is not a trading bot
 
 **Nothing here can place an order or move funds.** The repository is split into
-two zones with separately-verified guarantees:
+three zones with separately-verified guarantees:
 
 | Zone | Authenticates? | Can trade or move funds? |
 | --- | --- | --- |
 | `crypto_research/` — the research engine | **No.** No signing code exists in it. | No. |
 | `account_tools/` — read-only account reader | Yes, read-only. | **No.** No such endpoint exists in it. |
+| `desktop_app/` — the desktop window | **No.** No signing code, no credential field. | No. |
 
 The engine cannot even reach the account reader: no engine module imports it, and
 a test re-imports the whole engine with `account_tools` made un-importable to
-prove no chain exists. Both claims are enforced, not promised:
+prove no chain exists. The desktop app only ever calls into the engine. All of
+these claims are enforced, not promised:
 
 ```bash
 python -m crypto_research safety-check
@@ -62,6 +64,38 @@ python -m crypto_research run configs/benchmark2_contribution_dca.toml
 
 python -m crypto_research experiments list
 ```
+
+## Desktop app
+
+A plain-language window over the research, for anyone who would rather not use a
+terminal:
+
+```bash
+python -m desktop_app          # or double-click run_desktop_app.pyw (no console window)
+```
+
+Five screens: **Home**, **What we've found so far** (the write-ups in `results/`,
+led by `FINAL_REPORT.md`), **Try your own plan**, **Your past plans** and **Safety
+check**. Hover over a label for a plain-English explanation.
+
+"Try your own plan" does not run from a single date. It runs the plan from the
+1st of *every* month the saved prices allow, each held for the same length of
+time (1, 2 or 3 years), and shows the worst, typical and best result plus a map of
+every starting month -- because when you start matters more than anything else you
+control. Its numbers match `results/start_date_sweep_12m.csv` to the cent
+(`tests/test_desktop_app_sweep.py` checks this). The coins offered are ones that
+still exist today, which flatters results; the screen says so.
+
+Beside the plan it shows what a stock market fund and a savings account would have
+done over the same starting months, bought on the same days, from the history in
+`data/reference/` (read, never written). Those figures reproduce the research's own
+(a 1-year stock fund: typical $235, money lost in 11 of 60 starts, worst fall 24%;
+`tests/test_desktop_app_alternatives.py` checks it). Without those files the
+comparison is simply left out.
+
+It uses only the standard library and only calls into `crypto_research`. Each
+finished plan is appended to `experiments/gui_plans.jsonl`; nothing is written to
+the research log. Crashes are logged to `logs/desktop_app.log`.
 
 ## Read this before choosing a date range
 
@@ -126,7 +160,7 @@ that identifies neither effect cannot be produced by accident.
 - No module can reach a live order path.
 
 ```
-306 tests, 0 failures (9 live-API tests skipped by default)
+609 tests, 0 failures (9 live-API tests skipped by default)
 ```
 
 Live API checks are opt-in, so the default run is offline and deterministic:
@@ -147,6 +181,7 @@ crypto_research/
   experiments/   append-only run registry
   safety.py      the zone-aware, machine-checkable safety audit
 account_tools/   read-only account reader (separate zone; can sign, cannot trade)
+desktop_app/     Tkinter window over the engine (separate zone; cannot authenticate)
 configs/         example experiment configurations
 docs/trading-bot/
 tests/

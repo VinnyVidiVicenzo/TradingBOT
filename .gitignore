@@ -13,6 +13,10 @@ data/*.sqlite-journal
 data/raw/
 experiments/runs/
 experiments/index.jsonl
+experiments/gui_plans.jsonl
+
+# Desktop app crash log (no console when launched via run_desktop_app.pyw)
+logs/
 
 # Secrets: V1 uses NO credentials. This is belt-and-braces only.
 .env

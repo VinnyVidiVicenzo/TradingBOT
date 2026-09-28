@@ -17,7 +17,7 @@ to-do item: no part of this repository contains a code path that submits,
 amends or cancels an order, or that moves funds. The two sections below state
 what each zone can do and how each claim is enforced.
 
-## Two zones, two different claims
+## Three zones, three different claims
 
 The repository is split into zones with separately-verified guarantees. This
 split is the whole design, and collapsing it into one vague "the repo is safe"
@@ -27,6 +27,7 @@ statement would destroy the useful part.
 | --- | --- | --- |
 | `crypto_research/` — the research engine | **No.** No signing code exists. | No. |
 | `account_tools/` — the account reader | Yes, read-only. | **No.** No such endpoint exists in it. |
+| `desktop_app/` — the desktop window | **No.** No signing code, no credential field. | No. |
 
 ### Zone 1: the research engine cannot authenticate
 
@@ -72,11 +73,37 @@ the one thing public data cannot provide. Its power is bounded structurally:
 4. **It emits text, not actions.** Output is configuration for a human to
    review and paste. It does not edit configs or experiments.
 
+### Zone 3: the desktop app cannot authenticate
+
+`desktop_app/` is a window over the research engine, for someone who would
+rather not use a terminal. It makes the *same* claim as the research engine and
+is audited under the same rules (`DESKTOP_APP_RULES` in
+`crypto_research/safety.py`):
+
+1. **It only calls into `crypto_research`.** It never imports `account_tools`,
+   and its imports must stay inside an explicit standard-library allow-list.
+   `tests/test_desktop_app_safety.py` asserts both by walking every import.
+2. **No field accepts a credential, and no code mentions one.** A test fails if
+   any source file contains words like `api_key` or `password`. If real fee
+   rates or balances are ever wanted, that stays a separate manual step in a
+   terminal, at `account_tools`' own hidden prompt -- never a box in this window.
+3. **Nothing is spent.** Its screens read saved prices and run practice
+   backtests. The *Safety check* screen runs the audit on demand and reports
+   the result in plain words.
+4. **Its one audit opt-out is pinned.** Tkinter's list and text widgets clear
+   themselves with `.delete()`, which the audit's HTTP-DELETE pattern cannot tell
+   apart from a web request. Those few lines carry the `# safety-audit: allow`
+   marker, and a test fails if the marker appears on any line that is not a
+   `.delete(` call.
+5. **It does not write to the research log.** A starting-month view is dozens of
+   exploratory backtests, so each finished plan is appended as one line to
+   `experiments/gui_plans.jsonl` instead of to `experiments/`.
+
 ### The audit
 
 `crypto_research/safety.py` audits each zone against its own rule set, and
-`tests/test_safety.py` plus `tests/test_account_tools.py` assert that each
-audit passes, that each can actually fail when fed a violation, and that
+`tests/test_safety.py`, `tests/test_account_tools.py` and
+`tests/test_desktop_app_safety.py` assert that each audit passes, that each can actually fail when fed a violation, and that
 signing is permitted in Zone 2 while order placement is forbidden in both.
 
 ```bash

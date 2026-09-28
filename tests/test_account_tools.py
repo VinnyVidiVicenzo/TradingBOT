@@ -551,7 +551,8 @@ class AuditZoneTests(unittest.TestCase):
         report = audit_repository(REPO_ROOT)
         self.assertTrue(report.ok, report.summary())
         self.assertEqual(
-            sorted(report.zones), ["account-tools", "research", "support"]
+            sorted(report.zones),
+            ["account-tools", "desktop-app", "research", "support"],
         )
 
     def test_the_research_zone_still_forbids_signing(self) -> None:
