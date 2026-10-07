@@ -250,7 +250,7 @@ def notes(
         "don't predict future ones.",
         "Amounts are in USDT, a coin designed to stay at one US dollar. Each buy "
         f"includes assumed trading costs of about {ASSUMED_COST_PERCENT} (an exchange "
-        "fee plus small price gaps). Taxes and savings-account interest are not counted.",
+        "fee plus small price gaps). Taxes are not counted; waiting crypto cash earns no interest.",
     ]
     if compared:
         lines.append(
@@ -263,7 +263,8 @@ def notes(
             lines.append(
                 f"The stock fund and savings account cover {compared_months} of the "
                 f"{summary.tested} starting months, because their saved history doesn't "
-                "reach the rest."
+                "reach the rest or contains gaps. All three comparison columns use only those "
+                "matched months; the map still shows every crypto starting month."
             )
     if summary.span_months < NARROW_SPAN_MONTHS:
         lines.append(

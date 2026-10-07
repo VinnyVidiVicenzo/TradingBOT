@@ -21,7 +21,7 @@ from .sweep import HOLD_LABELS, SweepResult, WindowOutcome
 logger = logging.getLogger(__name__)
 
 FILENAME = "gui_plans.jsonl"
-_VERSION = 1
+_VERSION = 2
 
 
 @dataclass(frozen=True, slots=True)
@@ -39,6 +39,8 @@ def append(path: Path, result: SweepResult, *, created_at_iso: str) -> None:
         "schedule": result.schedule.value,
         "hold_months": result.hold_months,
         "skipped": result.skipped,
+        "provenance": result.provenance,
+        "comparison_snapshot": result.comparison_snapshot,
         "outcomes": [
             {
                 "start_ms": outcome.start_ms,
@@ -46,6 +48,7 @@ def append(path: Path, result: SweepResult, *, created_at_iso: str) -> None:
                 "ending_value": str(outcome.ending_value),
                 "max_drawdown": str(outcome.max_drawdown),
                 "rejected_orders": outcome.rejected_orders,
+                "dataset_sha256": outcome.dataset_sha256,
             }
             for outcome in result.outcomes
         ],
@@ -87,7 +90,7 @@ def load_all(path: Path) -> list[StoredPlan]:
 
 
 def _from_record(record: Mapping[str, Any]) -> StoredPlan:
-    if record["version"] != _VERSION:
+    if record["version"] not in (1, _VERSION):
         raise ValueError(f"unknown history format version {record['version']!r}")
     hold_months = int(record["hold_months"])
     if hold_months not in HOLD_LABELS:
@@ -99,6 +102,7 @@ def _from_record(record: Mapping[str, Any]) -> StoredPlan:
             ending_value=Decimal(item["ending_value"]),
             max_drawdown=Decimal(item["max_drawdown"]),
             rejected_orders=int(item["rejected_orders"]),
+            dataset_sha256=str(item.get("dataset_sha256", "")),
         )
         for item in record["outcomes"]
     )
@@ -109,5 +113,7 @@ def _from_record(record: Mapping[str, Any]) -> StoredPlan:
         hold_months=hold_months,
         outcomes=outcomes,
         skipped=int(record["skipped"]),
+        provenance=dict(record.get("provenance", {})),
+        comparison_snapshot=record.get("comparison_snapshot"),
     )
     return StoredPlan(created_at_iso=str(record["created_at"]), result=result)

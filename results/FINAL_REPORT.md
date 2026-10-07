@@ -115,11 +115,11 @@ The typical result was identical. The exciting numbers were all hindsight.
 | 17 Jul 2025 | CLARITY Act passes House (294 to 134) | +1.6% | +3.5% | +11.1% |
 | 18 Jul 2025 | GENIUS Act signed into law | +0.7% | +3.5% | +11.1% |
 | 14 May 2026 | CLARITY Act advanced by Senate committee (15 to 9) | +1.5% | −5.4% | −24.0% |
-| 15 Sep 2026 | CLARITY Act fails Senate vote (49 to 50) | −4.4% | +16.9% | +16.3% |
+| 15 Sep 2026 | CLARITY Act fails Senate vote (49 to 50) | −4.4% | +16.9% | n/a — incomplete horizon |
 
-- **Bad news** (6 events) fell on the day 6 of 6 times, by −7.3% on average. A week later 4 of 6 were still down (average −5.1%); a month later 3 of 6 were (average +2.1%). About half had recovered.
+- **Bad news** (6 events) fell on the day 6 of 6 times, by −7.3% on average. A week later 4 of 6 were still down (average −5.1%); among the 5 events with a complete month of subsequent data, 3 were still down (average −0.8%). The September 2026 event has no full-month result in this dataset.
 - **Good news** (9 events) barely moved prices: up 6 of 9 times on the day, +1.1% on average.
-- **The CLARITY Act** is a proposed law setting US rules for crypto markets. It passed the House on 17 July 2025 and failed a Senate procedural vote on 15 September 2026 (49 to 50; 60 were needed), so it is **not law**. The month after its four milestones ranged from −24.0% to +16.3%. There is no consistent pattern, and each is a single event. The day it failed moved the basket −4.4%, yet 411 of 2,186 ordinary days (19%, about one in five) moved by more.
+- **The CLARITY Act** is a proposed law setting US rules for crypto markets. It passed the House on 17 July 2025 and failed a Senate procedural vote on 15 September 2026 (49 to 50; 60 were needed), so it is **not law**. The three milestones with complete subsequent months ranged from −24.0% to +11.1%; the fourth has insufficient subsequent data. There is no consistent pattern, and each is a single event. The day it failed moved the basket −4.4%, yet 411 of 2,186 ordinary days (19%, about one in five) moved by more.
 - The separate stablecoin law, the GENIUS Act, was signed on 18 July 2025.
 - **Limits:** 15 events chosen in hindsight, with overlapping 7- and 30-day windows. No single event proves anything.
 

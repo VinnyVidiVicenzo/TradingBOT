@@ -435,8 +435,16 @@ def _imported_modules(path: Path) -> set[str]:
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             found.update(alias.name for alias in node.names)
-        elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
-            found.add(node.module)
+        elif isinstance(node, ast.ImportFrom):
+            if node.level == 0 and node.module:
+                found.add(node.module)
+            elif node.level:
+                from importlib.util import resolve_name
+                relative = path.relative_to(REPO_ROOT).with_suffix("")
+                package = ".".join(relative.parts[:-1])
+                module = resolve_name("." * node.level + (node.module or ""), package)
+                found.add(module)
+                found.update(module + "." + alias.name for alias in node.names)
     return found
 
 
@@ -491,14 +499,21 @@ class ZoneBoundaryTests(unittest.TestCase):
         script = (
             "import sys\n"
             "class Blocker:\n"
-            "    def find_module(self, name, path=None):\n"
+            "    def find_spec(self, name, path=None, target=None):\n"
             "        if name.split('.')[0] == 'account_tools':\n"
             "            raise AssertionError('engine reached account_tools: ' + name)\n"
             "        return None\n"
             "sys.meta_path.insert(0, Blocker())\n"
-            "import crypto_research.backtest, crypto_research.strategies\n"
-            "import crypto_research.experiments, crypto_research.datafeed\n"
-            "import crypto_research.storage, crypto_research.config\n"
+            "try:\n"
+            "    import account_tools\n"
+            "except AssertionError:\n"
+            "    pass\n"
+            "else:\n"
+            "    raise AssertionError('import blocker did not work')\n"
+            "import importlib\n"
+            f"modules = {[str(p.relative_to(REPO_ROOT).with_suffix('')).replace(chr(92), '.').removesuffix('.__init__') for p in _engine_modules()]!r}\n"
+            "for module in sorted(set(modules)):\n"
+            "    importlib.import_module(module)\n"
             "print('clean')\n"
         )
         result = subprocess.run(

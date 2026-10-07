@@ -129,6 +129,7 @@ class NoOrderApiTests(unittest.TestCase):
             "json", "os", "pathlib", "platform", "random", "re", "sqlite3",
             "subprocess", "sys", "time", "tomllib", "types", "typing", "urllib",
             "contextlib", "traceback", "collections", "functools", "math",
+            "logging", "msvcrt", "fcntl",  # stdlib file locking and recovery diagnostics
             # First-party sibling subproject, referenced lazily by safety.py
             # only so the audit can report its endpoint whitelist.
             "account_tools",

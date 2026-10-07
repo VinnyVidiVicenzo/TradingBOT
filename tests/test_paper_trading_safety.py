@@ -36,6 +36,7 @@ FIRST_PARTY_ALLOWED = {
     "crypto_research.storage.database",
     "crypto_research.storage.repositories",
     "crypto_research.timeutil",
+    "crypto_research.jsonl",
 }
 
 

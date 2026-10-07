@@ -5,7 +5,7 @@ from __future__ import annotations
 import tkinter as tk
 from tkinter import ttk
 
-from .. import theme
+from .. import theme, coin_catalog
 
 _BUTTONS: tuple[tuple[str, str, str], ...] = (
     (
@@ -25,7 +25,7 @@ _BUTTONS: tuple[tuple[str, str, str], ...] = (
     ),
     (
         "Safety check",
-        "Confirm, right now, that this app cannot trade or move money.",
+        "Check the code for known forbidden patterns and read the check's limits.",
         "safety_check",
     ),
 )
@@ -49,6 +49,12 @@ class HomeScreen(ttk.Frame):
             wraplength=600,
             justify="left",
         ).pack(anchor="w", pady=(0, 24))
+
+        options = coin_catalog.discover_available_coins(app.db_path)
+        latest = min((o.last_open_date for o in options), default=None)
+        ttk.Label(self, text=(f"Saved daily prices available through {latest}. This app does not update them automatically."
+                             if latest else "No saved daily prices are available yet."),
+                  wraplength=600, justify="left").pack(anchor="w", pady=(0, 12))
 
         for title, subtitle, key in _BUTTONS:
             row = ttk.Frame(self)

@@ -36,12 +36,15 @@ How it stays honest
 from __future__ import annotations
 
 import hashlib
+import json
 import math
 import statistics
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from typing import Any, Callable, Mapping, Sequence
 
 from crypto_research.models import MarketBar
+from crypto_research.datafeed.dataset import build_dataset_version
+from crypto_research.decimals import format_decimal
 
 from ..base.coverage import CoverageIndex
 from ..base.health import HealthStatus
@@ -187,15 +190,26 @@ def dataset_fingerprint(inputs: AblationInputs, spec: AblationSpec) -> dict[str,
     """A hash of exactly what a run was given, so a rerun can prove it saw the same data."""
     event_ids = sorted(e.event_id for e in inputs.events)
     bars = sorted(inputs.bars, key=lambda b: b.open_time)
-    bar_blob = "|".join(f"{b.open_time}:{b.close}" for b in bars)
-    events_hash = hashlib.sha256("|".join(event_ids).encode("utf-8")).hexdigest()
-    bars_hash = hashlib.sha256(bar_blob.encode("utf-8")).hexdigest()
-    combined = hashlib.sha256(f"{events_hash}{bars_hash}".encode("utf-8")).hexdigest()
+    events_text = json.dumps([e.to_dict() for e in sorted(inputs.events, key=lambda e: e.event_id)], sort_keys=True)
+    events_hash = hashlib.sha256(events_text.encode()).hexdigest()
+    grouped = {}
+    for bar in bars:
+        grouped.setdefault(bar.symbol, []).append(bar)
+    bars_hash = build_dataset_version(grouped).sha256
+    coverage = sorted((asdict(i) for intervals in inputs.coverage._by_key.values() for i in intervals),
+                      key=lambda i: json.dumps(i, sort_keys=True))
+    context = {"coverage": coverage, "providers": inputs.providers,
+               "provider_versions": inputs.provider_versions,
+               "definitions": None if inputs.definitions is None else [asdict(d) for d in inputs.definitions]}
+    context_hash = hashlib.sha256(json.dumps(context, sort_keys=True, default=str).encode()).hexdigest()
+    combined = hashlib.sha256(f"{events_hash}{bars_hash}{context_hash}".encode("utf-8")).hexdigest()
     providers: dict[str, int] = {}
     for event in inputs.events:
         providers[event.provider] = providers.get(event.provider, 0) + 1
     return {
         "sha256": combined,
+        "context_sha256": context_hash,
+        "health_gate_identity": "caller-supplied; health gate behavior must be recorded separately" if inputs.health_gate else None,
         "events": {"count": len(event_ids), "sha256": events_hash, "by_provider": dict(sorted(providers.items()))},
         "bars": {
             "symbol": spec.market_symbol, "interval": spec.interval, "count": len(bars),

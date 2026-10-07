@@ -1,4 +1,4 @@
-"""One click, right now: prove this app cannot trade or move money."""
+"""Run the static pattern check and explain its limits."""
 
 from __future__ import annotations
 
@@ -26,9 +26,9 @@ class SafetyCheckScreen(ttk.Frame):
         ttk.Label(
             self,
             text=(
-                "This checks the actual code on your computer, right now, for "
-                "anything that could place an order or move money. It isn't a "
-                "promise -- it's a scan, and you can run it as often as you like."
+                "This scans selected source files for known forbidden endpoints, "
+                "signing code and credential values. It is a text-pattern check, "
+                "not proof of all possible behavior or a check of account permissions."
             ),
             wraplength=600,
             justify="left",
@@ -65,7 +65,7 @@ class SafetyCheckScreen(ttk.Frame):
         if report.ok:
             self._result_label.configure(foreground="#0f6e56")
             self._result_var.set(
-                "Confirmed: nothing that could trade or move money was found, "
+                "No known forbidden patterns found, "
                 f"across {report.files_scanned} files scanned just now."
             )
         else:

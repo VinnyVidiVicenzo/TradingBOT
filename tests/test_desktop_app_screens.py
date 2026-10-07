@@ -254,7 +254,7 @@ class SafetyCheckScreenTests(_ScreenTestCase):
         self.screen = SafetyCheckScreen(self.root, self.fake)
         self._click_and_wait()
         message = self.screen._result_var.get()
-        self.assertIn("Confirmed: nothing that could trade or move money was found", message)
+        self.assertIn("No known forbidden patterns found", message)
         self.assertRegex(message, r"across \d+ files scanned just now")
         self.assertTrue(self.screen._button.instate(["!disabled"]))
 

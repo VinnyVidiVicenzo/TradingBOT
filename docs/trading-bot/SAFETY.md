@@ -196,10 +196,9 @@ anything depends on it.
 
 Position sizing in V1 is either a fixed fraction of a fixed pool
 (Benchmark 1) or a fixed fraction of an explicitly declared contribution
-(Benchmark 2). Neither reacts to prior outcomes. There is no code path that
-increases size after a loss, and any future strategy that proposes to do so
-should be rejected on sight: with a finite pool, doubling after losses has a
-guaranteed terminal state and it is ruin.
+(Benchmark 2). Neither reacts to prior outcomes. The dip-weighted research
+strategy can increase a simulated buy after a price fall, but its tilt is capped
+and funded from a finite pool. It does not borrow or implement unbounded doubling.
 
 ## Existing holdings are not cash
 
@@ -232,13 +231,16 @@ module inside it for exactly that reason.
 
 The boundary is the strategy interface. A strategy receives a
 `StrategyContext` and returns `OrderIntent` records. It gets no client, no
-database handle, no filesystem access, no network and no clock. It cannot
-place an order because it is not given anything that could.
+database handle, filesystem service, network client or wall clock through that
+interface. This is an API boundary, not an operating-system sandbox: trusted
+Python strategy code can still import modules. The simulator has no live order
+placement path. Running untrusted strategy code would require process isolation.
 
 Whatever comes later — a model, a signal service, a news reader — sits behind
 that same boundary and returns intents into a simulator. If paper trading is
-ever built, it becomes a **separate process** that consumes intents; the
-research code does not grow an execution mode.
+extended into live execution, it must become a **separate process** with its own
+controls; the research code must not grow a live execution mode. Current paper
+rehearsal invokes the backtester with pretend money only.
 
 ## Future LLM and news inputs are untrusted
 

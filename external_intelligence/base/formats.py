@@ -46,7 +46,7 @@ def _parse_jsonl(text: str) -> list[tuple[int, Any]]:
             continue
         try:
             out.append((index, json.loads(stripped)))
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, RecursionError, ValueError):
             out.append((index, UnparseableRecord(stripped[:200])))
         index += 1
     return out
@@ -55,8 +55,8 @@ def _parse_jsonl(text: str) -> list[tuple[int, Any]]:
 def _parse_json(text: str, envelope_keys: Sequence[str]) -> list[tuple[int, Any]]:
     try:
         data = json.loads(text)
-    except json.JSONDecodeError as exc:
-        raise ProviderSchemaError(f"not valid JSON: {exc.msg}") from exc
+    except (json.JSONDecodeError, RecursionError, ValueError) as exc:
+        raise ProviderSchemaError("invalid or excessively complex JSON document") from exc
     if isinstance(data, list):
         return list(enumerate(data))
     if isinstance(data, dict):
@@ -69,6 +69,10 @@ def _parse_json(text: str, envelope_keys: Sequence[str]) -> list[tuple[int, Any]
 
 def _parse_csv(text: str) -> list[tuple[int, Any]]:
     reader = csv.DictReader(io.StringIO(text))
-    if not reader.fieldnames:
-        raise ProviderSchemaError("CSV payload has no header row")
-    return [(index, dict(row)) for index, row in enumerate(reader)]
+    try:
+        if not reader.fieldnames:
+            raise ProviderSchemaError("CSV payload has no header row")
+        return [(index, UnparseableRecord("CSV row has surplus columns") if None in row else dict(row))
+                for index, row in enumerate(reader)]
+    except csv.Error as exc:
+        raise ProviderSchemaError("invalid CSV document") from exc

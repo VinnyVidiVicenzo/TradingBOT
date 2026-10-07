@@ -25,6 +25,7 @@ from typing import Any, Mapping
 
 from ..errors import BinanceUSAPIError, RateLimitError, TransportError
 from ..timeutil import now_ms
+from ..http_policy import no_redirect_opener
 from .constants import BASE_URL, PUBLIC_ENDPOINTS, USER_AGENT
 
 _FORBIDDEN_HEADER_PREFIXES = ("authorization", "x-mbx-api" + "key")  # safety-audit: allow
@@ -73,7 +74,7 @@ class PublicTransport:
         # Stay below the documented 6000/min so a shared IP has headroom.
         self.weight_ceiling_1m = weight_ceiling_1m
         self.rate_limit = RateLimitState()
-        self._opener = opener or urllib.request.build_opener()
+        self._opener = opener or no_redirect_opener()
         self._sleep = sleep
         self._random = random.Random(0)  # jitter only; never touches simulation
 
@@ -140,7 +141,7 @@ class PublicTransport:
         self._record_weight(headers)
         try:
             payload = json.loads(body.decode("utf-8"))
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        except (UnicodeDecodeError, json.JSONDecodeError, RecursionError, ValueError) as exc:
             raise TransportError(f"GET {url} returned non-JSON body") from exc
         return Response(
             payload=payload,
@@ -158,7 +159,7 @@ class PublicTransport:
         try:
             self.rate_limit.used_weight_1m = int(raw)
             self.rate_limit.last_seen_at = now_ms()
-        except ValueError:  # pragma: no cover - malformed header
+        except (ValueError, OverflowError):  # pragma: no cover - malformed header
             pass
 
 
@@ -189,7 +190,7 @@ def _api_error(status: int, body: bytes, url: str) -> BinanceUSAPIError:
         if isinstance(parsed, dict):
             code = parsed.get("code")
             message = str(parsed.get("msg", message))
-    except (UnicodeDecodeError, json.JSONDecodeError):
+    except (UnicodeDecodeError, json.JSONDecodeError, RecursionError, ValueError):
         pass
     if status in (418, 429):
         return RateLimitError(status, code, message, url)

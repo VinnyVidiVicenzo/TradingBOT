@@ -61,6 +61,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
+from crypto_research.http_policy import no_redirect_opener, pagination_url
 
 REF = Path(__file__).parent.parent / "data/reference"
 RESULTS = Path(__file__).parent.parent / "results"
@@ -68,8 +69,11 @@ RESULTS = Path(__file__).parent.parent / "results"
 
 def get(url: str) -> bytes:
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (research)"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return r.read()
+    with no_redirect_opener().open(req, timeout=30) as r:
+        body = r.read(5_000_001)
+        if len(body) > 5_000_000:
+            raise ValueError("reference response too large")
+        return body
 
 
 def fetch_funding_history() -> list[tuple[datetime, float]]:
@@ -125,10 +129,14 @@ def fetch_stablecoin_supply(asset: str) -> dict[date, float]:
             f"?assets={asset}&metrics=SplyCur&frequency=1d&start_time=2018-01-01"
             "&page_size=10000"
         )
+        seen = set()
         while url:
+            if url in seen or len(seen) >= 100:
+                raise ValueError("pagination repeated or exceeded 100 pages")
+            seen.add(url)
             page = json.loads(get(url))
             rows.extend(page["data"])
-            url = page.get("next_page_url")
+            url = pagination_url(page.get("next_page_url"), url, host="community-api.coinmetrics.io")
             time.sleep(0.5)
         with cache.open("w", newline="", encoding="utf-8") as fh:
             w = csv.writer(fh)

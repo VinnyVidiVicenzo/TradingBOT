@@ -1,6 +1,6 @@
 # crypto-research
 
-A controlled research and (later) paper-trading platform for evaluating crypto
+A controlled research and paper-trading rehearsal platform for evaluating crypto
 accumulation strategies on **Binance.US** market data.
 
 The question it exists to answer: *does added market information improve
@@ -11,7 +11,7 @@ do-nothing baseline, out of sample, by more than it costs?"
 ## This is not a trading bot
 
 **Nothing here can place an order or move funds.** The repository is split into
-three zones with separately-verified guarantees:
+six zones with separate restrictions:
 
 | Zone | Authenticates? | Can trade or move funds? |
 | --- | --- | --- |
@@ -21,8 +21,9 @@ three zones with separately-verified guarantees:
 
 The engine cannot even reach the account reader: no engine module imports it, and
 a test re-imports the whole engine with `account_tools` made un-importable to
-prove no chain exists. The desktop app only ever calls into the engine. All of
-these claims are enforced, not promised:
+check that import boundary. The desktop app calls the research engine. The
+following command checks selected forbidden patterns and credential assignments;
+it is a regression check, not a complete security proof:
 
 ```bash
 python -m crypto_research safety-check
@@ -82,6 +83,11 @@ Python is reinstalled. From a terminal, or on another system:
 ```bash
 python -m desktop_app
 ```
+
+Installed Python packages also expose `crypto-research-desktop` and
+`crypto-research-paper`. Launch the installed desktop command from the project
+workspace so it can find `data/`, `results/` and `experiments/`; these local files
+are not bundled into the package. This is not a self-contained executable.
 
 The shortcut runs `run_desktop_app.pyw` with `pythonw.exe` (no console window). It
 names Python explicitly because double-clicking a `.pyw` file only works once Windows

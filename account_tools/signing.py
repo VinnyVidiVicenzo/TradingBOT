@@ -30,6 +30,7 @@ from types import MappingProxyType
 from typing import Any, Mapping
 
 from .credentials import Credentials, redact
+from crypto_research.http_policy import no_redirect_opener
 
 BASE_URL = "https://api.binance.us"
 
@@ -118,7 +119,7 @@ class SignedReadOnlyTransport:
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.recv_window_ms = recv_window_ms
-        self._opener = opener or urllib.request.build_opener()
+        self._opener = opener or no_redirect_opener()
         self._time_source = time_source or _local_time_ms
 
     def get(self, path: str, params: Mapping[str, Any] | None = None) -> SignedResponse:
@@ -157,7 +158,7 @@ class SignedReadOnlyTransport:
 
         try:
             decoded = json.loads(body.decode("utf-8"))
-        except (UnicodeDecodeError, json.JSONDecodeError):
+        except (UnicodeDecodeError, json.JSONDecodeError, RecursionError, ValueError):
             raise AccountTransportError(f"GET {path} returned a non-JSON body") from None
         return SignedResponse(payload=decoded, status=status, path=path)
 
@@ -171,7 +172,7 @@ class SignedReadOnlyTransport:
             if isinstance(parsed, dict):
                 code = parsed.get("code")
                 message = self._redact(str(parsed.get("msg", message)))
-        except (UnicodeDecodeError, json.JSONDecodeError):
+        except (UnicodeDecodeError, json.JSONDecodeError, RecursionError, ValueError):
             pass
         return AccountAPIError(status, code, message, path)
 

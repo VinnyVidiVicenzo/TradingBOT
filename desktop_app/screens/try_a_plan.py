@@ -9,12 +9,14 @@ else a person controls. Each finished sweep is appended to the plan history
 from __future__ import annotations
 
 import logging
+from dataclasses import replace
 import tkinter as tk
 from tkinter import ttk
 
 from crypto_research.timeutil import now_ms, to_iso
 
 from .. import (
+    alternatives,
     coin_catalog,
     errors,
     plan_builder,
@@ -203,6 +205,7 @@ class TryAPlanScreen(ttk.Frame):
             return
         self._show_status("")
         try:
+            outcome = replace(outcome, comparison_snapshot=alternatives.snapshot(outcome, self._app.reference))
             plan_history.append(
                 self._app.plan_history_path, outcome, created_at_iso=to_iso(now_ms())
             )

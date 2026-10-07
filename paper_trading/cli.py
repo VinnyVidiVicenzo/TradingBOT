@@ -23,7 +23,7 @@ from . import depth_cost, ticklog
 from .errors import PaperTradingError
 from .plan import RehearsalPlan, load_plan
 from .report import build_report
-from .runner import latest_completed, tick
+from .runner import latest_completed_pair, tick
 from .scorecard import evaluate
 
 
@@ -95,8 +95,7 @@ def _tick_command(args: argparse.Namespace) -> int:
 def _report_command(args: argparse.Namespace) -> int:
     plan = _load(args)
     registry = ExperimentRegistry(plan.experiment_dir)
-    rehearsal_record = latest_completed(registry, plan.rehearsal.name)
-    benchmark_record = latest_completed(registry, plan.benchmark.name)
+    rehearsal_record, benchmark_record = latest_completed_pair(registry, plan)
     ticks = ticklog.read_all(ticklog.path_for(plan.experiment_dir, plan.name))
     scorecard = evaluate(ticks, rehearsal_record=rehearsal_record, benchmark_record=benchmark_record)
 

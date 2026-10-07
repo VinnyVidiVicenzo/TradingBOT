@@ -17,7 +17,7 @@ date        event                                        day   next 7d  next 30d
 2025-07-17  CLARITY passes House 294-134               +1.6%     +3.5%    +11.1%  VERIFIED
 2025-07-18  GENIUS Act signed into law                 +0.7%     +3.5%    +11.1%  VERIFIED
 2026-05-14  CLARITY advanced by Senate cmte 15-9       +1.5%     -5.4%    -24.0%  VERIFIED
-2026-09-15  CLARITY Act FAILS Senate cloture 49-50     -4.4%    +16.9%    +16.3%  VERIFIED
+2026-09-15  CLARITY Act FAILS Senate cloture 49-50     -4.4%    +16.9%       n/a  VERIFIED
 
 
 WERE EVENT DAYS UNUSUAL? (this needs no statistics, only counting)
@@ -43,7 +43,7 @@ DID 'GOOD NEWS' AND 'BAD NEWS' GO THE RIGHT WAY?
 
   bad   news,  1 day(s): went down 6 of 6 times, average -7.3%
   bad   news,  7 day(s): went down 4 of 6 times, average -5.1%
-  bad   news, 30 day(s): went down 3 of 6 times, average +2.1%
+  bad   news, 30 day(s): went down 3 of 5 times, average -0.8%
 
 
 THE CLARITY ACT, SPECIFICALLY
@@ -63,4 +63,4 @@ THE CLARITY ACT, SPECIFICALLY
   2026-09-15  CLARITY Act FAILS Senate cloture 49-50
     on the day    -4.4%
     next week     +16.9%
-    next month    +16.3%
+    next month    n/a

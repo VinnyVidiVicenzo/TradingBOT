@@ -10,6 +10,7 @@ from .repositories import (
     AttributionRepository,
     CanonicalRepository,
     CoverageRepository,
+    CursorRepository,
     EventRepository,
     HealthRepository,
     QuarantineRepository,
@@ -29,6 +30,7 @@ class IntelligenceStore:
     coverage: CoverageRepository
     health: HealthRepository
     canonical: CanonicalRepository
+    cursors: CursorRepository
 
     @classmethod
     def from_database(cls, db: IntelligenceDatabase) -> "IntelligenceStore":
@@ -41,6 +43,7 @@ class IntelligenceStore:
             coverage=CoverageRepository(db),
             health=HealthRepository(db),
             canonical=CanonicalRepository(db),
+            cursors=CursorRepository(db),
         )
 
     @classmethod

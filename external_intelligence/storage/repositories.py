@@ -201,7 +201,10 @@ class QuarantineRepository:
     ) -> None:
         text = None
         if record is not None:
-            text = json.dumps(record, sort_keys=True, default=str)[:MAX_RECORD_JSON]
+            try:
+                text = json.dumps(record, default=str, ensure_ascii=True)[:MAX_RECORD_JSON]
+            except (TypeError, ValueError, RecursionError, OverflowError):
+                text = json.dumps({"unserializable_record": type(record).__name__})
         with self._db.transaction() as conn:
             conn.execute(
                 "INSERT INTO quarantine (provider, reason, detail, raw_payload_reference, "
@@ -339,6 +342,36 @@ class HealthRepository:
             "ORDER BY snapshot_id ASC", (provider,),
         )
         return [json.loads(row["snapshot_json"]) for row in cursor.fetchall()]
+
+
+class CursorRepository:
+    """A poller's resume point. Append-only: the current value is whichever row is newest."""
+
+    def __init__(self, db: IntelligenceDatabase) -> None:
+        self._db = db
+
+    def record(self, provider: str, key: str, value: str, *, recorded_at: int) -> None:
+        with self._db.transaction() as conn:
+            conn.execute(
+                "INSERT INTO provider_cursors (provider, key, value, recorded_at) VALUES (?,?,?,?)",
+                (provider, key, value, recorded_at),
+            )
+
+    def latest(self, provider: str, key: str) -> str | None:
+        row = self._db.connection.execute(
+            "SELECT value FROM provider_cursors WHERE provider = ? AND key = ? "
+            "ORDER BY cursor_id DESC LIMIT 1",
+            (provider, key),
+        ).fetchone()
+        return None if row is None else row["value"]
+
+    def history(self, provider: str, key: str) -> list[tuple[str, int]]:
+        cursor = self._db.connection.execute(
+            "SELECT value, recorded_at FROM provider_cursors WHERE provider = ? AND key = ? "
+            "ORDER BY cursor_id ASC",
+            (provider, key),
+        )
+        return [(row["value"], int(row["recorded_at"])) for row in cursor.fetchall()]
 
 
 class CanonicalRepository:

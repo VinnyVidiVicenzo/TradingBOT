@@ -37,6 +37,7 @@ ALLOWED_ROOTS = {
     "enum",
     "json",
     "logging",
+    "math",
     "pathlib",
     "queue",
     "re",

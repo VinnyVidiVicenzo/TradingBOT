@@ -30,7 +30,7 @@ from crypto_research.config import ExperimentConfig
 from crypto_research.datafeed.download import Downloader
 from crypto_research.errors import CryptoResearchError, TransportError
 from crypto_research.experiments.registry import ExperimentRegistry, RunRecord, config_hash
-from crypto_research.experiments.runner import run_experiment
+from crypto_research.experiments.runner import run_experiment, input_identity
 from crypto_research.storage.database import open_database
 from crypto_research.storage.repositories import BarRepository
 from crypto_research.timeutil import now_ms
@@ -122,6 +122,29 @@ def latest_completed(registry: ExperimentRegistry, experiment_name: str) -> dict
     return registry.load(newest["run_id"])
 
 
+def latest_completed_pair(registry: ExperimentRegistry, plan: RehearsalPlan):
+    """Only compare current-config runs at the same horizon on identical data."""
+    def matching(config):
+        records = []
+        for entry in registry.list_runs():
+            if entry.get("experiment_name") != config.name or entry.get("status") != "COMPLETED":
+                continue
+            record = registry.load(entry["run_id"])
+            end = record["date_range"]["end_time"]
+            if record["config_sha256"] == config_hash(resolved_for_end_time(config, end).describe()):
+                records.append(record)
+        return records
+    rehearsal = matching(plan.rehearsal)
+    if not rehearsal:
+        return None, None
+    current = max(rehearsal, key=lambda r: r["date_range"]["end_time"])
+    benchmark = [r for r in matching(plan.benchmark)
+                 if r["date_range"] == current["date_range"]
+                 and r["dataset_version"] == current["dataset_version"]
+                 and r.get("provenance") == current.get("provenance")]
+    return current, max(benchmark, key=lambda r: r["created_at"]) if benchmark else None
+
+
 # --------------------------------------------------------------------------
 # internals
 # --------------------------------------------------------------------------
@@ -149,16 +172,27 @@ def _run_or_reuse(role: str, config: ExperimentConfig, registry: ExperimentRegis
     digest = config_hash(config.describe())
     existing = _find_by_digest(registry, digest)
     if existing is not None:
-        return TrackResult(role=role, run_id=existing["run_id"], status=existing["status"], reused=True)
+        try:
+            current = input_identity(config)
+            recorded = registry.load(existing["run_id"])
+            provenance = recorded.get("provenance", {})
+            if (current["dataset_sha256"] == (recorded.get("dataset_version") or {}).get("sha256")
+                    and current["code_sha256"] == provenance.get("code_sha256")
+                    and current["rules_sha256"] == provenance.get("rules", {}).get("sha256")):
+                return TrackResult(role=role, run_id=existing["run_id"], status=existing["status"], reused=True)
+        except CryptoResearchError:
+            pass  # record the failed attempt rather than reuse an obsolete result
     record, _result, _metrics = run_experiment(config, registry=registry)
     return TrackResult(role=role, run_id=record.run_id, status=record.status.value, reused=False)
 
 
 def _find_by_digest(registry: ExperimentRegistry, digest: str) -> dict[str, Any] | None:
     short = digest[:16]
-    for entry in registry.list_runs():
-        if entry.get("config_sha256") == short:
-            return entry
+    for entry in reversed(registry.list_runs()):
+        if entry.get("config_sha256") == short and entry.get("status") == "COMPLETED":
+            record = registry.load(entry["run_id"])
+            if record.get("config_sha256") == digest:
+                return entry
     return None
 
 

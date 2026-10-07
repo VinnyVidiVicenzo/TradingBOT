@@ -1,7 +1,7 @@
 """What allocation would actually have been mathematically "best" -- and why
 that question is a trap if answered on only one slice of history.
 
-Grid-searches every crypto/stock/cash weight combination in 5% steps (231
+Grid-searches every crypto/stock/cash weight combination in 10% steps (66
 combinations) and scores each one by "gain per unit of worst drawdown" -- the
 same risk-adjusted measure vs_stock_fund.py already used, kept for consistency
 rather than switching to a less-explained one like the Sharpe ratio.
@@ -98,7 +98,7 @@ def score_robust(mix: dict[str, float], returns: dict[str, list[float]],
 def main() -> None:
     s = build()
     mixes = grid()
-    print(f"Testing {len(mixes)} crypto/stock/cash combinations in 5% steps.\n")
+    print(f"Testing {len(mixes)} crypto/stock/cash combinations in {STEP * 100:g}% steps.\n")
 
     # -- A. single history ------------------------------------------------
     print("A. IF YOU HAD KNOWN THE FUTURE (one real path, 2020-2026) -- a trap, see below\n")

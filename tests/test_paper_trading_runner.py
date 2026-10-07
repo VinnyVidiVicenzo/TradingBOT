@@ -200,7 +200,8 @@ class LatestCompletedTests(unittest.TestCase):
         record = latest_completed(h.registry, h.plan.rehearsal.name)
         self.assertIsNotNone(record)
         self.assertIn("metrics", record)
-        self.assertEqual(record["metrics"]["accepted_orders"], 6)  # two decisions, three symbols each
+        self.assertEqual(record["metrics"]["accepted_orders"], 3)  # second batch would arrive after the run end
+        self.assertEqual(record["metrics"]["rejections_by_reason"]["OUTSIDE_RUN_WINDOW"], 3)
 
 
 if __name__ == "__main__":

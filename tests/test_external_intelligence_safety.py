@@ -43,15 +43,18 @@ REPO_ROOT = Path(__file__).parent.parent
 PACKAGE = REPO_ROOT / "external_intelligence"
 
 STDLIB_ALLOWED = {
-    "__future__", "abc", "ast", "bisect", "collections", "csv", "dataclasses", "decimal", "enum",
-    "hashlib", "io", "json", "math", "pathlib", "random", "re", "socket", "sqlite3", "statistics",
-    "sys", "time", "traceback", "typing", "urllib", "contextlib", "functools", "itertools",
+    "__future__", "abc", "argparse", "ast", "bisect", "collections", "csv", "dataclasses", "decimal",
+    "enum", "hashlib", "io", "json", "math", "pathlib", "random", "re", "socket", "sqlite3",
+    "statistics", "sys", "time", "traceback", "typing", "urllib", "contextlib", "functools",
+    "itertools",
 }
 FIRST_PARTY_ALLOWED = {
     "external_intelligence",
     # The pieces of the research engine this zone reuses: data types, storage plumbing and the
     # experiment registry. Nothing that places orders, signs requests or reaches an account.
     "crypto_research.decimals",
+    "crypto_research.http_policy",
+    "crypto_research.datafeed.dataset",
     "crypto_research.errors",
     "crypto_research.experiments.registry",
     "crypto_research.models",

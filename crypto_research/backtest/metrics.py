@@ -143,7 +143,8 @@ def compute_metrics(result: RunResult) -> RunMetrics:
         # out here so it is counted once, as a contribution, and not also as
         # starting value.
         metrics.starting_portfolio_value = (
-            curve[0].total_value - curve[0].contribution_inflow
+            result.starting_portfolio_value if result.starting_portfolio_value is not None
+            else curve[0].total_value - curve[0].contribution_inflow
         )
         metrics.ending_portfolio_value = curve[-1].total_value
         metrics.first_mark_time = curve[0].time
@@ -155,6 +156,13 @@ def compute_metrics(result: RunResult) -> RunMetrics:
             _max_drawdown(curve)
         )
         metrics.time_weighted_return = _time_weighted_return(curve)
+        if result.starting_portfolio_value is not None:
+            metrics.time_weighted_return = curve[-1].nav_per_unit - Decimal(1)
+            # Include the pre-trade unit price, so immediate costs are a fall.
+            baseline = EquityPoint(curve[0].time, ZERO, ZERO, ZERO, ZERO, Decimal(1))
+            metrics.max_drawdown, metrics.max_drawdown_start, metrics.max_drawdown_end = (
+                _max_drawdown([baseline, *curve])
+            )
         metrics.time_weighted_exposure = _time_weighted_exposure(curve)
 
     metrics.total_capital_in = (

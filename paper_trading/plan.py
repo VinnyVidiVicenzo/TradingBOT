@@ -112,6 +112,15 @@ def _require_shared_data(rehearsal: ExperimentConfig, benchmark: ExperimentConfi
         mismatches.append(f"symbols: {sorted(a.symbols)} vs {sorted(b.symbols)}")
     if a.start_time != b.start_time:
         mismatches.append(f"start: {a.start_time} vs {b.start_time}")
+    for name in ("initial_cash", "starting_holdings", "external_contributions", "valuation_asset", "assumed_rates"):
+        if getattr(rehearsal.backtest, name) != getattr(benchmark.backtest, name):
+            mismatches.append(f"portfolio.{name} differs")
+    for name in ("costs", "execution"):
+        if getattr(rehearsal.backtest, name).describe() != getattr(benchmark.backtest, name).describe():
+            mismatches.append(f"{name} differs")
+    for name in ("include_quotes", "feed_delay_ms", "max_gap_intervals", "require_all_symbols"):
+        if getattr(a, name) != getattr(b, name):
+            mismatches.append(f"data.{name} differs")
     if mismatches:
         raise PlanMismatchError(
             "the rehearsal and benchmark configs must read identical data so the "

@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import csv
 import logging
+import math
 from collections import defaultdict
 from dataclasses import dataclass
 from decimal import Decimal
@@ -53,12 +54,15 @@ class ReferenceData:
     base_ms: int  # midnight UTC of the first day covered
     fund: tuple[float, ...]  # dividend-adjusted close, carried over non-trading days
     daily_rate: tuple[float, ...]  # savings growth per day: 0.0001 means +0.01%
+    valid_days: tuple[bool, ...] = ()
 
     def index(self, day_ms: int) -> int:
         return (day_ms - self.base_ms) // DAY_MS
 
     def covers(self, first_ms: int, last_ms: int) -> bool:
-        return self.index(first_ms) >= 0 and self.index(last_ms) < len(self.fund)
+        first, last = self.index(first_ms), self.index(last_ms)
+        return (0 <= first <= last < len(self.fund)
+                and (not self.valid_days or all(self.valid_days[first:last + 1])))
 
 
 @dataclass(frozen=True, slots=True)
@@ -83,6 +87,9 @@ def build_reference(
     """Daily arrays from {midnight-UTC ms: value} readings, or None if there is too little."""
     if len(fund_prices) < MIN_ROWS or len(annual_yield_pct) < MIN_ROWS:
         return None
+    if (any(not math.isfinite(v) or v <= 0 for v in fund_prices.values())
+            or any(not math.isfinite(v) or v <= -36500 for v in annual_yield_pct.values())):
+        return None
     fund_days = sorted(fund_prices)
     rate_days = sorted(annual_yield_pct)
     base = max(fund_days[0], rate_days[0])
@@ -92,6 +99,7 @@ def build_reference(
 
     fund: list[float] = []
     rates: list[float] = []
+    valid: list[bool] = []
     fund_i = rate_i = 0
     current_fund = fund_prices[fund_days[0]]
     current_rate = annual_yield_pct[rate_days[0]]
@@ -104,7 +112,9 @@ def build_reference(
             rate_i += 1
         fund.append(current_fund)
         rates.append(current_rate / 100 / 365)
-    return ReferenceData(base, tuple(fund), tuple(rates))
+        valid.append(day - fund_days[fund_i - 1] <= STALE_DAYS_ALLOWED * DAY_MS
+                     and day - rate_days[rate_i - 1] <= STALE_DAYS_ALLOWED * DAY_MS)
+    return ReferenceData(base, tuple(fund), tuple(rates), tuple(valid))
 
 
 def _read_series(path: Path, value_column: str) -> dict[int, float]:
@@ -159,12 +169,32 @@ def compare(result: SweepResult, reference: ReferenceData) -> Alternatives | Non
         flows = _flows_for(result, start_ms, end_ms)
         first, last = reference.index(first_ms), reference.index(last_ms)
         fund_end, fund_fall = _fund_path(flows, reference, first, last)
-        savings_end = _savings_end(flows, reference, first, last)
+        savings_end, savings_fall = _savings_path(flows, reference, first, last)
         fund.append(_outcome(start_ms, result.amount, fund_end, fund_fall))
-        savings.append(_outcome(start_ms, result.amount, savings_end, 0.0))
+        savings.append(_outcome(start_ms, result.amount, savings_end, savings_fall))
     if not fund:
         return None
     return Alternatives(tuple(fund), tuple(savings))
+
+
+def snapshot(result: SweepResult, reference: ReferenceData | None) -> dict:
+    """Freeze comparison outcomes with the plan, including unavailable data."""
+    found = compare(result, reference) if reference is not None else None
+    def rows(outcomes):
+        return [{"start_ms": o.start_ms, "capital_in": str(o.capital_in),
+                 "ending_value": str(o.ending_value), "max_drawdown": str(o.max_drawdown)}
+                for o in outcomes]
+    return {"fund": rows(found.fund) if found else [],
+            "savings": rows(found.savings) if found else []}
+
+
+def restore_snapshot(saved: dict) -> Alternatives | None:
+    def outcomes(rows):
+        return tuple(WindowOutcome(int(r["start_ms"]), Decimal(r["capital_in"]),
+                                   Decimal(r["ending_value"]), Decimal(r["max_drawdown"]), 0)
+                     for r in rows)
+    fund, savings = outcomes(saved["fund"]), outcomes(saved["savings"])
+    return Alternatives(fund, savings) if fund else None
 
 
 def _outcome(start_ms: int, amount: Decimal, ending: float, fall: float) -> WindowOutcome:
@@ -244,8 +274,22 @@ def _fund_path(
 
 def _savings_end(flows: _Flows, reference: ReferenceData, first: int, last: int) -> float:
     """The balance on the last day: each amount earns the day's rate from the day after it goes in."""
+    return _savings_path(flows, reference, first, last)[0]
+
+
+def _savings_path(flows: _Flows, reference: ReferenceData, first: int, last: int) -> tuple[float, float]:
     deposits = _by_day(flows.deposits, reference)
     balance = flows.initial + deposits.get(first, 0.0)
+    units = balance
+    peak, worst = 1.0, 0.0
     for day in range(first + 1, last + 1):
-        balance = balance * (1 + reference.daily_rate[day]) + deposits.get(day, 0.0)
-    return balance
+        balance *= 1 + reference.daily_rate[day]
+        deposit = deposits.get(day, 0.0)
+        if deposit:
+            units += deposit / (balance / units) if units > 0 and balance > 0 else deposit
+            balance += deposit
+        if units > 0:
+            nav = balance / units
+            peak = max(peak, nav)
+            worst = max(worst, (peak - nav) / peak)
+    return balance, worst

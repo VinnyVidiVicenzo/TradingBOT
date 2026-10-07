@@ -27,6 +27,7 @@ from ..binanceus.filters import SymbolRuleBook
 from ..datafeed.dataset import DatasetVersion, MarketDataSet
 from ..decimals import ZERO, div, format_decimal
 from ..errors import ConfigError
+from ..provenance import rule_identity
 from ..models import (
     CashSource,
     ExternalContribution,
@@ -37,7 +38,7 @@ from .costs import CostModels
 from .events import EventKind, EventQueue, PendingExecution
 from .execution import ExecutionConfig, ExecutionSimulator, FillModel, FullFillModel
 from .market import MarketState, MarketView, bar_close_times
-from .orders import OrderIntent, SimulatedOrder
+from .orders import OrderIntent, SimulatedOrder, OrderStatus, RejectionReason
 from .portfolio import Portfolio, RateView
 
 
@@ -153,6 +154,8 @@ class RunResult:
     used_rate_assumptions: tuple[tuple[str, str], ...] = ()
     warnings: list[str] = field(default_factory=list)
     final_prices: Mapping[str, Decimal] = field(default_factory=dict)
+    starting_portfolio_value: Decimal | None = None
+    rule_identity: Mapping[str, object] = field(default_factory=dict)
 
     @property
     def accepted_orders(self) -> list[SimulatedOrder]:
@@ -211,6 +214,7 @@ class Backtester:
             dataset_version=self.dataset.version,
             eligible_symbols=self.dataset.symbols,
             portfolio=portfolio,
+            rule_identity=rule_identity(self.rule_book),
         )
 
         queue = self._build_queue(result)
@@ -245,6 +249,9 @@ class Backtester:
             elif event.kind is EventKind.CONTRIBUTION:
                 contribution: ExternalContribution = event.payload
                 value_before = self._safe_value(portfolio, market, assumptions, result)
+                if result.starting_portfolio_value is None:
+                    result.starting_portfolio_value = value_before
+                nav.seed_if_needed(value_before)
                 portfolio.cash.deposit(
                     contribution.asset,
                     contribution.amount,
@@ -259,6 +266,11 @@ class Backtester:
                 nav.pending_inflow += inflow
 
             elif event.kind is EventKind.DECISION:
+                if result.starting_portfolio_value is None:
+                    result.starting_portfolio_value = self._safe_value(
+                        portfolio, market, assumptions, result
+                    )
+                    nav.seed_if_needed(result.starting_portfolio_value)
                 context = StrategyContext(
                     now=event.time,
                     market=MarketView(market, event.time),
@@ -276,6 +288,14 @@ class Backtester:
                             "expected OrderIntent"
                         )
                     submit_time = config.costs.latency.submit_time(event.time)
+                    if submit_time > config.end_time:
+                        result.orders.append(SimulatedOrder(
+                            intent=intent, decision_time=event.time,
+                            submit_time=submit_time, status=OrderStatus.REJECTED,
+                            rejection_reason=RejectionReason.OUTSIDE_RUN_WINDOW,
+                            note="arrival falls after the run end; no simulated fill",
+                        ))
+                        continue
                     pending.setdefault(submit_time, []).append(
                         PendingExecution(
                             intent=intent,
@@ -284,6 +304,7 @@ class Backtester:
                         )
                     )
                     queue.push(submit_time, EventKind.EXECUTION, submit_time)
+                    queue.push(submit_time, EventKind.MARK, None)
                 decision_index += 1
                 result.decision_count = decision_index
 
@@ -301,10 +322,19 @@ class Backtester:
             elif event.kind is EventKind.MARK:
                 point = self._mark(portfolio, market, nav, event.time, assumptions, result)
                 if point is not None:
+                    if result.equity_curve and result.equity_curve[-1].time == point.time:
+                        previous = result.equity_curve.pop()
+                        point = EquityPoint(
+                            point.time, point.total_value, point.cash_value,
+                            point.invested_value, point.units, point.nav_per_unit,
+                            previous.contribution_inflow + point.contribution_inflow,
+                        )
                     result.equity_curve.append(point)
 
         result.used_rate_assumptions = tuple(sorted(assumptions))
         result.final_prices = dict(market.visible_prices())
+        if not result.equity_curve or result.equity_curve[-1].time != config.end_time:
+            raise ConfigError("the final portfolio could not be valued; run results are unavailable")
         return result
 
     # -- construction ------------------------------------------------------
@@ -368,6 +398,8 @@ class Backtester:
                 queue.push(moment, EventKind.DECISION, None)
                 queue.push(moment, EventKind.MARK, None)
 
+        queue.push(config.end_time, EventKind.MARK, None)
+
         return queue
 
     # -- valuation ---------------------------------------------------------
@@ -392,8 +424,8 @@ class Backtester:
         rates = self._rates(market, assumptions)
         try:
             value = portfolio.value(rates)
-        except Exception:
-            return ZERO
+        except Exception as exc:
+            raise ConfigError(f"portfolio cannot be valued before cash flow or trading: {exc}") from exc
         assumptions.update(rates.used_assumptions)
         return value
 

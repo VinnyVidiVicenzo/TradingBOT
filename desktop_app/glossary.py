@@ -62,7 +62,7 @@ DEFINITIONS: dict[str, str] = {
     ),
     "savings account": (
         "The same money in a savings account paying the 3-month US Treasury "
-        "rate, earning interest from the day each amount goes in. Real savings "
+        "rate, earning interest from the day after each amount goes in. Real savings "
         "accounts usually pay a little less."
     ),
     # -- the map legend ----------------------------------------------------
@@ -146,7 +146,7 @@ DEFINITIONS: dict[str, str] = {
         "A scan of the actual code on this computer for anything that could "
         "place an order or move money."
     ),
-    "check now": "Scans this computer's copy of the code right now. It takes about a second.",
+    "check now": "Checks selected source files for known forbidden text patterns. It does not prove every possible behavior or check account permissions.",
 }
 
 

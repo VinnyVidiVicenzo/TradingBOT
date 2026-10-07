@@ -20,7 +20,7 @@ from typing import Any, Mapping, Sequence
 
 from crypto_research.decimals import dec
 
-from .runner import STATUS_FEED_ERROR
+from .runner import STATUS_FEED_ERROR, STATUS_NO_NEW_BAR
 from .ticklog import TickLogEntry
 
 MIN_TICKS_TO_JUDGE_FEED = 5
@@ -74,6 +74,7 @@ def evaluate(
 
 
 def _feed_reliable(ticks: Sequence[TickLogEntry]) -> ScorecardCheck:
+    ticks = [t for t in ticks if t.status != STATUS_NO_NEW_BAR]
     if len(ticks) < MIN_TICKS_TO_JUDGE_FEED:
         return ScorecardCheck(
             "feed_reliable", "NOT_YET_EVALUATED",
@@ -95,7 +96,7 @@ def _no_crashes(ticks: Sequence[TickLogEntry]) -> ScorecardCheck:
         if t.rehearsal_status == "FAILED" or t.benchmark_status == "FAILED"
     ]
     if not failed:
-        return ScorecardCheck("no_crashes", "PASS", "no run has ever failed")
+        return ScorecardCheck("no_crashes", "PASS", "no failed run in the recorded ticks; unlogged crashes are not checked")
     return ScorecardCheck(
         "no_crashes", "FAIL",
         f"{len(failed)} tick(s) recorded a failed run; see the experiment "
@@ -110,7 +111,7 @@ def _only_buys(rehearsal: Mapping[str, Any] | None, benchmark: Mapping[str, Any]
     sold = {r["experiment_name"]: dec(r["metrics"]["total_sold_capital"]) for r in records}
     offenders = {name: amount for name, amount in sold.items() if amount != 0}
     if not offenders:
-        return ScorecardCheck("only_buys", "PASS", "no run has ever sold anything")
+        return ScorecardCheck("only_buys", "PASS", "no sales in the supplied completed runs")
     return ScorecardCheck(
         "only_buys", "FAIL",
         "a run recorded a sale, which this project never permits: " + ", ".join(
@@ -129,7 +130,7 @@ def _cash_never_negative(rehearsal: Mapping[str, Any] | None, benchmark: Mapping
         if dec(r["metrics"]["uninvested_cash_value"]) < 0
     }
     if not negative:
-        return ScorecardCheck("cash_never_negative", "PASS", "leftover cash is never negative")
+        return ScorecardCheck("cash_never_negative", "PASS", "ending aggregate cash is nonnegative in the supplied runs; intermediate buckets are not checked")
     return ScorecardCheck(
         "cash_never_negative", "FAIL",
         "a run ended with negative cash, which should be structurally impossible: "
@@ -141,6 +142,8 @@ def _benchmark_available(rehearsal: Mapping[str, Any] | None, benchmark: Mapping
     if rehearsal is None:
         return ScorecardCheck("benchmark_available", "NOT_YET_EVALUATED", "the rehearsal has not completed a run yet")
     if benchmark is not None:
+        if rehearsal.get("date_range") != benchmark.get("date_range") or rehearsal.get("dataset_version") != benchmark.get("dataset_version"):
+            return ScorecardCheck("benchmark_available", "FAIL", "benchmark horizon or dataset differs from rehearsal")
         return ScorecardCheck("benchmark_available", "PASS", "a benchmark run exists alongside the rehearsal")
     return ScorecardCheck(
         "benchmark_available", "FAIL",

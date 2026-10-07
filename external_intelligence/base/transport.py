@@ -24,6 +24,7 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass, field
 from typing import Any, Callable, Iterable, Mapping, Protocol
+from crypto_research.http_policy import no_redirect_opener
 
 from ..errors import ProviderError, ProviderRateLimited, ProviderSchemaError, ProviderTimeout
 from .clock import Clock, SystemClock
@@ -76,7 +77,7 @@ class UrllibGetFetcher:
     ) -> None:
         self.allowed_hosts = frozenset(host.lower() for host in allowed_hosts)
         self._clock = clock or SystemClock()
-        self._opener = opener or urllib.request.urlopen
+        self._opener = opener or no_redirect_opener().open
         self._max_bytes = max_bytes
         self._limiter = rate_limiter
 
@@ -113,23 +114,39 @@ class UrllibGetFetcher:
         if status >= 400:
             raise ProviderError(f"provider answered HTTP {status}")
         latency_ms = int((time.monotonic() - began) * 1000)
-        return FetchResponse(status, body, headers, started + latency_ms, latency_ms)
+        return FetchResponse(status, body, headers, self._clock.now_ms(), latency_ms)
 
     # -- internals -----------------------------------------------------------
 
     def _checked_url(self, request: FetchRequest) -> str:
-        parts = urllib.parse.urlsplit(request.url)
+        if any(ord(c) < 32 or ord(c) == 127 for c in request.url):
+            raise ProviderError("URL contains control characters")
+        try:
+            parts = urllib.parse.urlsplit(request.url)
+        except ValueError as exc:
+            raise ProviderError("invalid URL") from exc
         if parts.scheme != "https":
             raise ProviderError("only https URLs are fetched")
-        if parts.username or parts.password:
+        if "@" in parts.netloc:
             raise ProviderError("credentials in a URL are not supported in this zone")
         host = (parts.hostname or "").lower()
         if host not in self.allowed_hosts:
             raise ProviderError(f"host {host!r} is not on the allow-list")
+        try:
+            if parts.port not in (None, 443):
+                raise ProviderError("only the standard HTTPS port is permitted")
+        except ValueError as exc:
+            raise ProviderError("invalid URL port") from exc
         pairs = urllib.parse.parse_qsl(parts.query, keep_blank_values=True)
         pairs += list(request.params.items())
         for key, _ in pairs:
-            if key.lower() in _CREDENTIAL_KEYS:
+            decoded = key
+            for _ in range(8):
+                next_key = urllib.parse.unquote(decoded)
+                if next_key == decoded:
+                    break
+                decoded = next_key
+            if "%" in decoded or decoded.lower() in _CREDENTIAL_KEYS:
                 raise ProviderError(
                     f"query key {key!r} looks like a credential; authenticated "
                     "fetching is not supported in this zone"
@@ -157,7 +174,7 @@ def _retry_after_ms(headers: Mapping[str, str]) -> int | None:
         return None
     try:
         return int(float(value) * 1000)
-    except ValueError:
+    except (ValueError, OverflowError):
         return None
 
 
@@ -166,5 +183,5 @@ def fetch_json(fetcher: Fetcher, request: FetchRequest) -> Any:
     response = fetcher.fetch(request)
     try:
         return json.loads(response.body.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+    except (UnicodeDecodeError, json.JSONDecodeError, RecursionError) as exc:
         raise ProviderSchemaError("reply was not valid UTF-8 JSON") from exc

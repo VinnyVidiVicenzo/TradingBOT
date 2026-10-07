@@ -100,20 +100,10 @@ def _walk(levels: Sequence[tuple[Decimal, Decimal]], notional: Decimal) -> Decim
 
 
 def append(path: str | Path, measurement: DepthCostMeasurement) -> None:
-    file_path = Path(path)
-    file_path.parent.mkdir(parents=True, exist_ok=True)
-    with file_path.open("a", encoding="utf-8", newline="\n") as handle:
-        handle.write(json.dumps(measurement.to_dict(), sort_keys=True) + "\n")
+    from crypto_research.jsonl import append_record
+    append_record(path, measurement.to_dict())
 
 
 def read_all(path: str | Path) -> list[DepthCostMeasurement]:
-    file_path = Path(path)
-    if not file_path.exists():
-        return []
-    entries: list[DepthCostMeasurement] = []
-    with file_path.open("r", encoding="utf-8") as handle:
-        for line in handle:
-            line = line.strip()
-            if line:
-                entries.append(DepthCostMeasurement.from_dict(json.loads(line)))
-    return entries
+    from crypto_research.jsonl import read_records
+    return read_records(path, DepthCostMeasurement.from_dict)

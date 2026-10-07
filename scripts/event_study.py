@@ -112,6 +112,17 @@ def pct_change(level: list[Decimal], i: int, j: int) -> float | None:
     return float(div(level[j] - level[i], level[i]) * 100)
 
 
+def forward_change(dates: list[int], level: list[Decimal], i: int, days: int) -> float | None:
+    """Require the complete calendar horizon, including its exact endpoint."""
+    from bisect import bisect_left
+    from crypto_research.timeutil import DAY_MS
+    target = dates[i] + days * DAY_MS
+    end = bisect_left(dates, target)
+    if end >= len(dates) or dates[end] != target:
+        return None
+    return pct_change(level, i, end)
+
+
 def main() -> None:
     with open_database("data/market.sqlite") as db:
         dates, level = basket_series(BarRepository(db))
@@ -134,8 +145,8 @@ def main() -> None:
             continue
         i = index_of[candidates[0]]
         day = pct_change(level, i - 1, i)
-        d7 = pct_change(level, i, min(i + 7, len(level) - 1))
-        d30 = pct_change(level, i, min(i + 30, len(level) - 1))
+        d7 = forward_change(dates, level, i, 7)
+        d30 = forward_change(dates, level, i, 30)
         rows.append((event, day, d7, d30))
         fmt = lambda v: "n/a" if v is None else f"{v:+.1f}%"
         print(f"{event.date:<12}{event.label[:39]:<40}{fmt(day):>8}"

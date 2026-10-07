@@ -13,6 +13,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
+from crypto_research.jsonl import append_record, read_records
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,24 +54,14 @@ class TickLogEntry:
 
 
 def path_for(experiment_dir: str, plan_name: str) -> Path:
+    if not plan_name or Path(plan_name).name != plan_name or any(c in plan_name for c in '/\\:'):
+        raise ValueError("plan name must be a simple filename component")
     return Path(experiment_dir) / f"paper_ticks_{plan_name}.jsonl"
 
 
 def append(path: str | Path, entry: TickLogEntry) -> None:
-    file_path = Path(path)
-    file_path.parent.mkdir(parents=True, exist_ok=True)
-    with file_path.open("a", encoding="utf-8", newline="\n") as handle:
-        handle.write(json.dumps(entry.to_dict(), sort_keys=True) + "\n")
+    append_record(path, entry.to_dict())
 
 
 def read_all(path: str | Path) -> list[TickLogEntry]:
-    file_path = Path(path)
-    if not file_path.exists():
-        return []
-    entries: list[TickLogEntry] = []
-    with file_path.open("r", encoding="utf-8") as handle:
-        for line in handle:
-            line = line.strip()
-            if line:
-                entries.append(TickLogEntry.from_dict(json.loads(line)))
-    return entries
+    return read_records(path, TickLogEntry.from_dict)

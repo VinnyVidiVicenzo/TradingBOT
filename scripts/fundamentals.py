@@ -35,11 +35,15 @@ from __future__ import annotations
 import csv
 import json
 import statistics
+import sys
 import time
 import urllib.error
 import urllib.request
 from datetime import date, timedelta
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from crypto_research.http_policy import no_redirect_opener, pagination_url
 
 OUT = Path(__file__).parent.parent / "data/reference/fundamentals"
 RESULTS = Path(__file__).parent.parent / "results"
@@ -61,8 +65,11 @@ def get(url: str) -> dict | list:
                                                "Accept": "application/json"})
     for attempt in range(5):
         try:
-            with urllib.request.urlopen(req, timeout=60) as r:
-                return json.loads(r.read().decode())
+            with no_redirect_opener().open(req, timeout=60) as r:
+                body = r.read(5_000_001)
+                if len(body) > 5_000_000:
+                    raise ValueError("reference response too large")
+                return json.loads(body.decode())
         except urllib.error.HTTPError as exc:
             # Free tiers rate-limit; waiting is the polite and correct response.
             if exc.code != 429 or attempt == 4:
@@ -91,10 +98,14 @@ def coinmetrics(asset: str) -> list[dict]:
         f"?assets={asset}&metrics=AdrActCnt,TxCnt,SplyCur,CapMrktCurUSD"
         "&frequency=1d&start_time=2020-01-01&page_size=10000"
     )
+    seen = set()
     while url:
+        if url in seen or len(seen) >= 100:
+            raise ValueError("pagination repeated or exceeded 100 pages")
+        seen.add(url)
         page = get(url)
         rows.extend(page["data"])
-        url = page.get("next_page_url")
+        url = pagination_url(page.get("next_page_url"), url, host="community-api.coinmetrics.io")
     with cache.open("w", newline="", encoding="utf-8") as fh:
         fields = ["time", "AdrActCnt", "TxCnt", "SplyCur", "CapMrktCurUSD"]
         w = csv.DictWriter(fh, fieldnames=fields, extrasaction="ignore")

@@ -67,6 +67,7 @@ class RunRecord:
     error: str | None = None
     traceback: str | None = None
     tool_versions: Mapping[str, str] = field(default_factory=dict)
+    provenance: Mapping[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -244,7 +245,18 @@ def _write_csv(path: Path, rows: Sequence[Mapping[str, Any]]) -> None:
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
-        writer.writerows(rows)
+        text_fields = {"reason", "tag", "client_order_id", "note", "symbol", "asset", "source"}
+        writer.writerows({key: _csv_text(value) if key in text_fields else value
+                         for key, value in row.items()} for row in rows)
+
+
+def _csv_text(value: Any) -> Any:
+    if isinstance(value, str):
+        stripped = value.lstrip()
+        if (stripped.startswith(("=", "+", "-", "@"))
+                or (value and ord(value[0]) < 32)):
+            return "'" + value
+    return value
 
 
 def default_experiment_dir() -> str:

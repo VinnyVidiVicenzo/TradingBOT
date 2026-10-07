@@ -73,6 +73,15 @@ class ProviderHealth:
 
     # -- recording -----------------------------------------------------------
 
+    @classmethod
+    def from_snapshot(cls, provider: str, snapshot: dict[str, Any] | None) -> "ProviderHealth":
+        health = cls(provider)
+        if snapshot is not None:
+            for name in vars(health):
+                if name not in {"provider", "policy"} and name in snapshot:
+                    setattr(health, name, snapshot[name])
+        return health
+
     def record_success(self, now_ms: int, *, latency_ms: int | None = None) -> None:
         self.attempts += 1
         self.successes += 1
@@ -201,6 +210,12 @@ class ProviderHealth:
             "mean_ingest_lag_ms": self.mean_ingest_lag_ms,
             "gap_count": len(self.gaps),
             "gaps": [list(gap) for gap in self.gaps],
+            "transfer_events": self.transfer_events,
+            "unattributed_transfers": self.unattributed_transfers,
+            "amount_expected_events": self.amount_expected_events,
+            "missing_amount_events": self.missing_amount_events,
+            "fetch_latency_ms": list(self.fetch_latency_ms),
+            "ingest_lag_ms": list(self.ingest_lag_ms),
         }
 
 

@@ -70,4 +70,7 @@ class PastPlansScreen(ttk.Frame):
 
     def _show(self, plan: plan_history.StoredPlan) -> None:
         self._results.render(plan.result, self._app.reference)
+        if not plan.result.provenance:
+            current = self._results._notes.cget("text")
+            self._results._notes.configure(text=current + "\n\nThis older saved plan predates the accounting fixes. Run it again for current results; its comparison uses today's saved reference data.")
         self._scroller.scroll_to_top()

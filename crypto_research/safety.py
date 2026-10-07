@@ -103,7 +103,7 @@ SECRET_ASSIGNMENT_RE = re.compile(
 )
 
 SCANNED_SUFFIXES = frozenset(
-    {".py", ".toml", ".json", ".md", ".txt", ".cfg", ".ini", ".yml", ".yaml"}
+    {".py", ".pyw", ".ps1", ".toml", ".json", ".md", ".txt", ".cfg", ".ini", ".yml", ".yaml"}
 )
 SKIPPED_DIRECTORIES = frozenset(
     {".git", ".venv", "venv", "__pycache__", "runs", "node_modules"}
@@ -232,13 +232,15 @@ def audit(
         report.files_scanned += 1
         try:
             text = path.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError):  # pragma: no cover - unreadable file
+        except (OSError, UnicodeDecodeError):
+            report.findings.append(SafetyFinding(_label(path), 0, "unreadable file",
+                                                "file could not be scanned", "", rules.zone))
             continue
         label = _label(path)
         for number, line in enumerate(text.splitlines(), start=1):
             if ALLOW_MARKER in line:
                 continue
-            if path.suffix == ".py":
+            if path.suffix in (".py", ".pyw", ".ps1"):
                 for endpoint in rules.forbidden_endpoints:
                     if endpoint in line:
                         report.findings.append(
@@ -289,6 +291,9 @@ def audit_repository(repo_root: Path | None = None) -> SafetyReport:
                 root / ".env.example",
                 root / "README.md",
                 root / "pyproject.toml",
+                root / "tools",
+                root / "scripts",
+                root / "run_desktop_app.pyw",
             ),
         ),
     )
@@ -323,7 +328,7 @@ def _iter_files(scan_root: Path, extra_roots: Iterable[Path]) -> Sequence[Path]:
                 continue
             if any(part in SKIPPED_DIRECTORIES for part in path.parts):
                 continue
-            if path.name in EXEMPT_FILES:
+            if path.resolve() == Path(__file__).resolve():
                 continue
             seen.setdefault(path, None)
     return list(seen)

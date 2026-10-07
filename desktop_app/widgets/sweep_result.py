@@ -128,11 +128,18 @@ class SweepResultView(ttk.Frame):
         summary: sweep_summary.SweepSummary,
         reference: alternatives.ReferenceData | None,
     ) -> tuple[metrics_presenter.Comparison | None, int | None]:
-        if reference is None:
+        if result.comparison_snapshot is not None:
+            found = alternatives.restore_snapshot(result.comparison_snapshot)
+        elif reference is None:
             return None, None
-        found = alternatives.compare(result, reference)
+        else:
+            found = alternatives.compare(result, reference)
         if found is None:
             return None, None
         fund = sweep_summary.summarize_outcomes(found.fund, amount=result.amount)
         savings = sweep_summary.summarize_outcomes(found.savings, amount=result.amount)
-        return metrics_presenter.comparison(summary, fund, savings), fund.tested
+        starts = {o.start_ms for o in found.fund}
+        matched = sweep_summary.summarize_outcomes(
+            tuple(o for o in result.outcomes if o.start_ms in starts), amount=result.amount
+        )
+        return metrics_presenter.comparison(matched, fund, savings), fund.tested

@@ -15,9 +15,15 @@ dev = ["pytest>=8"]
 [project.scripts]
 crypto-research = "crypto_research.cli:main"
 crypto-research-account = "account_tools.cli:main"
+crypto-research-desktop = "desktop_app.__main__:main"
+crypto-research-paper = "paper_trading.cli:main"
+crypto-research-intelligence = "external_intelligence.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["crypto_research*", "account_tools*"]
+include = ["crypto_research*", "account_tools*", "external_intelligence*", "desktop_app*", "paper_trading*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.setuptools.package-data]
+desktop_app = ["assets/*.ico"]

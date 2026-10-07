@@ -18,6 +18,7 @@ from ..storage.database import open_database
 from ..storage.repositories import RuleSnapshotRepository
 from ..strategies import build_strategy
 from ..timeutil import now_ms, to_iso
+from ..provenance import rule_identity, source_identity
 from .registry import ExperimentRegistry, RunRecord, RunStatus, config_hash, git_state
 
 
@@ -98,6 +99,7 @@ def run_experiment(
         ],
         metrics=metrics.to_dict(),
         warnings=list(result.warnings),
+        provenance={"code_sha256": source_identity(), "rules": result.rule_identity},
         **skeleton,
     )
     registry.write(
@@ -119,6 +121,24 @@ def run_experiment(
 
 
 def _execute(config: ExperimentConfig, run_id: str) -> tuple[RunResult, RunMetrics]:
+    dataset, rule_book = _load_inputs(config)
+    strategy = build_strategy(config.strategy_name, config.strategy_params)
+    backtester = Backtester(
+        dataset=dataset, rule_book=rule_book, config=config.backtest,
+        fill_model=config.fill_model,
+    )
+    result = backtester.run(strategy, run_id=run_id)
+    return result, compute_metrics(result)
+
+
+def input_identity(config: ExperimentConfig) -> dict[str, Any]:
+    """Identity check without rerunning a strategy, for safe paper-run reuse."""
+    dataset, rules = _load_inputs(config)
+    return {"dataset_sha256": dataset.version.sha256, "code_sha256": source_identity(),
+            "rules_sha256": rule_identity(rules)["sha256"]}
+
+
+def _load_inputs(config: ExperimentConfig):
     with open_database(config.data.db_path) as db:
         rules = RuleSnapshotRepository(db).latest()
         if not rules:
@@ -146,15 +166,7 @@ def _execute(config: ExperimentConfig, run_id: str) -> tuple[RunResult, RunMetri
             feed_delay_ms=config.data.feed_delay_ms,
         )
 
-    strategy = build_strategy(config.strategy_name, config.strategy_params)
-    backtester = Backtester(
-        dataset=dataset,
-        rule_book=rule_book,
-        config=config.backtest,
-        fill_model=config.fill_model,
-    )
-    result = backtester.run(strategy, run_id=run_id)
-    return result, compute_metrics(result)
+    return dataset, rule_book
 
 
 def _code_version() -> str:

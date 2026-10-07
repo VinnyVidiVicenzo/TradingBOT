@@ -34,6 +34,7 @@ class App:
         self.plan_history_path = self.repo_root / "experiments" / plan_history.FILENAME
         self._reference: alternatives.ReferenceData | None = None
         self._reference_loaded = False
+        self._reference_stamp = None
 
         self.root = tk.Tk()
         self.root.title("Crypto plan tester -- practice only, never real money")
@@ -56,9 +57,13 @@ class App:
     @property
     def reference(self) -> alternatives.ReferenceData | None:
         """Stock-fund and savings history for the comparison, or None if it isn't saved."""
-        if not self._reference_loaded:
+        directory = self.repo_root / "data" / "reference"
+        stamp = tuple((p.stat().st_mtime_ns, p.stat().st_size) if p.exists() else None
+                      for p in (directory / alternatives.FUND_FILE, directory / alternatives.RATE_FILE))
+        if not self._reference_loaded or stamp != self._reference_stamp:
             self._reference = alternatives.load_reference(self.repo_root / "data" / "reference")
             self._reference_loaded = True
+            self._reference_stamp = stamp
         return self._reference
 
     def _set_icon(self) -> None:
@@ -125,4 +130,5 @@ class App:
 
 
 def _default_repo_root() -> Path:
-    return Path(__file__).resolve().parent.parent
+    source_root = Path(__file__).resolve().parent.parent
+    return source_root if (source_root / "README.md").is_file() else Path.cwd()

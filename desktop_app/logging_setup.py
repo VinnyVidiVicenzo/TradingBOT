@@ -12,6 +12,8 @@ from pathlib import Path
 
 def configure_logging(repo_root: Path | None = None) -> None:
     root = repo_root or Path(__file__).resolve().parent.parent
+    if repo_root is None and not (root / "README.md").is_file():
+        root = Path.cwd()
     log_dir = root / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
     logging.basicConfig(

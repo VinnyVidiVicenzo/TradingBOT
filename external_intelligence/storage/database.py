@@ -160,6 +160,19 @@ SCHEMA_STATEMENTS: tuple[str, ...] = (
         UNIQUE (event_id, candidate_event_ids, rule)
     )
     """,
+    # A poller's resume point (for example, the last Binance.US trade id it has
+    # fully scanned for one symbol). Append-only like everything else here: a new
+    # value is a new row, and "the cursor" is whichever row was recorded last.
+    """
+    CREATE TABLE IF NOT EXISTS provider_cursors (
+        cursor_id   INTEGER PRIMARY KEY AUTOINCREMENT,
+        provider    TEXT    NOT NULL,
+        key         TEXT    NOT NULL,
+        value       TEXT    NOT NULL,
+        recorded_at INTEGER NOT NULL
+    )
+    """,
+    "CREATE INDEX IF NOT EXISTS idx_cursors_lookup ON provider_cursors (provider, key, cursor_id)",
 )
 
 

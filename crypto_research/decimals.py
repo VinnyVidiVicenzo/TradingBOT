@@ -24,6 +24,21 @@ PRECISION = 34
 
 ZERO = Decimal(0)
 ONE = Decimal(1)
+MAX_NUMBER_CHARS = 512
+MAX_NUMBER_DIGITS = 128
+MAX_NUMBER_EXPONENT = 256
+
+
+def bounded_decimal(value: Decimal) -> Decimal:
+    """Reject nonfinancial magnitudes before integer or fixed-point expansion."""
+    if not value.is_finite():
+        raise ValueError("number must be finite")
+    parts = value.as_tuple()
+    if (len(parts.digits) > MAX_NUMBER_DIGITS
+            or abs(parts.exponent) > MAX_NUMBER_EXPONENT
+            or abs(value.adjusted()) > MAX_NUMBER_EXPONENT):
+        raise ValueError("number exceeds supported precision or magnitude")
+    return value
 
 
 def dec(value: Any) -> Decimal:
@@ -34,11 +49,14 @@ def dec(value: Any) -> Decimal:
     still prefer strings.
     """
     if isinstance(value, Decimal):
-        return value
-    if isinstance(value, float):
-        return Decimal(repr(value))
+        return bounded_decimal(value)
+    if isinstance(value, bool):
+        raise ValueError("boolean is not a number")
+    text = repr(value) if isinstance(value, float) else str(value)
+    if len(text) > MAX_NUMBER_CHARS:
+        raise ValueError("number token is too long")
     try:
-        return Decimal(str(value))
+        return bounded_decimal(Decimal(text))
     except InvalidOperation as exc:  # pragma: no cover - defensive
         raise ValueError(f"cannot convert {value!r} to Decimal") from exc
 
@@ -103,6 +121,8 @@ def step_to_places(step: Decimal) -> int:
 
 def format_decimal(value: Decimal) -> str:
     """Canonical, round-trippable string form used for hashing and storage."""
+    bounded_decimal(value)
     if value == 0:
         return "0"
-    return format(value.normalize(), "f")
+    text = format(value, "f")
+    return text.rstrip("0").rstrip(".") if "." in text else text

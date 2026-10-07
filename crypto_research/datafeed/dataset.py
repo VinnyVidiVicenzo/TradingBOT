@@ -78,7 +78,10 @@ class DatasetVersion:
         }
 
 
-def build_dataset_version(bars_by_symbol: Mapping[str, Sequence[MarketBar]]) -> DatasetVersion:
+def build_dataset_version(
+    bars_by_symbol: Mapping[str, Sequence[MarketBar]],
+    quotes_by_symbol: Mapping[str, Sequence[MarketQuote]] | None = None,
+) -> DatasetVersion:
     """Hash every bar that a run can see.
 
     The digest covers the values a strategy could act on -- symbol, interval,
@@ -105,6 +108,7 @@ def build_dataset_version(bars_by_symbol: Mapping[str, Sequence[MarketBar]]) -> 
                         bar.interval,
                         str(bar.open_time),
                         str(bar.close_time),
+                        str(bar.feed_delay_ms),
                         format_decimal(bar.open),
                         format_decimal(bar.high),
                         format_decimal(bar.low),
@@ -117,6 +121,14 @@ def build_dataset_version(bars_by_symbol: Mapping[str, Sequence[MarketBar]]) -> 
             total += 1
             first_open = bar.open_time if first_open == 0 else min(first_open, bar.open_time)
             last_close = max(last_close, bar.close_time)
+
+    for symbol, quotes in sorted((quotes_by_symbol or {}).items()):
+        for quote in sorted(quotes, key=lambda q: (q.observable_at, q.source_received_at)):
+            digest.update(repr((symbol, quote.exchange, quote.exchange_event_time,
+                                quote.source_received_at, format_decimal(quote.bid),
+                                format_decimal(quote.ask),
+                                None if quote.bid_size is None else format_decimal(quote.bid_size),
+                                None if quote.ask_size is None else format_decimal(quote.ask_size))).encode())
 
     if len(intervals) > 1:
         raise ConfigError(
@@ -188,7 +200,7 @@ class MarketDataSet:
                 quotes, key=lambda quote: quote.observable_at
             )
         if self.version is None:
-            self.version = build_dataset_version(self.bars_by_symbol)
+            self.version = build_dataset_version(self.bars_by_symbol, self.quotes_by_symbol)
         if not self.gaps:
             self.gaps = find_gaps(self.bars_by_symbol, self.version.interval)
 

@@ -28,17 +28,19 @@ explains how that is enforced, not just promised).
 | Piece | State |
 | --- | --- |
 | Common provider interface, event model, append-only store | built and tested |
+| Binance.US trades adapter | **built and live** (since 1 Oct 2026). Reads the venue's own public trade feed -- real data, no export, no key, no cost (section 2) |
 | Whale Alert adapter | built; reads **exports you already have**. No live feed (section 2) |
 | CoinLobster adapter | built; reads exports in a project-defined flat format. No live feed (section 2) |
 | Arkham, Nansen, CryptoQuant, Glassnode | documented placeholders only. Nothing is integrated, bought or scraped (section 17) |
 | Features, lagged-only normalisation | built and tested |
 | Latency, event studies, ablation, hypothesis registry | built and tested on synthetic data |
-| Real provider data | **none has been loaded.** Every statistical result so far comes from synthetic fixtures that plant, or do not plant, an effect to prove the machinery can tell them apart |
-| Live ingestion of any provider | off, pending your decision (section 18) |
+| Real provider data | **flowing, as of 1 Oct 2026**, from the Binance.US trades adapter for BTC, ETH and SOL. Every *statistical* result so far still comes from synthetic fixtures -- real data has only just begun to accumulate, and a feature-family ablation needs enough history to say anything |
+| Live ingestion | **on** for Binance.US trades (polled, not streamed); off for every other provider, pending your decision (section 18) |
 
-Nothing here has been run against real whale data, so nothing here says anything
-yet about whether whale data helps. What it says is that the pipeline can ask the
-question properly.
+The statistical machinery (features, ablation, event studies) has only been
+proven against synthetic fixtures so far. Real data is now accumulating, but not
+yet for long enough to run a meaningful ablation on it -- that is the natural
+next step once a few weeks of polling have built up some history.
 
 ## 1. Architecture
 
@@ -54,6 +56,7 @@ external_intelligence/
   base/            provider interface, clock, rate limiter, GET-only transport,
                    coverage, receipt policy, health, file formats,
                    executed-activity adapter
+  binanceus_trades/ the venue's own public trade feed (live, free, real)
   whale_alert/     Whale Alert adapter
   coinlobster/     CoinLobster adapter
   placeholders/    Arkham, Nansen, CryptoQuant, Glassnode (specs, no code paths)
@@ -105,12 +108,13 @@ normalize one record into events, and refuse to guess. An adapter produces
 
 | Provider | What is implemented | Live feed |
 | --- | --- | --- |
+| Binance.US trades | Reads `/api/v3/aggTrades`, the venue's own public executed-trade feed, and keeps trades at or above a configurable size. See "The Binance.US trades adapter" below | **on** |
 | Whale Alert | Reads JSON, JSON lines or CSV exports in the documented "sub-transactions" shape (`hash`, `timestamp` in Unix seconds, `inputs` / `outputs` with `address`, `owner`, `owner_type`, `amount`) and in a flat shape (`from_address`, `to_owner_type`, ...) | off |
 | CoinLobster | Reads exports in a **project-defined** flat shape (`executed_activity_flat_v1`) with kinds `whale_trade`, `large_trade`, `liquidation`, `funding`, `open_interest` | off |
 | Arkham, Nansen, CryptoQuant, Glassnode | A specification each; raising `ProviderNotIntegrated` if used | not applicable |
 
-Why live ingestion is off (checked against the providers' public pages on
-2026-09-28; verify again before relying on it):
+Why live ingestion is off for Whale Alert and CoinLobster (checked against the
+providers' public pages on 2026-09-28; verify again before relying on it):
 
 * **Whale Alert** has no free data API. Its Alerts API and its Enterprise REST API
   are paid plans that authenticate with an API key. This zone cannot use a key
@@ -125,6 +129,36 @@ within the licence it came with; do not redistribute it. Social-media scraping o
 public alert feeds is not supported. The CoinLobster flat shape is defined here
 because no documented schema exists; if the real payload differs, only that
 adapter changes.
+
+### The Binance.US trades adapter
+
+`binanceus_trades/` is different from the other two: its endpoint is public, free
+and already on this project's permitted-endpoint list, so it is the one provider
+here that genuinely fetches live, with a genuinely *observed* receipt time rather
+than an assumed one (checked against a real response, 1 Oct 2026).
+
+* **What it reports.** Binance's own `isBuyerMaker` flag states which side
+  crossed the spread: `isBuyerMaker=true` means the seller was the taker (a
+  sell), `false` means the buyer was the taker (a buy). This is recorded as
+  `side`, exactly as the venue reports it -- never inferred from price movement.
+  A trade at or above a configurable size becomes `LARGE_EXECUTED_TRADE`; at or
+  above a second, larger configurable size it becomes `WHALE_TRADE_BUY` or
+  `WHALE_TRADE_SELL`. Both thresholds default to $50,000 and $250,000 and can be
+  set per poll; they are not a research conclusion about what "large" means.
+* **Only USD-quoted pairs** (`BTCUSD`, `ETHUSD`, `SOLUSD`, ...). A USDT-quoted
+  pair's price times quantity is a USDT notional, not a USD one, and this
+  project never treats the two as the same asset; USDT-quoted pairs are out of
+  scope until that distinction has a real answer, not a relabelled number.
+* **Polling, not streaming**, and never reports a false zero. Each poll resumes
+  from exactly the trade id after the last one it fully scanned (a `provider_cursors`
+  table, append-only like everything else in this store), so a quiet spell between
+  two polls can never be mistaken for "nothing happened" and a burst of trades can
+  never be partly skipped. The *first* poll for a symbol only learns where the
+  feed currently is and declares no coverage at all -- there is no honest way to
+  claim coverage for history before this project started watching it.
+* **Run it** with `python -m external_intelligence poll-binanceus-trades --symbol BTCUSD --asset BTC`
+  (repeat per symbol). Safe to run as often as you like; a quiet poll costs one
+  small request and advances nothing it shouldn't.
 
 The one network primitive, `UrllibGetFetcher`, exists so a permitted feed can be
 added later without weakening the zone. It is HTTPS-only, GET-only, sends no
@@ -576,14 +610,13 @@ paid dependency, standard library only, local storage.
 * Paid providers (section 17) are estimated by role only. Buying any of them to
   test a hypothesis is only worth it if a *free* proxy for the same hypothesis has
   already shown something.
-* A free, permitted source probably exists for **executed large trades on the venue
-  this project actually trades**: Binance.US publishes individual trades on a
-  public endpoint (`/api/v3/aggTrades`) that the research zone is already allowed to
-  use. If its trade record carries the usual buyer-is-maker flag, which says which
-  side was the aggressor (to be confirmed against Binance.US's current
-  documentation before building anything), a large-trade feature made from it would
-  be a like-for-like test of hypothesis C on real data without any subscription.
-  It is not built yet.
+* **Built, 1 Oct 2026:** a free, permitted source for executed large trades on the
+  venue this project actually trades. Binance.US's public `/api/v3/aggTrades`
+  endpoint carries a buyer-is-maker flag confirmed against a live response to say
+  which side was the aggressor; `binanceus_trades/` reads it, live, at no cost.
+  This is the like-for-like test of hypothesis C on real data without any
+  subscription -- see "The Binance.US trades adapter" above. It still needs
+  several weeks of accumulated history before an ablation on it means anything.
 * Transfers need an export you are entitled to use; there is no free bulk source
   identified for them.
 
@@ -645,10 +678,13 @@ rules. This is enforced by structure rather than by hoping nobody tries:
 
 ## Known limitations
 
-* **No real provider data has been run.** Fixtures are synthetic and follow the
-  providers' documented field names; real payloads will have quirks nobody has seen.
-* **Live ingestion is off** for both providers (section 2), and no free bulk source
-  for transfers has been identified.
+* **Real data is only just accumulating.** The statistical machinery (features,
+  ablation, event studies) has only been proven against synthetic fixtures;
+  Whale Alert and CoinLobster fixtures in particular are synthetic and follow
+  the providers' documented field names, so a real export's quirks will not
+  have been seen yet.
+* **Live ingestion is off for Whale Alert and CoinLobster** (section 2), and no
+  free bulk source for transfers has been identified.
 * **The lagged normalisations are not yet inputs to the ablation.** They exist and
   are tested, but the builder recomputes its history at every decision time, which is
   far too slow for a year of hourly decisions. Wiring them in needs the base feature's
@@ -676,8 +712,16 @@ rules. This is enforced by structure rather than by hoping nobody tries:
 
 ## Using it
 
-There is no command-line entry point yet; the pieces are a library. A short tour
-with synthetic values and no credentials:
+There is a command-line entry point for the Binance.US trades poller:
+
+    python -m external_intelligence poll-binanceus-trades --symbol BTCUSD --asset BTC
+    python -m external_intelligence poll-binanceus-trades --symbol ETHUSD --asset ETH
+    python -m external_intelligence poll-binanceus-trades --symbol SOLUSD --asset SOL
+
+Safe to run by hand as often as you like, or on a schedule (the same way
+`paper_trading`'s rehearsal is scheduled -- see `docs/trading-bot/PAPER_TRADING.md`).
+Every other provider is still a library, used as the sections above show. A short
+tour of the import path with synthetic values and no credentials:
 
 ```python
 from external_intelligence.base.clock import SystemClock
@@ -718,14 +762,17 @@ production.
    justify it.
 2. Whether to supply an export you are entitled to use, so the pipeline can run on
    real transfers.
-3. Whether to build the Binance.US executed-trade feature (section 18) as the first
-   real-data test.
+3. Whether to let the Binance.US trades poller keep running unattended (a scheduled
+   task, the same way `paper_trading`'s rehearsal is scheduled) rather than being
+   run by hand.
 4. Whether to fetch minute-level bars, which real latency work needs (section 9).
 
 ## Testing
 
 Tests live in `tests/test_external_intelligence_*.py`: events, storage, Whale Alert,
-ingest and provider failures, duplicates, features, research, ablation, and the
+the Binance.US trades adapter and poller, ingest and provider failures, duplicates,
+features, research, ablation, and the
 safety boundary. Run them with `python -m unittest discover -s tests`, or one file at
-a time. All fixtures are synthetic and follow the providers' documented field names;
-no real payload was available to check them against.
+a time. The Binance.US trades tests use a sample captured from a real response
+(1 Oct 2026); every other provider's fixtures are synthetic and follow the
+providers' documented field names, since no real payload was available for them.

@@ -20,7 +20,7 @@ one-line summary of each sweep for the "Your past plans" screen instead.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from decimal import Decimal
 
 from crypto_research.backtest.engine import Backtester
@@ -30,6 +30,7 @@ from crypto_research.config import parse_config
 from crypto_research.datafeed.dataset import MarketDataSet
 from crypto_research.datafeed.loader import load_dataset
 from crypto_research.errors import ConfigError
+from crypto_research.provenance import rule_identity, source_identity
 from crypto_research.storage.database import Database, open_database
 from crypto_research.storage.repositories import RuleSnapshotRepository
 from crypto_research.strategies import build_strategy
@@ -52,6 +53,7 @@ class WindowOutcome:
     ending_value: Decimal
     max_drawdown: Decimal
     rejected_orders: int
+    dataset_sha256: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -75,6 +77,8 @@ class SweepResult:
     outcomes: tuple[WindowOutcome, ...]
     # Starting months not tried because a coin had no saved prices for them.
     skipped: int
+    provenance: dict = field(default_factory=dict)
+    comparison_snapshot: dict | None = None
 
 
 def month_starts(first_ms: int, last_ms: int, hold_months: int) -> list[int]:
@@ -121,6 +125,7 @@ def run_sweep(request: SweepRequest) -> SweepResult:
         hold_months=request.hold_months,
         outcomes=tuple(outcomes),
         skipped=skipped,
+        provenance={"code_sha256": source_identity(), "rules": rule_identity(rule_book)},
     )
 
 
@@ -187,6 +192,7 @@ def _run_window(
         ending_value=metrics.ending_portfolio_value,
         max_drawdown=metrics.max_drawdown,
         rejected_orders=metrics.rejected_orders,
+        dataset_sha256=dataset.version.sha256,
     )
 
 

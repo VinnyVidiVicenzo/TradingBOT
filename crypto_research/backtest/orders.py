@@ -48,6 +48,7 @@ class RejectionReason(str, Enum):
     EXCHANGE_FILTER = "EXCHANGE_FILTER"
     LIMIT_NOT_MARKETABLE = "LIMIT_NOT_MARKETABLE"
     MALFORMED_INTENT = "MALFORMED_INTENT"
+    OUTSIDE_RUN_WINDOW = "OUTSIDE_RUN_WINDOW"
 
 
 @dataclass(frozen=True, slots=True)

@@ -30,10 +30,14 @@ from __future__ import annotations
 import csv
 import json
 import statistics
+import sys
 import time
 import urllib.request
 from datetime import date, timedelta
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from crypto_research.http_policy import no_redirect_opener, pagination_url
 
 OUT = Path(__file__).parent.parent / "data/reference/fundamentals"
 ASSETS = {"BTC": "btc", "ETH": "eth", "XRP": "xrp", "ZEC": "zec", "DOGE": "doge"}
@@ -53,11 +57,19 @@ def fetch(asset: str) -> dict[date, tuple[float, float]]:
         rows, url = [], ("https://community-api.coinmetrics.io/v4/timeseries/asset-metrics"
                          f"?assets={asset}&metrics=CapMVRVCur,PriceUSD&frequency=1d"
                          "&start_time=2013-01-01&page_size=10000")
+        seen = set()
         while url:
+            if url in seen or len(seen) >= 100:
+                raise ValueError("pagination repeated or exceeded 100 pages")
+            seen.add(url)
             req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (research)"})
-            page = json.loads(urllib.request.urlopen(req, timeout=60).read().decode())
+            with no_redirect_opener().open(req, timeout=60) as response:
+                body = response.read(5_000_001)
+            if len(body) > 5_000_000:
+                raise ValueError("reference response too large")
+            page = json.loads(body.decode())
             rows.extend(page["data"])
-            url = page.get("next_page_url")
+            url = pagination_url(page.get("next_page_url"), url, host="community-api.coinmetrics.io")
             time.sleep(1)
         with cache.open("w", newline="", encoding="utf-8") as fh:
             w = csv.writer(fh)

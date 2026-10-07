@@ -31,7 +31,7 @@ from ..binanceus.filters import OrderType
 from ..decimals import ZERO, dec, div, format_decimal, mul
 from ..errors import ConfigError
 from ..models import CashSource
-from ..timeutil import add_days
+from ..timeutil import add_days, interval_to_ms, DAY_MS
 from .base import AssetUniverse, BaseStrategy
 
 
@@ -54,7 +54,7 @@ class DipWeightedDeployment(BaseStrategy):
     max_tilt: Decimal = dec("3")
 
     name: str = field(default="dip_weighted_deployment", init=False)
-    version: str = field(default="1", init=False)
+    version: str = field(default="2", init=False)
 
     _pool: Decimal = field(default=ZERO, init=False, repr=False)
     _dates_done: int = field(default=0, init=False, repr=False)
@@ -81,7 +81,16 @@ class DipWeightedDeployment(BaseStrategy):
         0 means at or above the recent high; 0.4 means 40% below it. Computed
         from visible bars only.
         """
-        bars = ctx.market.history(symbol, self.lookback_days)
+        latest = ctx.market.last_bar(symbol)
+        if latest is None:
+            return ZERO
+        try:
+            width = interval_to_ms(latest.interval)
+            count = (self.lookback_days * DAY_MS + width - 1) // width + 1
+        except ValueError:
+            count = self.lookback_days + 1
+        cutoff = ctx.now - self.lookback_days * DAY_MS
+        bars = tuple(b for b in ctx.market.history(symbol, count) if b.observable_at > cutoff)
         if not bars:
             return ZERO
         peak = max(bar.close for bar in bars)

@@ -128,7 +128,7 @@ def make_event_id(provider: str, provider_event_id: str, schema_version: str = S
 
 
 def _is_ms(value: Any) -> bool:
-    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+    return isinstance(value, int) and not isinstance(value, bool) and 0 <= value <= 2**63 - 1
 
 
 def _coerce_enum(enum_cls: type[Enum], value: Any, name: str) -> Any:
