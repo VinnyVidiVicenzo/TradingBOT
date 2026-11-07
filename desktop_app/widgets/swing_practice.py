@@ -75,9 +75,11 @@ class SwingPracticePanel(ttk.Frame):
         self.tabs.add(recent, text="Recent decisions")
         self.events = tk.StringVar()
         ttk.Label(recent.content, textvariable=self.events, wraplength=900, justify="left", padding=8).pack(anchor="w")
+        footer = ttk.Frame(self)
+        footer.pack(side="bottom", fill="x", before=self.tabs)
         self.worker_text = tk.StringVar(value=practice_worker.describe(repo_root, "swing"))
-        ttk.Label(self, textvariable=self.worker_text, wraplength=930).pack(anchor="w", pady=(3, 0))
-        ttk.Label(self, text="Practice only • Background checks continue with this window closed while the computer is awake • Pause stops decisions", wraplength=930).pack(anchor="w", pady=(3, 0))
+        ttk.Label(footer, textvariable=self.worker_text, wraplength=930).pack(anchor="w", pady=(3, 0))
+        ttk.Label(footer, text="Practice only • Background checks continue with this window closed while the computer is awake • Pause stops decisions", wraplength=930).pack(anchor="w", pady=(3, 0))
         if self.agent.path.exists():
             self.render(self.agent.snapshot())
         self._timer = self.after(2000, self.check)
