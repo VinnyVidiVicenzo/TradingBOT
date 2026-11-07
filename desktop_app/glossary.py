@@ -7,6 +7,8 @@ built, so editing a definition here needs no other change anywhere in the app.
 from __future__ import annotations
 
 DEFINITIONS: dict[str, str] = {
+    "swing practice": "Your separate pretend swing wallet, with a fixed active model. New candidates learn and are tested separately without changing that wallet or its history.",
+    "practice agent": "Watch current public prices with a saved $200 pretend wallet. After Start, the independent worker continues its test rules with the window closed while the computer is awake. Pause stops decisions. It cannot use real money.",
     # -- the three ways money can go in ------------------------------------
     "put it all in at once": (
         "Every dollar buys coins on the very first day, all in one go."

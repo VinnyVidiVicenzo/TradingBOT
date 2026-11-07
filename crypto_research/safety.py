@@ -1,6 +1,6 @@
 """A machine-checkable statement of what each part of this repository can do.
 
-The repository has two zones with two different, separately-verified claims:
+The repository has separate zones with distinct, checked capability claims:
 
 * **research** (``crypto_research/``) -- cannot authenticate at all. No signing,
   no credential handling, no private endpoints, GET only. This is the guarantee
@@ -167,14 +167,18 @@ EXTERNAL_INTELLIGENCE_RULES = RuleSet(
     forbidden_patterns=SIGNING_PATTERNS + WRITE_METHOD_PATTERNS + WRONG_VENUE_PATTERNS,
 )
 
-# Paper trading (paper_trading/) rehearses a plan against live prices with pretend
-# money. It carries exactly the research engine's claim, for the strongest possible
-# reason: it contains no execution logic of its own at all. It imports the research
-# engine's own public client and its own backtester unchanged, and produces no
-# SimulatedOrder that was not already produced by code this audit already covers.
+# Paper trading rehearses research configs and local pretend-wallet strategies.
+# Its public-data client cannot authenticate; simulated settlements remain local.
 PAPER_TRADING_RULES = RuleSet(
     zone="paper-trading",
     claim="cannot authenticate: no signing, no credentials, no private endpoints",
+    forbidden_endpoints=TRADING_ENDPOINTS + ACCOUNT_READ_ENDPOINTS_FORBIDDEN_IN_RESEARCH,
+    forbidden_patterns=SIGNING_PATTERNS + WRITE_METHOD_PATTERNS + WRONG_VENUE_PATTERNS,
+)
+
+MARKET_CAPTURE_RULES = RuleSet(
+    zone="market-capture",
+    claim="public streams only: cannot authenticate, trade or move funds",
     forbidden_endpoints=TRADING_ENDPOINTS + ACCOUNT_READ_ENDPOINTS_FORBIDDEN_IN_RESEARCH,
     forbidden_patterns=SIGNING_PATTERNS + WRITE_METHOD_PATTERNS + WRONG_VENUE_PATTERNS,
 )
@@ -282,6 +286,7 @@ def audit_repository(repo_root: Path | None = None) -> SafetyReport:
         (DESKTOP_APP_RULES, root / "desktop_app", ()),
         (EXTERNAL_INTELLIGENCE_RULES, root / "external_intelligence", ()),
         (PAPER_TRADING_RULES, root / "paper_trading", ()),
+        (MARKET_CAPTURE_RULES, root / "market_capture", ()),
         (
             SUPPORT_RULES,
             root / "tests",

@@ -18,9 +18,14 @@ class NavBar(ttk.Frame):
     ) -> None:
         super().__init__(parent)
         self._buttons: dict[str, ttk.Button] = {}
-        for key, label in items:
+        for index, (key, label) in enumerate(items):
             button = ttk.Button(self, text=label, command=lambda k=key: on_select(k))
-            button.pack(side="left", padx=4, pady=6)
+            if len(items) > 5:
+                columns = 4 if len(items) > 6 else 3
+                button.grid(row=index // columns, column=index % columns, sticky="ew", padx=4, pady=4)
+                self.columnconfigure(index % columns, weight=1)
+            else:
+                button.pack(side="left", padx=4, pady=6)
             attach_tooltip(button, label.lower())
             self._buttons[key] = button
 

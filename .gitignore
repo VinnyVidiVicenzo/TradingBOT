@@ -13,6 +13,14 @@ data/*.sqlite-journal
 data/*.sqlite-wal
 data/*.sqlite-shm
 data/raw/
+data/*.sqlite.lock
+data/research_costs.json
+data/research_costs.pending
+data/metals_inventory.json
+data/metals_inventory.pending
+data/learning_capture/
+data/learning_research/
+data/practice_runtime/
 experiments/runs/
 experiments/index.jsonl
 experiments/gui_plans.jsonl

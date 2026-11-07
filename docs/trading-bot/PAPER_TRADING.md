@@ -7,6 +7,62 @@ touches a real account, so it needs none.
 
 ## What a rehearsal is, in one sentence
 
+The desktop **Practice agent** is a separate forward-only simulator in
+`paper_trading/practice.py`, rather than the paired config-replay workflow below.
+It keeps one persistent $200 pretend wallet, uses only the public market client,
+and supports simulated buying and selling. No research config or real-account
+permission is changed. See README's automatic practice-agent section for its
+entry-rule learning, fixed risk limits, costs, persistence and fill-model limitations.
+Start launches the fixed `market_capture.practice_worker` process. It continues
+practice and prospective learning with the desktop window closed, while this
+computer is awake. Reopening only reads the saved sessions; Pause remains an
+explicit action. Status shows the heartbeat, last successful check and retries.
+Nothing starts automatically at Windows login; after shutdown or a worker crash,
+use Start/Reconnect. Missed trades and observations are never reconstructed.
+`paper_trading/learning.py` compares bounded candidate entry thresholds using
+forward discovery and a separate validation period. Trial portfolios reuse the
+practice simulator; promotions affect only future entry checks. Learner state,
+actual net outcomes and phase/promotion evidence share the wallet's atomic commit.
+Background trial failures stop that trial, without partially changing its wallet
+or discarding a valid actual practice decision. No learner can change the budget,
+exit thresholds, permitted symbols or account-access boundary.
+
+The optional `market_signals.py` layer adds bounded public aggregate-trade and
+depth snapshots and hourly context. Its paired forward comparison freezes entry
+parameters and shares starting holdings/cash, fills, costs and exit rules. Only
+the candidate uses market-entry filters. Neither trial feeds the existing learner
+or primary portfolio; failures and incomplete samples cannot alter those inputs.
+Summary observations with content hashes are retained atomically in `market_samples`;
+primary activity rows retain their evidence/cost explanations. Raw tape is not
+archived, so hashes alone do not make historical observations replayable.
+Existing practice/learning state is extended additively without a reset. See
+README for sampling frequency, truncation/freshness handling and fixed filter thresholds.
+
+`prediction.py` adds delayed, forward-only opportunity learning to the same
+transaction. Predictions and fixed-scale feature vectors are recorded before
+labels; outcomes mature on a fresh quote one hour later (five-minute grace).
+Missing labels expire. Training is progressive, while challenger validation is
+frozen and occurs only on subsequent forecasts. A fixed past-frequency baseline,
+condition-specific scores, checkpoint history and deterioration-triggered
+rollback provide comparisons without changing the actual agent. The predictor
+uses standard-library numeric code and JSON, not executable model serialization.
+A savepoint prevents predictor failure from discarding valid wallet/learner
+updates. See README for all thresholds and the limits of hypothetical returns.
+
+`swing.py` reuses that engine in independent 4h/24h namespaces scoped by the
+economic identity of `research_costs.json`. The SQL adapter substitutes only
+fixed table identifiers with validated prefixes; values remain bound parameters.
+Per-coin sampling intervals prevent overlapping swing target windows. Existing
+one-hour labels and weights are not migrated or overwritten. The fee import
+does not change the current practice execution assumptions.
+
+`market_capture/` is a separate, optionally installed public streaming recorder
+with independent start/stop controls, finite storage and no account access.
+Execution replay rejects capture gaps, requires causally later near-time depth
+snapshots and leaves passive fills unmodeled. `metals.py` supports manual physical
+inventory and hypothetical at-expiry hedge arithmetic only. See
+[research extensions](RESEARCH_EXTENSIONS.md) for commands and limits.
+
 Two ordinary backtest configs -- one for the plan, one for the benchmark it is
 compared against -- run again every time new prices close, with the ending date
 replaced by the newest one instead of a fixed date from the file.

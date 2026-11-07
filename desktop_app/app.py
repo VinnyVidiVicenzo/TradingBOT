@@ -23,6 +23,8 @@ SCREENS: tuple[tuple[str, str], ...] = (
     ("findings", "What we've found so far"),
     ("try_a_plan", "Try your own plan"),
     ("past_plans", "Your past plans"),
+    ("practice", "Practice agent"),
+    ("swing", "Swing practice"),
     ("safety_check", "Safety check"),
 )
 
@@ -52,6 +54,7 @@ class App:
 
         self._screens: dict[str, ttk.Frame] = {}
         self._build_screens()
+        self.root.protocol("WM_DELETE_WINDOW", self._close)
         self.show("home")
 
     @property
@@ -88,19 +91,26 @@ class App:
         self.root.minsize(min(MIN_WIDTH, width), min(MIN_HEIGHT, height))
 
     def _build_screens(self) -> None:
-        from .screens import findings, home, past_plans, safety_check, try_a_plan
+        from .screens import findings, home, past_plans, practice, safety_check, swing, try_a_plan
 
         factories = {
             "home": home.HomeScreen,
             "findings": findings.FindingsScreen,
             "try_a_plan": try_a_plan.TryAPlanScreen,
             "past_plans": past_plans.PastPlansScreen,
+            "practice": practice.PracticeScreen,
+            "swing": swing.SwingScreen,
             "safety_check": safety_check.SafetyCheckScreen,
         }
         for key, factory in factories.items():
             screen = factory(self._container, self)
             screen.grid(row=0, column=0, sticky="nsew")
             self._screens[key] = screen
+
+    def _close(self) -> None:
+        self._screens["practice"].close()
+        self._screens["swing"].close()
+        self.root.destroy()
 
     def show(self, key: str) -> None:
         self._screens[key].tkraise()

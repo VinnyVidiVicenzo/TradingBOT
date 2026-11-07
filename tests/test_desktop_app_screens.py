@@ -85,10 +85,10 @@ class HomeScreenTests(_ScreenTestCase):
     def test_each_button_goes_to_its_screen(self) -> None:
         self.screen = HomeScreen(self.root, self.fake)
         buttons = self._buttons(self.screen)
-        self.assertEqual(len(buttons), 4)
+        self.assertEqual(len(buttons), 6)
         for button in buttons:
             button.invoke()
-        self.assertEqual(self.fake.shown, ["findings", "try_a_plan", "past_plans", "safety_check"])
+        self.assertEqual(self.fake.shown, ["swing", "practice", "findings", "try_a_plan", "past_plans", "safety_check"])
 
 
 # -- What we've found ------------------------------------------------------
@@ -289,9 +289,9 @@ class SafetyCheckScreenTests(_ScreenTestCase):
 
 
 class AppShellTests(AppTestCase):
-    def test_all_five_screens_are_built_and_home_is_showing(self) -> None:
+    def test_all_seven_screens_are_built_and_home_is_showing(self) -> None:
         self.assertEqual(set(self.app._screens), {key for key, _ in SCREENS})
-        self.assertEqual(len(SCREENS), 5)
+        self.assertEqual(len(SCREENS), 7)
 
     def test_every_screen_can_be_shown_on_a_fresh_machine_with_no_data(self) -> None:
         for key, _label in SCREENS:

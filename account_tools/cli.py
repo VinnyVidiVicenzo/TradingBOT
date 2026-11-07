@@ -17,7 +17,8 @@ import sys
 from pathlib import Path
 from typing import Sequence
 
-from crypto_research.timeutil import now_ms, to_iso
+from crypto_research.timeutil import now_ms, to_iso, parse_time
+from crypto_research.market_universe import SYMBOLS, LEGACY_SYMBOLS
 
 from .client import BinanceUSAccountClient, fees_for_symbols
 from .credentials import (
@@ -33,7 +34,7 @@ from .reporting import (
 )
 from .signing import AccountTransportError, SignedReadOnlyTransport
 
-DEFAULT_SYMBOLS = "BTCUSD,ETHUSD,SOLUSD"
+DEFAULT_SYMBOLS = ",".join(SYMBOLS)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -73,6 +74,7 @@ def build_parser() -> argparse.ArgumentParser:
     fees.add_argument("--symbols", default=DEFAULT_SYMBOLS)
     fees.add_argument("--window", default="", help="the backtest window these apply to")
     fees.add_argument("--write", help="also write the block to this path")
+    fees.add_argument("--research-profile", help="export per-symbol fee rates only, without balances or authentication data")
 
     holdings = sub.add_parser(
         "holdings", parents=[shared],
@@ -122,6 +124,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"error: {exc}", file=sys.stderr)
         _hint(exc)
         return 2
+    except (ValueError, TypeError, KeyError) as exc:
+        print(f"invalid account report: {exc}", file=sys.stderr)
+        return 2
 
 
 def _dispatch(args, client: BinanceUSAccountClient, observed_iso: str) -> int:
@@ -141,6 +146,17 @@ def _dispatch(args, client: BinanceUSAccountClient, observed_iso: str) -> int:
         snapshot = client.account()
         symbols = [s.strip().upper() for s in args.symbols.split(",") if s.strip()]
         per_symbol = fees_for_symbols(client, symbols)
+        if args.research_profile:
+            required = tuple(s for s in SYMBOLS if s in symbols)
+            if not set(LEGACY_SYMBOLS) <= set(required):
+                raise ValueError("Research export requires BTCUSD and ETHUSD; include all five practice markets for full coverage")
+            if any(s not in per_symbol for s in required):
+                raise ValueError("Research export requires reported fee rows for every requested practice market")
+            payload = {"version": 1, "source": "Binance.US reported per-symbol fee snapshot",
+                       "verification": "account_reported",
+                       "observed_at": parse_time(observed_iso), "slippage": "0.001",
+                       "fees": {s: {"maker": str(per_symbol[s].maker), "taker": str(per_symbol[s].taker)} for s in required}}
+            _maybe_write(args.research_profile, json.dumps(payload, indent=2))
         block = render_fee_block(
             snapshot, per_symbol, observed_iso=observed_iso, window=args.window
         )

@@ -28,6 +28,8 @@ PACKAGE_ROOT = REPO_ROOT / "desktop_app"
 # not a formality.
 ALLOWED_ROOTS = {
     "desktop_app",
+    "paper_trading",
+    "market_capture",
     "crypto_research",
     "__future__",
     "collections",

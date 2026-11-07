@@ -122,6 +122,18 @@ class BinanceUSPublicClient:
 
     # -- prices ------------------------------------------------------------
 
+    def aggregate_trades(self, symbol: str, *, start_time: int, end_time: int,
+                         limit: int = 1000) -> list[Mapping[str, Any]]:
+        """One bounded public aggregate-trade page; callers must detect truncation."""
+        if not 1 <= limit <= 1000 or start_time > end_time:
+            raise ConfigError("invalid aggregate trade range or limit")
+        response = self._transport.get("/api/v3/aggTrades", {
+            "symbol": symbol, "startTime": start_time, "endTime": end_time, "limit": limit,
+        })
+        if not isinstance(response.payload, list) or len(response.payload) > limit:
+            raise ConfigError("aggregate trades response is not a bounded array")
+        return response.payload
+
     def ticker_price(self, symbol: str) -> Decimal:
         response = self._transport.get("/api/v3/ticker/price", {"symbol": symbol})
         return dec(response.payload["price"])

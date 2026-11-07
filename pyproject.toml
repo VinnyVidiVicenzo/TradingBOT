@@ -11,6 +11,7 @@ dependencies = []          # standard library only
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+recorder = ["websockets==17.4"]
 
 [project.scripts]
 crypto-research = "crypto_research.cli:main"
@@ -18,9 +19,10 @@ crypto-research-account = "account_tools.cli:main"
 crypto-research-desktop = "desktop_app.__main__:main"
 crypto-research-paper = "paper_trading.cli:main"
 crypto-research-intelligence = "external_intelligence.cli:main"
+crypto-research-capture = "market_capture.__main__:main"
 
 [tool.setuptools.packages.find]
-include = ["crypto_research*", "account_tools*", "external_intelligence*", "desktop_app*", "paper_trading*"]
+include = ["crypto_research*", "account_tools*", "external_intelligence*", "desktop_app*", "paper_trading*", "market_capture*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

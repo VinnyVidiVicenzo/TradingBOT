@@ -8,7 +8,7 @@ done better than a simple benchmark?"*
 
 ## What this system is not
 
-It is not an autonomous trading system. It cannot place an order and it cannot
+It is not an autonomous real-money trading system. It cannot place an order and it cannot
 move money. It can, through a separate and deliberately isolated subproject,
 read one account's commission rates and balances — and nothing else.
 
@@ -17,7 +17,7 @@ to-do item: no part of this repository contains a code path that submits,
 amends or cancels an order, or that moves funds. The two sections below state
 what each zone can do and how each claim is enforced.
 
-## Three zones, three different claims
+## Separate zones and explicit capability limits
 
 The repository is split into zones with separately-verified guarantees. This
 split is the whole design, and collapsing it into one vague "the repo is safe"
@@ -28,6 +28,10 @@ statement would destroy the useful part.
 | `crypto_research/` — the research engine | **No.** No signing code exists. | No. |
 | `account_tools/` — the account reader | Yes, read-only. | **No.** No such endpoint exists in it. |
 | `desktop_app/` — the desktop window | **No.** No signing code, no credential field. | No. |
+| `external_intelligence/` — external observations | No authenticated fetching. | No. |
+| `paper_trading/` — practice/research models | No. | No. |
+| `market_capture/` — public stream recorder | No. | No. |
+| Tests, tools and documentation — support | No product authentication workflow. | No. |
 
 ### Zone 1: the research engine cannot authenticate
 
@@ -181,7 +185,7 @@ There is no margin, no borrowing, no futures and no leverage of any kind.
 `isMarginTradingAllowed` is recorded from exchangeInfo for completeness and is
 never acted on.
 
-## No selling in V1
+## Buy-only research configs; simulated exits in the practice agent
 
 `ExecutionConfig.allow_sell` defaults to `False`, and a configuration file
 cannot switch it on: the config parser raises if it sees `allow_sell = true`.
@@ -191,6 +195,39 @@ change with its own tests, not a flag flip.
 The simulator does contain a sell settlement path, unreachable in V1. It is
 there so the engine stays general and so the sell path is reviewable before
 anything depends on it.
+
+The desktop practice agent is a separate local simulator with explicit buy and
+sell tests. It starts with $200 pretend cash, caps each coin's entry at $50,
+and never adds deposits or borrowing. It uses the existing public GET client,
+not account access. Its SQLite transaction commits wallet changes and activity
+together, rechecks pause state before simulation, and prevents overlapping
+checks from repeating a purchase. Invalid data prevents simulation. A $40 loss threshold is
+a stop trigger, not a guaranteed maximum loss; price gaps can exceed it.
+An explicitly started, fixed local worker continues checks with the GUI closed.
+One OS lock owns both sessions; per-session threads isolate slow requests, and
+the heartbeat remains independent of those requests. Saved pause flags and
+control revisions are rechecked before simulation, including pause/resume races.
+Data-fetch failures retry with bounded backoff without changing cash, decisions
+or labels; simulation errors and risk halts remain paused. Reopening never
+resets or pauses a session. Sleep/shutdown interrupt coverage, and no missed
+decisions or learning outcomes are invented. There is no login auto-start.
+Learning is limited to three predefined entry thresholds, with forward discovery
+and a separate validation phase. It cannot change position/spending limits,
+exit thresholds, code, symbols or transport permissions. Shadow wallets share
+the same simulation routine and observations; they never fund the primary wallet.
+The advisory opportunity predictor stores forecasts before delayed labels and
+cannot change the trade strategy or risk limits, even after model validation.
+Its incremental parameters, frozen checkpoints and rollback events are local
+JSON/SQLite records. A prediction-only savepoint isolates computation failures
+from valid wallet changes; no account, model-service or execution access is added.
+Independent 4h/24h studies reuse the delayed-label engine in cost-scoped tables,
+without resetting the original predictor. Imported fee files contain rates and
+provenance only; they cannot grant account access. The public recorder is a
+separate audited zone with one optional WebSocket dependency and a fixed allow-list
+of Binance.US streams. It never sends application trade messages. Top-20 snapshot
+recording and conservative replay do not imply full-book or passive-fill accuracy.
+Physical-metals calculations are local manual inventory/scenario arithmetic;
+there is no path to buy metal, sell derivatives or obtain an insurance policy.
 
 ## No martingale, no doubling down
 

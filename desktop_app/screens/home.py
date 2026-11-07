@@ -8,6 +8,12 @@ from tkinter import ttk
 from .. import theme, coin_catalog
 
 _BUTTONS: tuple[tuple[str, str, str], ...] = (
+    ("Swing practice", "Run your saved swing wallet and follow its separate learning candidates.", "swing"),
+    (
+        "Practice agent",
+        "Let a $200 pretend wallet decide when to buy, hold and sell using current prices.",
+        "practice",
+    ),
     (
         "What we've found so far",
         "Read the plain-language findings from the research already done.",
@@ -42,7 +48,7 @@ class HomeScreen(ttk.Frame):
         ttk.Label(
             self,
             text=(
-                "This tool can only look at old prices and do practice math with "
+                "This tool looks at saved and current public prices and does practice math with "
                 "made-up money. It can never buy, sell, or move your real money -- "
                 "there is no button anywhere in this app that does that."
             ),

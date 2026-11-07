@@ -18,10 +18,10 @@ REPO_ROOT = Path(__file__).parent.parent
 PACKAGE = REPO_ROOT / "paper_trading"
 
 STDLIB_ALLOWED = {
-    "__future__", "argparse", "dataclasses", "decimal", "json", "pathlib", "sys", "typing",
+    "__future__", "argparse", "contextlib", "dataclasses", "decimal", "hashlib", "json", "math", "pathlib", "re", "sqlite3", "sys", "typing", "uuid",
 }
-# paper_trading contains no execution logic of its own: it only orchestrates the
-# already-audited research engine. Its import surface should reflect that -- the
+# paper_trading orchestrates research replays and a local pretend-wallet simulator.
+# Its import surface permits public prices and local storage -- the
 # engine's public client, config loader, backtester and registry, and nothing that
 # authenticates, trades, or belongs to another zone.
 FIRST_PARTY_ALLOWED = {
@@ -30,6 +30,8 @@ FIRST_PARTY_ALLOWED = {
     "crypto_research.config",
     "crypto_research.datafeed.download",
     "crypto_research.decimals",
+    "crypto_research.market_universe",
+    "crypto_research.models",
     "crypto_research.errors",
     "crypto_research.experiments.registry",
     "crypto_research.experiments.runner",
